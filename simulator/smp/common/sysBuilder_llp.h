@@ -57,6 +57,7 @@ public:
     manifold::kernel::Ticks_t get_stop_tick() { return STOP; }
     size_t get_proc_node_size() { return proc_node_idx_vec.size(); }
     size_t get_mc_node_size() { return mc_node_idx_vec.size(); }
+    size_t get_xbar_node_size() { return xbar_node_idx_vec.size(); }
     int get_y_dim() { return m_network_builder->get_y_dim(); }
 
     std::map<int, int>& get_proc_id_lp_map() { return proc_id_lp_map; }
@@ -92,12 +93,15 @@ protected:
 
     std::vector<int> proc_node_idx_vec;
     std::vector<int> mc_node_idx_vec;
+    std::vector<int> xbar_node_idx_vec;
 
     std::set<int> proc_node_idx_set; //set is used to ensure each index is unique
     std::set<int> mc_node_idx_set; //set is used to ensure each index is unique
+    std::set<int> xbar_node_idx_set; //set is used to ensure each index is unique
 
     std::map<int, int> proc_id_lp_map; //maps proc's node id to its LP
     std::map<int, int> mc_id_lp_map; //maps mc's node id to its LP
+    std::map<int, int> xbar_id_lp_map; //maps mc's node id to its LP
 
     //int m_processor_type;
 private:

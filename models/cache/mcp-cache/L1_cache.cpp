@@ -116,7 +116,7 @@ void L1_cache::handle_processor_request (int, cache_req *request)
 
 
 //! Since L1_cache has 2 input ports, we may have simultaneous outputs. To ensure determinism,
-//! tick() is used to handle simultaneous inputs in a determinstic way.
+//! tick() is used to handle simultaneous inputs in a deterministic way.
 void L1_cache :: tick()
 {
     while(m_net_requests.size() > 0) {

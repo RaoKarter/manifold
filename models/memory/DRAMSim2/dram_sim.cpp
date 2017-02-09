@@ -91,7 +91,6 @@ void Dram_sim::write_complete(unsigned id, uint64_t address, uint64_t done_cycle
 #endif
 }
 
-
 void Dram_sim :: try_send_reply()
 {
     if ( !m_completed_reqs.empty() && downstream_credits > 0) {

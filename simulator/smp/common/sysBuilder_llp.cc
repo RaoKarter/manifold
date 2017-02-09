@@ -73,20 +73,23 @@ void SysBuilder_llp :: config_system()
 void SysBuilder_llp :: config_components()
 {
     try {
-        //simulation parameters
-        STOP = m_config.lookup("simulation_stop");
+			//simulation parameters
+			STOP = m_config.lookup("simulation_stop");
 
-        try {
-            m_DEFAULT_CLOCK_FREQ = m_config.lookup("default_clock");
-            assert(m_DEFAULT_CLOCK_FREQ > 0);
-        }
-        catch (SettingNotFoundException e) {
-            //if default clock not defined
-            m_DEFAULT_CLOCK_FREQ = -1;
-        }
+			try
+			{
+				m_DEFAULT_CLOCK_FREQ = m_config.lookup("default_clock");
+				assert(m_DEFAULT_CLOCK_FREQ > 0);
+			}
+			catch (SettingNotFoundException e)
+			{
+				//if default clock not defined
+				m_DEFAULT_CLOCK_FREQ = -1;
+			}
 #ifdef LIBKITFOX
         //kitfox
-        try {
+        try
+        {
             const char* kitfox_chars = m_config.lookup("kitfox_config");
             uint64_t sampling_freq = m_config.lookup("kitfox_freq");
             m_kitfox_builder = new KitFoxBuilder(kitfox_chars, sampling_freq);
@@ -96,13 +99,15 @@ void SysBuilder_llp :: config_components()
                     exit(1);
             }
         }
-        catch (SettingNotFoundException e) {
+        catch (SettingNotFoundException e)
+        {
             cerr << "KitFox config file not specified\n";
             exit(1);
         }
 #endif
         //network
-        try {
+        try
+        {
             const char* net_chars = m_config.lookup("network_type");
             string net_str = net_chars;
             if(net_str == "IRIS") m_network_builder = new Iris_builder();
@@ -111,7 +116,8 @@ void SysBuilder_llp :: config_components()
                 exit(1);
             }
         }
-        catch (SettingNotFoundException e) {
+        catch (SettingNotFoundException e)
+        {
             m_network_builder = new Iris_builder(); //default is Iris
         }
 
@@ -127,8 +133,10 @@ void SysBuilder_llp :: config_components()
    /*     if(proc_str == "ZESTO") m_proc_builder = new Zesto_builder(this);*/
         //else if (proc_str == "SIMPLE") m_proc_builder = new Simple_builder(this);
         //else if (proc_str == "SPX") m_proc_builder = new Spx_builder(this);
-        if (proc_str == "SPX") m_proc_builder = new Spx_builder(this);
-        else {
+        if (proc_str == "SPX")
+        	m_proc_builder = new Spx_builder(this);
+        else
+        {
             cerr << "Processor type  " << proc_str << "  not supported\n";
             exit(1);
         }
@@ -136,16 +144,20 @@ void SysBuilder_llp :: config_components()
 
 
         //cache
-        try {
+        try
+        {
             const char* cache_chars = m_config.lookup("cache_type");
             string cache_str = cache_chars;
-            if(cache_str == "MCP") m_cache_builder = new MCP_lp_lls_builder(this);
-            else {
+            if(cache_str == "MCP")
+            	m_cache_builder = new MCP_lp_lls_builder(this);
+            else
+            {
                 cerr << "Cache type  " << cache_str << "  not supported\n";
                 exit(1);
             }
         }
-        catch (SettingNotFoundException e) {
+        catch (SettingNotFoundException e)
+        {
             m_cache_builder = new MCP_lp_lls_builder(this); //default is MCP_lp_lls
         }
         m_cache_builder->read_cache_config(m_config);
@@ -154,9 +166,14 @@ void SysBuilder_llp :: config_components()
         //memory controller
         const char* mem_chars = m_config.lookup("mc.type");
         string mem_str = mem_chars;
-        if(mem_str == "CAFFDRAM") m_mc_builder = new CaffDRAM_builder(this);
-        else if(mem_str == "DRAMSIM") m_mc_builder = new DramSim_builder(this);
-        else {
+        if(mem_str == "CAFFDRAM")
+        	m_mc_builder = new CaffDRAM_builder(this);
+        else if(mem_str == "DRAMSIM")
+        	m_mc_builder = new DramSim_builder(this);
+        else if(mem_str == "HMC")
+        	m_mc_builder = new HMC_builder(this);
+        else
+        {
             cerr << "Memory controller type  " << mem_str << "  not supported\n";
             exit(1);
         }
@@ -171,7 +188,8 @@ void SysBuilder_llp :: config_components()
 
         this->proc_node_idx_vec.resize(num_proc);
 
-        for(int i=0; i<num_proc; i++) {
+        for(int i=0; i<num_proc; i++)
+        {
             assert((int)setting_proc[i] >=0 && (int)setting_proc[i] < MAX_NODES);
             proc_node_idx_set.insert((int)setting_proc[i]);
             this->proc_node_idx_vec[i] = (int)setting_proc[i];
@@ -179,20 +197,42 @@ void SysBuilder_llp :: config_components()
         assert(proc_node_idx_set.size() == (unsigned)num_proc); //verify no 2 indices are the same
 
 
-        //memory controller assignment
-        //the node indices of MC are in an array, each value between 0 and MAX_NODES-1
-        Setting& setting_mc = m_config.lookup("mc.node_idx");
-        int num_mc = setting_mc.getLength(); //number of mem controllers
-        assert(num_mc >=1 && num_mc <= MAX_NODES);
+        if(mem_str == "HMC")
+        {
+			//xbar assignment
+			//the node indices of xbar are in an array, each value between 0 and MAX_NODES-1
+			Setting& setting_xbar = m_config.lookup("xbar.node_idx");
+			int num_xbar = setting_xbar.getLength(); //number of SerDes links
+			assert(num_xbar >=1 && num_xbar <= MAX_NODES);
 
-        this->mc_node_idx_vec.resize(num_mc);
+			this->xbar_node_idx_vec.resize(num_xbar);
 
-        for(int i=0; i<num_mc; i++) {
-            assert((int)setting_mc[i] >=0 && (int)setting_mc[i] < MAX_NODES);
-            mc_node_idx_set.insert((int)setting_mc[i]);
-            this->mc_node_idx_vec[i] = (int)setting_mc[i];
+			for(int i=0; i<num_xbar; i++)
+			{
+				assert((int)setting_xbar[i] >=0 && (int)setting_xbar[i] < MAX_NODES);
+				xbar_node_idx_set.insert((int)setting_xbar[i]);
+				this->xbar_node_idx_vec[i] = (int)setting_xbar[i];
+			}
+			assert(xbar_node_idx_set.size() == (unsigned)num_xbar); //verify no 2 indices are the same
         }
-        assert(mc_node_idx_set.size() == (unsigned)num_mc); //verify no 2 indices are the same
+        else
+        {
+        	//memory controller assignment
+			//the node indices of mc are in an array, each value between 0 and MAX_NODES-1
+			Setting& setting_mc = m_config.lookup("mc.node_idx");
+			int num_mc = setting_mc.getLength(); //number of SerDes links
+			assert(num_mc >=1 && num_mc <= MAX_NODES);
+
+			this->mc_node_idx_vec.resize(num_mc);
+
+			for(int i=0; i<num_mc; i++)
+			{
+				assert((int)setting_mc[i] >=0 && (int)setting_mc[i] < MAX_NODES);
+				mc_node_idx_set.insert((int)setting_mc[i]);
+				this->mc_node_idx_vec[i] = (int)setting_mc[i];
+			}
+			assert(mc_node_idx_set.size() == (unsigned)num_mc); //verify no 2 indices are the same
+        }
 
 //      //verify MC indices are not used by processors
 //      for(int i=0; i<num_mc; i++) {
@@ -200,11 +240,13 @@ void SysBuilder_llp :: config_components()
 //              assert(this->mc_node_idx_vec[i] != this->proc_node_idx_vec[j]);
 //      }
     }
-    catch (SettingNotFoundException e) {
+    catch (SettingNotFoundException e)
+    {
         cout << e.getPath() << " not set." << endl;
         exit(1);
     }
-    catch (SettingTypeException e) {
+    catch (SettingTypeException e)
+    {
         cout << e.getPath() << " has incorrect type." << endl;
         exit(1);
     }
@@ -224,7 +266,8 @@ void SysBuilder_llp :: build_system(FrontendType type, int n_lps, vector<string>
         m_default_clock = new Clock(m_DEFAULT_CLOCK_FREQ);
 
     //create network
-    if(m_network_builder->get_type() == NetworkBuilder :: IRIS) {
+    if(m_network_builder->get_type() == NetworkBuilder :: IRIS)
+    {
         dep_injection_for_iris();
     }
 
@@ -236,18 +279,22 @@ void SysBuilder_llp :: build_system(FrontendType type, int n_lps, vector<string>
 #endif
 
     assert(m_proc_builder->get_fe_type() == ProcBuilder::INVALID_FE_TYPE);
-    switch(type) {
-        case FT_QSIMCLIENT: {
+    switch(type)
+    {
+        case FT_QSIMCLIENT:
+        {
             m_proc_builder->set_fe_type(ProcBuilder::QSIMCLIENT);
             create_qsimclient_nodes(n_lps, args, part);
             break;
         }
-        case FT_TRACE: {
+        case FT_TRACE:
+        {
             m_proc_builder->set_fe_type(ProcBuilder::TRACE);
             create_trace_nodes(n_lps, args, part);
             break;
         }
-        default: {
+        default:
+        {
             assert(0);
             break;
         }
@@ -528,8 +575,13 @@ void SysBuilder_llp :: create_nodes(int type, int n_lps, int part)
 
 
     //??????????????????? todo cache should have separate clock
+    const char* mem_chars = m_config.lookup("mc.type");
+    string mem_str = mem_chars;
     m_cache_builder->create_caches(*m_default_clock);
-    m_mc_builder->create_mcs(mc_id_lp_map);
+    if(mem_str == "HMC")
+    	m_mc_builder->create_mcs(xbar_id_lp_map);
+    else
+    	m_mc_builder->create_mcs(mc_id_lp_map);
 
     if(m_cache_builder->get_type() == CacheBuilder::MCP_CACHE || m_cache_builder->get_type() == CacheBuilder::MCP_L1L2) {
         dep_injection_for_mcp();
@@ -639,11 +691,17 @@ void SysBuilder_llp :: dep_injection_for_mcp()
 //====================================================================
 void SysBuilder_llp :: dep_injection_for_iris()
 {
-    if(m_cache_builder->get_type() == CacheBuilder::MCP_CACHE || m_cache_builder->get_type() == CacheBuilder::MCP_L1L2) {
+	const char* mem_chars = m_config.lookup("mc.type");
+	string mem_str = mem_chars;
+    if(m_cache_builder->get_type() == CacheBuilder::MCP_CACHE || m_cache_builder->get_type() == CacheBuilder::MCP_L1L2)
+    {
         MCP_cache_builder* mcp = dynamic_cast<MCP_cache_builder*>(m_cache_builder);
         MCPSimLen* simLen = new MCPSimLen(mcp->get_l2_block_size(), mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(),
                                       this->mc_node_idx_vec);
-        MCPVnet* vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->mc_node_idx_vec);
+        if(mem_str == "HMC")
+        	MCPVnet* vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->xbar_node_idx_vec);
+        else
+        	MCPVnet* vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->mc_node_idx_vec);
 
         Iris_builder* iris = dynamic_cast<Iris_builder*>(m_network_builder);
     iris->dep_injection(simLen, vnet);
