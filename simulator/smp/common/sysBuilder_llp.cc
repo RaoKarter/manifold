@@ -698,10 +698,11 @@ void SysBuilder_llp :: dep_injection_for_iris()
         MCP_cache_builder* mcp = dynamic_cast<MCP_cache_builder*>(m_cache_builder);
         MCPSimLen* simLen = new MCPSimLen(mcp->get_l2_block_size(), mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(),
                                       this->mc_node_idx_vec);
+        MCPVnet* vnet;
         if(mem_str == "HMC")
-        	MCPVnet* vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->xbar_node_idx_vec);
+        	 vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->xbar_node_idx_vec);
         else
-        	MCPVnet* vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->mc_node_idx_vec);
+        	 vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->mc_node_idx_vec);
 
         Iris_builder* iris = dynamic_cast<Iris_builder*>(m_network_builder);
     iris->dep_injection(simLen, vnet);

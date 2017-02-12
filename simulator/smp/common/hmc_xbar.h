@@ -3,6 +3,7 @@
 #include "kernel/component-decl.h"
 #include "kernel/clock.h"
 #include "uarch/networkPacket.h"
+#include "uarch/memMsg.h"
 #include <list>
 #include <algorithm>
 
@@ -15,10 +16,10 @@ namespace xbar_namespace {
 
 class hmcxbar : public manifold::kernel::Component {
 public:
-    enum { PORT_NET=0 }; // Each link will have a xbar
-    int *PORT_MC;        // Depending on the size of the HMC each xbar will have 'PORT_MC' number of vaults connected to it
+    enum { PORT_NET=0, PORT_MC1, PORT_MC2 }; // Each link will have a xbar
+//    int *PORT_MC;        // Depending on the size of the HMC each xbar will have 'PORT_MC' number of vaults connected to it
 
-    hmcxbar(int nid, manifold::kernel::Clock&, int credit_type, int num_mc_ports);
+    hmcxbar(int nid, manifold::kernel::Clock&, int num_mc_ports);
     ~hmcxbar() {};
 
     int get_nid() { return xbar_nid; }
@@ -97,9 +98,9 @@ template<typename T>
 void hmcxbar :: handle_mc_incoming(int in_port, manifold::uarch::NetworkPacket* pkt)
 {
 	// Logic to check if incoming message is from port assigned to mem controller
-	int * p;
-	p = std::find(PORT_MC, PORT_MC + xbar_num_mc_ports, in_port);
-	assert(*p == in_port);
+//	int * p;
+//	p = std::find(PORT_MC, PORT_MC + xbar_num_mc_ports, in_port);
+//	assert(*p == in_port);
 
 	if (pkt->type == CREDIT_MSG_TYPE)
 	{

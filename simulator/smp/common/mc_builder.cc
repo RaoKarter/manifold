@@ -495,10 +495,11 @@ int HMC_builder :: create_xbar(int xbar_ports,int node_id) //fixme: Need to figu
 		xbar_clock = xbar_clocks[0];
 	}
 
-	int i;
+	int i, num_xbar_ports;
+	num_xbar_ports = m_NUM_XBAR_MC_PORTS;
 	for(i = 0; i < m_NUM_SERDES; i++)
 	{
-		int cid = Component :: Create<hmcxbar>(node_id, *xbar_clock, m_NUM_XBAR_MC_PORTS); // fixme: need to decide what are the passed variables
+		int cid = Component :: Create<hmcxbar>(node_id, *xbar_clock, num_xbar_ports); // fixme: need to decide what are the passed variables
 		m_xbar_id_cid_map[node_id] = cid;
 	}
 	// Return num_xbars on successful creation of xbar
@@ -573,27 +574,31 @@ void HMC_builder::connect_xbar_mc()
 
 		hmcxbar* hmc_xbar = Component :: GetComponent<hmcxbar>(xbar_cid);
 
-		for(int i = 0; i < m_NUM_XBAR_MC_PORTS; i++)
+//		for(int i = 0; i < m_NUM_XBAR_MC_PORTS; i++)
+//		{
+
+		Dram_sim* dram_sim = Component :: GetComponent<Dram_sim>(mc_cid);
+
+		assert(node_id_xbar >= 0 && node_id >= 0 && node_id_xbar < int(hmc_xbar->get_num_xbar_ports()) );
+		if(hmc_xbar && dram_sim)
 		{
-			Dram_sim* dram_sim = Component :: GetComponent<Dram_sim>(mc_cid);
+			Manifold :: Connect(xbar_cid, hmcxbar::PORT_MC1, &hmcxbar::handle_mc_incoming<manifold::mcp_cache_namespace::Mem_msg>,
+								mc_cid, Controller::PORT0, &Dram_sim::handle_incoming<manifold::mcp_cache_namespace::Mem_msg>,
+											*(hmc_xbar->get_clock()), *(dram_sim->get_clock()), 1, 1); // fixme: Check the parameters passed
+			Manifold :: Connect(xbar_cid, hmcxbar::PORT_MC2, &hmcxbar::handle_mc_incoming<manifold::mcp_cache_namespace::Mem_msg>,
+								mc_cid+1, Controller::PORT0, &Dram_sim::handle_incoming<manifold::mcp_cache_namespace::Mem_msg>,
+											*(hmc_xbar->get_clock()), *(dram_sim->get_clock()), 1, 1); // fixme: Check the parameters passed
 
-			assert(node_id_xbar >= 0 && node_id >= 0 && node_id_xbar < int(hmc_xbar->get_num_xbar_ports()) );
-			if(hmc_xbar && dram_sim)
-			{
-				Manifold :: Connect(xbar_cid, hmcxbar::PORT_MC[i], &hmcxbar::handle_mc_incoming<manifold::mcp_cache_namespace::Mem_msg>,
-									mc_cid, Controller::PORT0, &Dram_sim::handle_incoming<manifold::mcp_cache_namespace::Mem_msg>,
-												*(hmc_xbar->get_clock()), *(dram_sim->get_clock()), 1, 1); // fixme: Check the parameters passed
-
-			}
-			if(it == m_xbar_id_cid_map.end())
-				break;
-			else
-			{
-				it = it + 1;
-				node_id = (*it).first;
-				mc_cid = (*it).second;
-			}
-		} // Connect DRAM and xbar for loop
+		}
+		if(it == m_xbar_id_cid_map.end())
+			break;
+		else
+		{
+			std::advance(it,1);
+			node_id = (*it).first;
+			mc_cid = (*it).second;
+		}
+//		} // Connect DRAM and xbar for loop
 	} // xbar instances for loop
 
 }
@@ -700,7 +705,6 @@ void HMC_builder :: print_config(std::ostream& out)
 	}
 }
 
-
 void HMC_builder :: print_stats(std::ostream& out)
 {
     for(map<int, int>::iterator it = m_mc_id_cid_map.begin(); it != m_mc_id_cid_map.end(); ++it)
@@ -719,4 +723,6 @@ void HMC_builder :: print_stats(std::ostream& out)
 			xbar->print_stats(out);
 	}
 }
+
+
 

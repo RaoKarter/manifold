@@ -6,6 +6,7 @@
 #include "CaffDRAM/Controller.h"
 #include "DRAMSim2/dram_sim.h"
 #include "uarch/DestMap.h"
+#include "hmc_xbar.h"
 
 
 

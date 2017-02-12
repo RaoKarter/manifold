@@ -87,16 +87,16 @@ int main(int argc, char** argv)
     sysBuilder.pre_simulation();
     sysBuilder.print_config(cout);
     Manifold::StopAt(sysBuilder.get_stop_tick());
-    Manifold::Run();
+//    Manifold::Run();
 
 
-    sysBuilder.print_stats(cerr);
+//    sysBuilder.print_stats(cerr);
 
 
 #ifdef REDIRECT_COUT
-    std::cout.rdbuf(cout_sbuf);
+//    std::cout.rdbuf(cout_sbuf);
 #endif
 
-    Manifold::Finalize();
+//    Manifold::Finalize();
 }
 

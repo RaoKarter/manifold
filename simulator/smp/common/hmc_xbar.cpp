@@ -11,10 +11,10 @@ using namespace manifold::uarch;
 namespace manifold {
 namespace xbar_namespace {
 
-hmcxbar :: hmcxbar(int nid, Clock& clk, int credit_type, int num_mc_ports) : CREDIT_MSG_TYPE(credit_type), xbar_clk(clk), xbar_num_mc_ports(num_mc_ports), xbar_nid(nid)
+hmcxbar :: hmcxbar(int nid, Clock& clk, int num_mc_ports) : xbar_clk(clk), xbar_num_mc_ports(num_mc_ports), xbar_nid(nid)
 {
 	// Create ports for xbar to communicate with memory vaults
-	PORT_MC = new int[xbar_num_mc_ports];
+//	PORT_MC = new int[xbar_num_mc_ports];
 
 	// Create one buffer for each connected memory vaults
 	xbar_net_requests = new std::list<manifold::uarch::NetworkPacket*>[xbar_num_mc_ports];
@@ -44,7 +44,7 @@ void hmcxbar :: tick()
 			xbar_net_requests[i].pop_front();
 
 			// Do something with the packet
-			Send(PORT_MC[i],pkt);
+			Send(PORT_MC1,pkt);
 		}
 	}
 

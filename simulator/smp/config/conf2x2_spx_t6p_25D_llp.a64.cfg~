@@ -72,7 +72,7 @@ mc: //hmc unit with memory controllers for each vault
 //        size = 1024;
 //    };
 
-    num_vaults = 32; 
+    num_vaults = 2; 
     downstream_credits = 10; //credits for sending to network
     type = "HMC";
      
@@ -80,13 +80,13 @@ mc: //hmc unit with memory controllers for each vault
     {
         dev_file = "../config/3d_die.ini";
         sys_file = "../config/3d_die.ini.example";
-        size = 1024;
+        size = 125;
     }
 };
 
 xbar: //cross-bars for hmc
 {
-    node_idx = [0, 1, 2, 3]; //number of serdes links
+    node_idx = [0]; //number of serdes links
     downstream_credits = 10; //credits for sending to network
     type = "xbar";
     
