@@ -1,6 +1,4 @@
 #include "hmc_xbar.h"
-#include "LLP_cache.h"
-#include "LLS_cache.h"
 #include "kernel/component.h"
 #include "kernel/manifold.h"
 
@@ -9,97 +7,209 @@ using namespace manifold::uarch;
 
 
 namespace manifold {
-namespace xbar_namespace {
+namespace hmc_xbar {
 
-hmcxbar :: hmcxbar(int nid, Clock& clk, int num_mc_ports) : xbar_clk(clk), xbar_num_mc_ports(num_mc_ports), xbar_nid(nid)
+int HMC_xbar :: MEM_MSG_TYPE = -1;
+int HMC_xbar :: CREDIT_MSG_TYPE = -1;
+bool HMC_xbar :: Msg_type_set = false;
+
+HMC_xbar :: HMC_xbar(int id, const HMC_xbar_settings& hmcxbar_settings, Clock& clk) :
+		hmc_id(id) , hmc_clk(clk)
 {
-	// Create ports for xbar to communicate with memory vaults
-//	PORT_MC = new int[xbar_num_mc_ports];
+	hmc_num_mc_ports = hmcxbar_settings.num_mem_links;
+	hmc_num_net_ports = hmcxbar_settings.num_hmc_net_links;
+	downstream_credits = new int [hmc_num_net_ports];
+	upstream_credits = new int [hmc_num_mc_ports];
+	this->hmcxbar_vault_map = hmcxbar_settings.s_vault_map;
 
-	// Create one buffer for each connected memory vaults
-	xbar_net_requests = new std::list<manifold::uarch::NetworkPacket*>[xbar_num_mc_ports];
+#ifdef HMCDEBUG
+	cerr << dec << " HMC xbar @\t" << this << "\tvault map\t" << hmcxbar_vault_map << endl;
+#endif
+
+	for(int i = 0; i < hmc_num_net_ports; i++) // size is number of network ports
+		downstream_credits[i] = hmcxbar_settings.downstream_credits;
+
+	for(int i = 0; i < hmc_num_mc_ports; i++) // size is number of vaults
+		upstream_credits[i] = hmcxbar_settings.upstream_credits;
+
+	/*
+	 * hmc_net_it is the iterator for the id_lp_map passed along with hmcxbar_settings
+	 *
+	 * This iterator will be initialized to point to the first network port of the HMC
+	 * instance. The iterator can now be used to get rest of the network port ids to
+	 * which the HMC instance is connected.
+	 */
+	hmc_net_it = hmcxbar_settings.id_lp_map->begin();
+	std::advance (hmc_net_it, hmc_id * hmc_num_net_ports);
+
+    assert(Msg_type_set);
+    assert(MEM_MSG_TYPE != CREDIT_MSG_TYPE);
+
+	// Create ports for hmc to communicate with the network
+	assert(hmc_num_net_ports <= MAX_NET_PORT);
+
+	string f;
+	for (int i = 0; i < hmc_num_net_ports; ++i)
+	{
+		f = to_string((*hmc_net_it).first);
+		hmc_nid_portid_map[f] = i;
+//		hmc_nid_portid_map[i] = (*hmc_net_it).first;
+#ifdef HMCDEBUG
+		cerr << dec << "hmc_nid_portid_map[" << f << "] = " << i << endl;
+//		cerr << dec << "hmc_nid_portid_map[" << i << "] = " << (*hmc_net_it).first << endl;
+#endif
+		net_ports[i] = i;
+		std::advance(hmc_net_it, 1);
+	}
+
+	std::advance(hmc_net_it, -hmc_num_net_ports);
+#ifdef HMCDEBUG
+		cerr << dec << "Iterator location NOW " << (*hmc_net_it).first << endl;
+#endif
+
+	hmc_map = NULL;
+
+	// Create ports for hmc to communicate with memory vaults
+	assert(hmc_num_mc_ports <= MAX_MEM_PORT);
+//	vault_node_idx_vec.resize(hmc_num_mc_ports);
+
+	int j = 0;
+	for (int i = net_ports[hmc_num_net_ports-1] + 1 ; i < hmc_num_mc_ports + hmc_num_net_ports; ++i)
+	{
+		m_ports[j] = i;
+		j++;
+//		vault_node_idx_vec.push_back(i);
+	}
+
+//	vault_map = new manifold::uarch::PageBasedMap(vault_node_idx_vec, 0);
+
+	//register with clock
+	Clock :: Register(clk, this, &HMC_xbar::tick, (void(HMC_xbar::*)(void)) 0 );
+
+	// Create one request buffer for each connected memory vault
+	hmc_net_requests = new std::list<manifold::uarch::NetworkPacket*>[hmc_num_mc_ports];
+
+	// Create one response buffer for each connected network port
+	hmc_mc_responses = new std::list<manifold::uarch::NetworkPacket*>[hmc_num_net_ports];
 
     //stats
-    stats_num_llp_incoming_msg = 0;
-    stats_num_lls_incoming_msg = 0;
-    stats_num_llp_outgoing_msg = 0;
-    stats_num_lls_outgoing_msg = 0;
-    stats_num_llp_incoming_credits = 0;
-    stats_num_lls_incoming_credits = 0;
-    stats_num_outgoing_credits = 0;
+	stats_num_net_incoming_msg = 0;
+	stats_num_net_outgoing_msg = 0;
+	stats_num_net_incoming_credits = 0;
+	stats_num_net_outgoing_credits = 0;
+	stats_num_mc_incoming_msg = 0;
+	stats_num_mc_outgoing_msg = 0;
+	stats_num_mc_incoming_credits = 0;
+	stats_num_mc_outgoing_credits = 0;
 }
 
-void hmcxbar :: tick()
+void HMC_xbar :: tick()
 {
-	/*------------- The crossbar code comes here -----------------*/
-	// Requests might come from MC side as well as the network side.
-	// We process them in a deterministic manner. First the network
-	// requests and later the MC requests
+	/*
+	 * Network sends requests and the Vaults respond to those requests.
+	 * Since multiple requests can arrive at the same time, we process
+	 * these in a deterministic manner. First we process the network
+	 * requests and then process the memory responses.
+	 */
 
-	for(int i = 0; i < xbar_num_mc_ports; i++)
+	for(int i = 0; i < get_num_mc_ports(); i++) // For each vault
 	{
-		if ( xbar_net_requests[i].size() > 0 )
+		if ( hmc_net_requests[i].size() > 0 && upstream_credits[i] > 0) // buffer containing handled network requests
 		{
-			NetworkPacket* pkt = xbar_net_requests[i].front();
-			xbar_net_requests[i].pop_front();
+			NetworkPacket* pkt = hmc_net_requests[i].front();
+			hmc_net_requests[i].pop_front();
 
-			// Do something with the packet
-			Send(PORT_MC1,pkt);
+			// Send the pkt to the vault
+			Send(m_ports[i], pkt);
+			upstream_credits[i]--;
+			stats_num_mc_outgoing_msg++;
+#ifdef HMCDEBUG
+	cerr << dec << "@\t" << m_clk->NowTicks() <<"\t(tick)HMCupstream credits[" << i << "]\t" << upstream_credits[i]+1
+			<< "->" << upstream_credits[i] << "\thmc_net_requests.size\t" << hmc_net_requests[i].size() << endl;
+	manifold::mcp_cache_namespace::Mem_msg* req = (manifold::mcp_cache_namespace::Mem_msg*)pkt->data;
+	uint64_t pkt_laddr = req->get_addr(); // Local address right now
+	uint64_t pkt_gaddr = hmc_map->get_global_addr(pkt_laddr, this->get_hmc_id()); // Global address
+	cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending MSG pkt from MC port\t"
+			<< dec << m_ports[i] << "(" << m_ports[i] - hmc_num_net_ports << ")\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << dec << endl;
+#endif
 		}
 	}
 
-    if ( xbar_mc_requests.size() > 0 )
+	// Now start to process memory responses
+	for(int i = 0; i < get_num_net_ports(); i++) // For each SerDes link
 	{
-		NetworkPacket* pkt = xbar_mc_requests.front();
-		xbar_mc_requests.pop_front();
+		if ( hmc_mc_responses[i].size() > 0 && downstream_credits[i] > 0) // buffer containing memory responses
+		{
+			NetworkPacket* pkt = hmc_mc_responses[i].front();
+			hmc_mc_responses[i].pop_front();
 
-		// Send the packet into the network
-		Send(PORT_NET,pkt);
+			// Send the packet into the network
+			Send(net_ports[i],pkt);
+			downstream_credits[i]--;
+			stats_num_net_outgoing_msg++;
+#ifdef HMCDEBUG
+		cerr << dec << "@\t" << m_clk->NowTicks() <<"\t(tick)HMCdownstream credits[" << i << "]\t" << downstream_credits[i]+1
+					<< "->" << downstream_credits[i] << "\thmc_mc_responses.size\t" << hmc_mc_responses[i].size() << endl;
+		manifold::uarch::Mem_msg* req = (manifold::uarch::Mem_msg*)pkt->data;
+		uint64_t pkt_gaddr = req->get_addr(); // Global address right now
+		uint64_t pkt_laddr = hmc_map->get_local_addr(pkt_gaddr); // Local address
+		cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending MSG pkt from NET port\t"
+			<< dec << net_ports[i] << "\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << dec << endl;
+#endif
+		}
 	}
-
 
 }
 
 
 
-void hmcxbar :: send_credit_downstream()
+void HMC_xbar :: send_credit_downstream(int port)
 {
-    NetworkPacket* pkt = new NetworkPacket;
-    pkt->type = CREDIT_MSG_TYPE;
-    Send(PORT_NET, pkt);
-//cout << "OOOOOOOOOOOOOOOOOOOOOOOOOO, @ " << m_clk.NowTicks() << " mux send credit\n";
-//cout.flush();
-    stats_num_outgoing_credits++;
+	manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
+	credit_pkt->type = CREDIT_MSG_TYPE;
+	Send(m_ports[port], credit_pkt);
+#ifdef HMCDEBUG
+	cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending CREDIT pkt from MC port\t"
+			<< dec << m_ports[port] << endl;
+#endif
+    stats_num_mc_outgoing_credits++;
+}
+
+void HMC_xbar :: send_credit_upstream(int port)
+{
+	manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
+	credit_pkt->type = CREDIT_MSG_TYPE;
+	Send(net_ports[port], credit_pkt);
+#ifdef HMCDEBUG
+	cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending CREDIT pkt from NET port\t"
+			<< dec << net_ports[port] << endl;
+#endif
+    stats_num_net_outgoing_credits++;
+}
+
+void HMC_xbar :: set_hmc_map(manifold::uarch::DestMap *m)
+{
+#ifdef HMCDEBUG
+	cout << "HMC xbar @\t" << this << "\tset_hmc_map\t" << m << endl;
+#endif
+    this->hmc_map = m;
 }
 
 
-void hmcxbar :: print_stats(ostream& out)
+void HMC_xbar :: print_stats(ostream& out)
 {
-    out << "****** XBAR " << xbar_nid << "********* stats:" << endl
-	<< "  incoming msg: " << stats_num_llp_incoming_msg << " (LLP)  "
-	                      << stats_num_lls_incoming_msg << " (LLS)  "
-			      << stats_num_llp_incoming_msg + stats_num_lls_incoming_msg << " (total)" << endl
-	<< "  outgoing msg: " << stats_num_llp_outgoing_msg << " (LLP)  "
-	                      << stats_num_lls_outgoing_msg << " (LLS)  "
-			      << stats_num_llp_outgoing_msg + stats_num_lls_outgoing_msg << " (total)" << endl
-	<< "  incoming credits: " << stats_num_llp_incoming_credits << " (LLP)  "
-	                          << stats_num_lls_incoming_credits << " (LLS)  "
-			          << stats_num_llp_incoming_credits + stats_num_lls_incoming_credits << " (total)" << endl
-        << "  outgoing credits: " << stats_num_outgoing_credits << endl;
-   	out << "  Total Reads Received= " << stats_n_reads << endl;
-	out << "  Total Writes Received= " << stats_n_writes << endl;
-	out << "  Total Reads Sent Back= " << stats_n_reads_sent << endl;
-//	out << "  Avg Memory Latency= " << (double)stats_totalMemLat / stats_n_reads_sent << endl;
-	out << "  Reads per source:" << endl;
-	for(map<int, unsigned>::iterator it=stats_n_reads_per_source.begin(); it != stats_n_reads_per_source.end(); ++it)
-	{
-		out << "    " << it->first << ": " << it->second << endl;
-	}
-	out << "  Writes per source:" << endl;
-	for(map<int, unsigned>::iterator it=stats_n_writes_per_source.begin(); it != stats_n_writes_per_source.end();++it)
-	{
-		out << "    " << it->first << ": " << it->second << endl;
-	}
+	//TODO: This needs to be printed carefully
+    out << "****** HMCXBAR " << hmc_id << "********* stats:" << endl
+	<< "  incoming mc msg: " << stats_num_mc_incoming_msg << endl
+	<< "  outgoing mc msg: " << stats_num_mc_outgoing_msg << endl
+	<< "  incoming net msg: " << stats_num_net_incoming_msg << endl
+	<< "  outgoing net msg: " << stats_num_net_outgoing_msg << endl
+	<< "  incoming net credits: " << stats_num_net_incoming_credits << endl
+    << "  incoming mc credits: " << stats_num_mc_incoming_credits << endl
+    << "  mc outgoing credits: " << stats_num_mc_outgoing_credits << endl
+    << "  net outgoing credits: " << stats_num_net_outgoing_credits << endl;
 }
 
 

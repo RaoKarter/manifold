@@ -1,0 +1,80 @@
+@	43	(tick)HMCdownstream credits[0]	10->9	hmc_mc_responses.size	3
+@	43	(tick)HMCdownstream credits[1]	10->9	hmc_mc_responses.size	2
+@	43	(tick)HMCdownstream credits[2]	10->9	hmc_mc_responses.size	4
+@	43	(tick)HMCdownstream credits[3]	10->9	hmc_mc_responses.size	5
+@	44	(tick)HMCdownstream credits[0]	9->8	hmc_mc_responses.size	2
+@	44	(tick)HMCdownstream credits[1]	9->8	hmc_mc_responses.size	1
+@	44	(tick)HMCdownstream credits[2]	9->8	hmc_mc_responses.size	3
+@	44	(tick)HMCdownstream credits[3]	9->8	hmc_mc_responses.size	4
+@	45	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	8->9
+@	45	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	8->9
+@	45	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	8->9
+@	45	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	8->9
+@	45	(tick)HMCdownstream credits[0]	9->8	hmc_mc_responses.size	1
+@	45	(tick)HMCdownstream credits[1]	9->8	hmc_mc_responses.size	0
+@	45	(tick)HMCdownstream credits[2]	9->8	hmc_mc_responses.size	2
+@	45	(tick)HMCdownstream credits[3]	9->8	hmc_mc_responses.size	3
+@	46	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	8->9
+@	46	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	8->9
+@	46	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	8->9
+@	46	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	8->9
+@	46	(tick)HMCdownstream credits[0]	9->8	hmc_mc_responses.size	0
+@	46	(tick)HMCdownstream credits[2]	9->8	hmc_mc_responses.size	1
+@	46	(tick)HMCdownstream credits[3]	9->8	hmc_mc_responses.size	2
+@	47	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	8->9
+@	47	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	9->10
+@	47	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	8->9
+@	47	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	8->9
+@	47	(tick)HMCdownstream credits[2]	9->8	hmc_mc_responses.size	0
+@	47	(tick)HMCdownstream credits[3]	9->8	hmc_mc_responses.size	1
+@	48	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	9->10
+@	48	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	8->9
+@	48	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	8->9
+@	48	(tick)HMCdownstream credits[3]	9->8	hmc_mc_responses.size	0
+@	49	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	9->10
+@	49	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	8->9
+@	50	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	9->10
+@	51	(tick)HMCdownstream credits[0]	10->9	hmc_mc_responses.size	1
+@	51	(tick)HMCdownstream credits[1]	10->9	hmc_mc_responses.size	3
+@	51	(tick)HMCdownstream credits[2]	10->9	hmc_mc_responses.size	0
+@	51	(tick)HMCdownstream credits[3]	10->9	hmc_mc_responses.size	2
+@	52	(tick)HMCdownstream credits[0]	9->8	hmc_mc_responses.size	0
+@	52	(tick)HMCdownstream credits[1]	9->8	hmc_mc_responses.size	2
+@	52	(tick)HMCdownstream credits[3]	9->8	hmc_mc_responses.size	1
+@	53	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	8->9
+@	53	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	8->9
+@	53	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	9->10
+@	53	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	8->9
+@	53	(tick)HMCdownstream credits[1]	9->8	hmc_mc_responses.size	1
+@	53	(tick)HMCdownstream credits[3]	9->8	hmc_mc_responses.size	0
+@	54	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	9->10
+@	54	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	8->9
+@	54	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	8->9
+@	54	(tick)HMCdownstream credits[1]	9->8	hmc_mc_responses.size	0
+@	55	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	8->9
+@	55	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	9->10
+@	56	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	9->10
+@	59	(tick)HMCdownstream credits[0]	10->9	hmc_mc_responses.size	0
+@	59	(tick)HMCdownstream credits[2]	10->9	hmc_mc_responses.size	1
+@	59	(tick)HMCdownstream credits[3]	10->9	hmc_mc_responses.size	0
+@	60	(tick)HMCdownstream credits[2]	9->8	hmc_mc_responses.size	0
+@	61	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	9->10
+@	61	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	8->9
+@	61	hmc_id	0	rcvd NET CREDIT pkt @ port	3	HMCdownstream credits[3]	9->10
+@	62	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	9->10
+@	67	(tick)HMCdownstream credits[0]	10->9	hmc_mc_responses.size	0
+@	69	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	9->10
+@	91	(tick)HMCdownstream credits[0]	10->9	hmc_mc_responses.size	0
+@	92	(tick)HMCdownstream credits[0]	9->8	hmc_mc_responses.size	0
+@	92	(tick)HMCdownstream credits[1]	10->9	hmc_mc_responses.size	1
+@	93	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	8->9
+@	93	(tick)HMCdownstream credits[1]	9->8	hmc_mc_responses.size	0
+@	94	hmc_id	0	rcvd NET CREDIT pkt @ port	0	HMCdownstream credits[0]	9->10
+@	94	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	8->9
+@	95	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	9->10
+@	99	(tick)HMCdownstream credits[2]	10->9	hmc_mc_responses.size	0
+@	101	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	9->10
+@	141	(tick)HMCdownstream credits[2]	10->9	hmc_mc_responses.size	0
+@	143	hmc_id	0	rcvd NET CREDIT pkt @ port	2	HMCdownstream credits[2]	9->10
+@	190	(tick)HMCdownstream credits[1]	10->9	hmc_mc_responses.size	0
+@	192	hmc_id	0	rcvd NET CREDIT pkt @ port	1	HMCdownstream credits[1]	9->10

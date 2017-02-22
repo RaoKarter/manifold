@@ -272,6 +272,7 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
 		filename = out.str();
 
 
+		out << "Trying with filename: " << filename <<".vis" << endl;
 		filename = FilenameWithNumberSuffix(filename, ".vis"); 
 		path.append(filename);
 		cerr << "writing vis file to " <<path<<endl;

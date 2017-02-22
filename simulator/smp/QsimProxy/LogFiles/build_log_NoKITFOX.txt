@@ -1,0 +1,133 @@
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DHMCDEBUG -DHUTDEBUG -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -std=c++11  -MMD -MF dep/smp_llp.d -c smp_llp.cc -o smp_llp.o
+In file included from ../common/sysBuilder_llp.h:9:0,
+                 from smp_llp.cc:34:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:56:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../uarch/DestMap.h:5:0,
+                 from ../common/sysBuilder_llp.h:9,
+                 from smp_llp.cc:34:
+../../../uarch/DestMap.h: In member function ‘virtual int manifold::uarch::HMCDestMap::lookup(uint64_t)’:
+../../../uarch/DestMap.h:182:57: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   assert( (p_rand + (num_serdes * idx)) <= m_nodes.size() );
+                                                         ^
+In file included from ../common/sysBuilder_llp.h:9:0,
+                 from smp_llp.cc:34:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::HMCDestMap::get_idx(int)’:
+../../../uarch/DestMap.h:198:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/proc_builder.h:8,
+                 from ../common/sysBuilder_llp.h:10,
+                 from smp_llp.cc:34:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h: At global scope:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DHMCDEBUG -DHUTDEBUG -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -std=c++11  -MMD -MF dep/sysBuilder_llp.d -c ../common/sysBuilder_llp.cc -o sysBuilder_llp.o
+In file included from ../common/sysBuilder_llp.h:9:0,
+                 from ../common/sysBuilder_llp.cc:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:56:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../uarch/DestMap.h:5:0,
+                 from ../common/sysBuilder_llp.h:9,
+                 from ../common/sysBuilder_llp.cc:1:
+../../../uarch/DestMap.h: In member function ‘virtual int manifold::uarch::HMCDestMap::lookup(uint64_t)’:
+../../../uarch/DestMap.h:182:57: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   assert( (p_rand + (num_serdes * idx)) <= m_nodes.size() );
+                                                         ^
+In file included from ../common/sysBuilder_llp.h:9:0,
+                 from ../common/sysBuilder_llp.cc:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::HMCDestMap::get_idx(int)’:
+../../../uarch/DestMap.h:198:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+../common/sysBuilder_llp.cc: In member function ‘virtual void SysBuilder_llp::config_components()’:
+../common/sysBuilder_llp.cc:169:29: error: expected type-specifier before ‘CaffDRAM_builder’
+          m_mc_builder = new CaffDRAM_builder(this);
+                             ^
+../common/sysBuilder_llp.cc:169:29: error: expected ‘;’ before ‘CaffDRAM_builder’
+../common/sysBuilder_llp.cc:171:29: error: expected type-specifier before ‘DramSim_builder’
+          m_mc_builder = new DramSim_builder(this);
+                             ^
+../common/sysBuilder_llp.cc:171:29: error: expected ‘;’ before ‘DramSim_builder’
+../common/sysBuilder_llp.cc:173:45: error: no matching function for call to ‘HMC_builder::HMC_builder(SysBuilder_llp* const)’
+          m_mc_builder = new HMC_builder(this);
+                                             ^
+../common/sysBuilder_llp.cc:173:45: note: candidates are:
+In file included from ../common/sysBuilder_llp.h:13:0,
+                 from ../common/sysBuilder_llp.cc:1:
+../common/mc_builder.h:117:2: note: HMC_builder::HMC_builder(SysBuilder_llp_HUT*)
+  HMC_builder(SysBuilder_llp_HUT* b) : MemControllerBuilder(b) {}
+  ^
+../common/mc_builder.h:117:2: note:   no known conversion for argument 1 from ‘SysBuilder_llp* const’ to ‘SysBuilder_llp_HUT*’
+../common/mc_builder.h:113:7: note: HMC_builder::HMC_builder(const HMC_builder&)
+ class HMC_builder : public MemControllerBuilder
+       ^
+../common/mc_builder.h:113:7: note:   no known conversion for argument 1 from ‘SysBuilder_llp* const’ to ‘const HMC_builder&’
+../common/mc_builder.h:113:7: note: HMC_builder::HMC_builder(HMC_builder&&)
+../common/mc_builder.h:113:7: note:   no known conversion for argument 1 from ‘SysBuilder_llp* const’ to ‘HMC_builder&&’
+../common/sysBuilder_llp.cc: In member function ‘void SysBuilder_llp::dep_injection_for_mcp()’:
+../common/sysBuilder_llp.cc:707:9: error: ‘CaffDRAM_builder’ was not declared in this scope
+         CaffDRAM_builder *caffdram = dynamic_cast<CaffDRAM_builder *>(m_mc_builder);
+         ^
+../common/sysBuilder_llp.cc:707:27: error: ‘caffdram’ was not declared in this scope
+         CaffDRAM_builder *caffdram = dynamic_cast<CaffDRAM_builder *>(m_mc_builder);
+                           ^
+../common/sysBuilder_llp.cc:707:27: note: suggested alternative:
+In file included from ../../../models/memory/CaffDRAM/Rank.h:11:0,
+                 from ../../../models/memory/CaffDRAM/Channel.h:11,
+                 from ../../../models/memory/CaffDRAM/Controller.h:11,
+                 from ../common/mc_builder.h:7,
+                 from ../common/sysBuilder_llp.h:13,
+                 from ../common/sysBuilder_llp.cc:1:
+../../../models/memory/CaffDRAM/Dsettings.h:14:20: note:   ‘manifold::caffdram’
+ namespace caffdram {
+                    ^
+../common/sysBuilder_llp.cc:707:51: error: expected type-specifier before ‘CaffDRAM_builder’
+         CaffDRAM_builder *caffdram = dynamic_cast<CaffDRAM_builder *>(m_mc_builder);
+                                                   ^
+../common/sysBuilder_llp.cc:707:51: error: expected ‘>’ before ‘CaffDRAM_builder’
+../common/sysBuilder_llp.cc:707:51: error: expected ‘(’ before ‘CaffDRAM_builder’
+../common/sysBuilder_llp.cc:707:69: error: expected primary-expression before ‘>’ token
+         CaffDRAM_builder *caffdram = dynamic_cast<CaffDRAM_builder *>(m_mc_builder);
+                                                                     ^
+../common/sysBuilder_llp.cc:707:84: error: expected ‘)’ before ‘;’ token
+         CaffDRAM_builder *caffdram = dynamic_cast<CaffDRAM_builder *>(m_mc_builder);
+                                                                                    ^
+../common/sysBuilder_llp.cc: In member function ‘void SysBuilder_llp::dep_injection_for_iris()’:
+../common/sysBuilder_llp.cc:753:47: warning: operation on ‘simLen’ may be undefined [-Wsequence-point]
+                          this->mc_node_idx_vec);
+                                               ^
+../common/sysBuilder_llp.cc: In member function ‘void SysBuilder_llp::connect_components()’:
+../common/sysBuilder_llp.cc:774:55: error: no matching function for call to ‘MemControllerBuilder::connect_mc_network(NetworkBuilder*&)’
+     m_mc_builder->connect_mc_network(m_network_builder);
+                                                       ^
+../common/sysBuilder_llp.cc:774:55: note: candidate is:
+In file included from ../common/sysBuilder_llp.h:13:0,
+                 from ../common/sysBuilder_llp.cc:1:
+../common/mc_builder.h:38:18: note: virtual void MemControllerBuilder::connect_mc_network()
+     virtual void connect_mc_network() = 0;
+                  ^
+../common/mc_builder.h:38:18: note:   candidate expects 0 arguments, 1 provided
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/proc_builder.h:8,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/sysBuilder_llp.cc:1:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h: At global scope:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+make: *** [sysBuilder_llp.o] Error 1

@@ -1,0 +1,5 @@
+
+ System has been initialized
+
+ config system has completed
+Number of LPs = 1

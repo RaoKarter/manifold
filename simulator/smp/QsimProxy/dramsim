@@ -1,0 +1,61 @@
+ =======================================================
+ ============== Printing Statistics [id:0]==============
+   Total Return Transactions : 0 (0 bytes) aggregate average bandwidth 0.000GB/s
+      -Rank   0 : 
+        -Reads  : 0 (0 bytes)
+        -Writes : 0 (0 bytes)
+        -Bandwidth / Latency  (Bank 0): 0.000 GB/s		-nan ns
+        -Bandwidth / Latency  (Bank 1): 0.000 GB/s		-nan ns
+        -Bandwidth / Latency  (Bank 2): 0.000 GB/s		-nan ns
+        -Bandwidth / Latency  (Bank 3): 0.000 GB/s		-nan ns
+        -Bandwidth / Latency  (Bank 4): 0.000 GB/s		-nan ns
+        -Bandwidth / Latency  (Bank 5): 0.000 GB/s		-nan ns
+        -Bandwidth / Latency  (Bank 6): 0.000 GB/s		-nan ns
+        -Bandwidth / Latency  (Bank 7): 0.000 GB/s		-nan ns
+ == Power Data for Rank        0
+   Average Power (watts)     : 0.000
+     -Background (watts)     : 0.000
+     -Act/Pre    (watts)     : 0.000
+     -Burst      (watts)     : 0.000
+     -Refresh    (watts)     : 0.000
+
+ == Pending Transactions : 0 (0)==
+==== Channel [0] ====
+ =======================================================
+ ============== Printing Statistics [id:0]==============
+   Total Return Transactions : 2785 (89120 bytes) aggregate average bandwidth 0.052GB/s
+      -Rank   0 : 
+        -Reads  : 2505 (80160 bytes)
+        -Writes : 280 (8960 bytes)
+        -Bandwidth / Latency  (Bank 0): 0.008 GB/s		38.987 ns
+        -Bandwidth / Latency  (Bank 1): 0.008 GB/s		38.949 ns
+        -Bandwidth / Latency  (Bank 2): 0.007 GB/s		38.470 ns
+        -Bandwidth / Latency  (Bank 3): 0.007 GB/s		38.826 ns
+        -Bandwidth / Latency  (Bank 4): 0.006 GB/s		38.597 ns
+        -Bandwidth / Latency  (Bank 5): 0.006 GB/s		38.368 ns
+        -Bandwidth / Latency  (Bank 6): 0.006 GB/s		39.237 ns
+        -Bandwidth / Latency  (Bank 7): 0.005 GB/s		38.431 ns
+ == Power Data for Rank        0
+   Average Power (watts)     : 0.181
+     -Background (watts)     : 0.091
+     -Act/Pre    (watts)     : 0.066
+     -Burst      (watts)     : 0.005
+     -Refresh    (watts)     : 0.019
+ ---  Latency list (9)
+       [lat] : #
+       [20-29] : 147
+       [30-39] : 2259
+       [40-49] : 47
+       [50-59] : 15
+       [60-69] : 12
+       [70-79] : 14
+       [80-89] : 7
+       [90-99] : 3
+       [100-109] : 1
+
+ == Pending Transactions : 1 (1266210)==
+//// Channel [0] ////
+tions : 0 (1266210)==
+//// Channel [0] ////
+// Channel [0] ////
+

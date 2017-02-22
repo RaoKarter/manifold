@@ -126,7 +126,6 @@ void SysBuilder_llp :: config_components()
         m_network_builder->read_network_topology(m_config);
         MAX_NODES = m_network_builder->get_max_nodes();
 
-
         // processor
         const char* proc_chars = m_config.lookup("processor.type");
         string proc_str = proc_chars;
@@ -201,19 +200,23 @@ void SysBuilder_llp :: config_components()
         {
 			//xbar assignment
 			//the node indices of xbar are in an array, each value between 0 and MAX_NODES-1
-			Setting& setting_xbar = m_config.lookup("xbar.node_idx");
-			int num_xbar = setting_xbar.getLength(); //number of SerDes links
-			assert(num_xbar >=1 && num_xbar <= MAX_NODES);
+        	MAX_VAULTS = m_config.lookup("max_vaults");
+        	MAX_SERDES = m_config.lookup("max_serdes");
+			Setting& setting_hmc_xbar = m_config.lookup("mc.xbar.node_idx");
+			num_serdes = m_config.lookup("mc.xbar.num_serdes");
+			int num_xbar_nodes = setting_hmc_xbar.getLength(); //number of IRIS network nodes
+			assert(num_xbar_nodes >=1 && num_xbar_nodes <= MAX_NODES);
+			trans_size = m_config.lookup("mc.trans_size");
 
-			this->xbar_node_idx_vec.resize(num_xbar);
+			this->mc_node_idx_vec.resize(num_xbar_nodes);
 
-			for(int i=0; i<num_xbar; i++)
+			for(int i=0; i < num_xbar_nodes; i++)
 			{
-				assert((int)setting_xbar[i] >=0 && (int)setting_xbar[i] < MAX_NODES);
-				xbar_node_idx_set.insert((int)setting_xbar[i]);
-				this->xbar_node_idx_vec[i] = (int)setting_xbar[i];
+				assert((int)setting_hmc_xbar[i] >=0 && (int)setting_hmc_xbar[i] < MAX_NODES);
+				mc_node_idx_set.insert((int)setting_hmc_xbar[i]);
+				this->mc_node_idx_vec[i] = (int)setting_hmc_xbar[i];
 			}
-			assert(xbar_node_idx_set.size() == (unsigned)num_xbar); //verify no 2 indices are the same
+			assert(mc_node_idx_set.size() == (unsigned)num_xbar_nodes); //verify no 2 indices are the same
         }
         else
         {
@@ -357,17 +360,23 @@ void SysBuilder_llp :: build_system(vector<string>& args, const char *stateFile,
 
     //??????????????? todo: network should be able to use different clock
     m_network_builder->create_network(*m_default_clock, PART_1);
+    cout << "\n Network has been created" << endl;
 
 #ifdef LIBKITFOX
     m_kitfox_builder->create_proxy();
 #endif
 
+    cout << "\n Kitfox proxy has been created" << endl;
     assert(m_proc_builder->get_fe_type() == ProcBuilder::INVALID_FE_TYPE);
     m_proc_builder->set_fe_type(ProcBuilder::QSIMPROXY);
+
+    cout << "\n Going into create_qsimproxy_nodes" << endl;
     create_qsimproxy_nodes(args,stateFile,appFile,n_lps,part);
 
     //connect components
+    cout << "\n connecting components..." << endl;
     connect_components();
+    cout << "\n connecting components done." << endl;
 }
 
 
@@ -462,6 +471,7 @@ void SysBuilder_llp :: create_qsimlib_nodes(Qsim::OSDomain* qsim_osd, vector<str
 //====================================================================
 void SysBuilder_llp :: create_qsimproxy_nodes(vector<string>& args, const char* stateFile, const char* appFile, int n_lps, int part)
 {
+	cout << "\n Inside create_qsimproxy_nodes" << endl;
     m_qsim_builder = new QsimProxyBuilder(this);
     m_qsim_builder->read_config(m_config, stateFile, appFile);
     m_qsim_builder->create_qsim(0);
@@ -497,7 +507,9 @@ void SysBuilder_llp :: create_qsimproxy_nodes(vector<string>& args, const char* 
         default: { assert(0); }
     }
 
+    cout << "\n Going to create nodes...";
     create_nodes(FT_QSIMPROXY, n_lps, part);
+    cout << "\n Nodes created" << endl;
 }
 
 
@@ -575,13 +587,12 @@ void SysBuilder_llp :: create_nodes(int type, int n_lps, int part)
 
 
     //??????????????????? todo cache should have separate clock
-    const char* mem_chars = m_config.lookup("mc.type");
-    string mem_str = mem_chars;
+    cout<<"\n Create_caches";
     m_cache_builder->create_caches(*m_default_clock);
-    if(mem_str == "HMC")
-    	m_mc_builder->create_mcs(xbar_id_lp_map);
-    else
-    	m_mc_builder->create_mcs(mc_id_lp_map);
+    cout<<"\n Created caches";
+    cout<<"\n Create_mcs" << endl;
+   	m_mc_builder->create_mcs(mc_id_lp_map);
+   	cout<<"\n Created mcs" << endl;
 
     if(m_cache_builder->get_type() == CacheBuilder::MCP_CACHE || m_cache_builder->get_type() == CacheBuilder::MCP_L1L2) {
         dep_injection_for_mcp();
@@ -596,34 +607,46 @@ void SysBuilder_llp :: create_nodes(int type, int n_lps, int part)
 void SysBuilder_llp :: do_partitioning_1_part(int n_lps)
 {
     int lp_idx = 1; //the network is LP 0
-    for(int i=0; i<MAX_NODES; i++) {
-        bool flag = false;
-        if(n_lps == 1)
-            lp_idx = 0;
-        else if(n_lps == 2)
-            lp_idx = 1;
 
-        if(mc_node_idx_set.find(i) != mc_node_idx_set.end()) { //MC node
-            m_node_conf[i].type = MC_NODE;
-            m_node_conf[i].lp = 0;
-            mc_id_lp_map[i] = m_node_conf[i].lp;
-            flag = true;
-        }
-        if(proc_node_idx_set.find(i) != proc_node_idx_set.end()) {
-          if (mc_node_idx_set.find(i) != mc_node_idx_set.end()) {
-              m_node_conf[i].type = CORE_MC_NODE;
-          }
-          else {
-            m_node_conf[i].type = CORE_NODE;
-          }
-            if(n_lps < 3) m_node_conf[i].lp = lp_idx;
-            else m_node_conf[i].lp = lp_idx%(n_lps-1)+1;
-            proc_id_lp_map[i] = m_node_conf[i].lp;
-            lp_idx++;
-            flag = true;
-        }
-        if (!flag) { m_node_conf[i].type = EMPTY_NODE; }
-    }
+	for(int i=0; i<MAX_NODES; i++)
+	{
+		bool flag = false;
+		if(n_lps == 1)
+			lp_idx = 0;
+		else if(n_lps == 2)
+			lp_idx = 1;
+
+		if(mc_node_idx_set.find(i) != mc_node_idx_set.end())
+		{ //MC node
+			m_node_conf[i].type = MC_NODE;
+			m_node_conf[i].lp = 0;
+			mc_id_lp_map[i] = m_node_conf[i].lp;
+			flag = true;
+		}
+		if(proc_node_idx_set.find(i) != proc_node_idx_set.end())
+		{
+			if (mc_node_idx_set.find(i) != mc_node_idx_set.end())
+			{
+				m_node_conf[i].type = CORE_MC_NODE;
+			}
+			else
+			{
+				m_node_conf[i].type = CORE_NODE;
+			}
+			if(n_lps < 3)
+				m_node_conf[i].lp = lp_idx;
+			else
+				m_node_conf[i].lp = lp_idx%(n_lps-1)+1;
+
+			proc_id_lp_map[i] = m_node_conf[i].lp;
+			lp_idx++;
+			flag = true;
+		}
+		if (!flag)
+		{
+			m_node_conf[i].type = EMPTY_NODE;
+		}
+	}
 }
 
 
@@ -636,30 +659,41 @@ void SysBuilder_llp :: do_partitioning_y_part(int n_lps)
     assert(y_dim > 1);
     assert(n_lps > 2);
 
-    int lp_idx = y_dim; //the network is LP 0 -- y_dim-1
-    for(int i=0; i<MAX_NODES; i++) {
-        bool flag = false;
-        if(mc_node_idx_set.find(i) != mc_node_idx_set.end()) { //MC node
-            m_node_conf[i].type = MC_NODE;
-            m_node_conf[i].lp = i/x_dim;
-            mc_id_lp_map[i] = m_node_conf[i].lp;
-            flag = true;
-        }
-        if(proc_node_idx_set.find(i) != proc_node_idx_set.end()) {
-          if (mc_node_idx_set.find(i) != mc_node_idx_set.end()) {
-              m_node_conf[i].type = CORE_MC_NODE;
-          }
-          else {
-            m_node_conf[i].type = CORE_NODE;
-          }
-            if(n_lps < 3) m_node_conf[i].lp = lp_idx;
-            else m_node_conf[i].lp = lp_idx%(n_lps-1)+1;
-            proc_id_lp_map[i] = m_node_conf[i].lp;
-            lp_idx++;
-            flag = true;
-        }
-        if (!flag) { m_node_conf[i].type = EMPTY_NODE; }
-    }
+	int lp_idx = y_dim; //the network is LP 0 -- y_dim-1
+	for(int i=0; i<MAX_NODES; i++)
+	{
+		bool flag = false;
+		if(mc_node_idx_set.find(i) != mc_node_idx_set.end())
+		{ //MC node
+			m_node_conf[i].type = MC_NODE;
+			m_node_conf[i].lp = i/x_dim;
+			mc_id_lp_map[i] = m_node_conf[i].lp;
+			flag = true;
+		}
+		if(proc_node_idx_set.find(i) != proc_node_idx_set.end())
+		{
+			if (mc_node_idx_set.find(i) != mc_node_idx_set.end())
+			{
+				m_node_conf[i].type = CORE_MC_NODE;
+			}
+			else
+			{
+				m_node_conf[i].type = CORE_NODE;
+			}
+			if(n_lps < 3)
+				m_node_conf[i].lp = lp_idx;
+			else
+				m_node_conf[i].lp = lp_idx%(n_lps-1)+1;
+
+			proc_id_lp_map[i] = m_node_conf[i].lp;
+			lp_idx++;
+			flag = true;
+		}
+		if (!flag)
+		{
+			m_node_conf[i].type = EMPTY_NODE;
+		}
+	}
 }
 
 
@@ -669,7 +703,8 @@ void SysBuilder_llp :: do_partitioning_y_part(int n_lps)
 // todo: move this to cache_builder !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 void SysBuilder_llp :: dep_injection_for_mcp()
 {
-    if (m_mc_builder->get_type() == MemControllerBuilder::CAFFDRAM) {
+    if (m_mc_builder->get_type() == MemControllerBuilder::CAFFDRAM)
+    {
         CaffDRAM_builder *caffdram = dynamic_cast<CaffDRAM_builder *>(m_mc_builder);
         manifold::caffdram::CaffDramMcMap *mc_map =
         new manifold::caffdram::CaffDramMcMap(mc_node_idx_vec,
@@ -677,7 +712,27 @@ void SysBuilder_llp :: dep_injection_for_mcp()
 
         m_cache_builder->set_mc_map_obj(mc_map);
         m_mc_builder->set_mc_map_obj(mc_map);
-    } else {
+    }
+    else if(m_mc_builder->get_type() == MemControllerBuilder::HMC)
+    {
+    	manifold::uarch::HMCDestMap *hmc_map = new manifold::uarch::HMCDestMap(
+    	                                        mc_node_idx_vec, num_serdes, int(MAX_VAULTS / MAX_SERDES), trans_size );
+    	cout << "hmc_map object " << hmc_map << endl;
+    	cout << "HMCMap nodes size " << hmc_map->get_nodes_size() << endl;
+   	    cout << "HMCDestMap selector bits " << dec << hmc_map->get_selector_bits() << endl;
+   	    cout << "HMCDestMap selector mask " << hex << hmc_map->get_selector_mask() << endl;
+    	/*
+    	 * num_serdes can be 2 or 4. The number of HMCs = length(mc_node_idx_vec) / num_serdes
+    	 * Eg: 			length(mc_node_idx_vec) = 16
+    	 * 				num_serdes = 4
+    	 * 				number of HMCs = 16 / 4 = 4
+    	 */
+		m_cache_builder->set_mc_map_obj(hmc_map);
+		m_mc_builder->set_mc_map_obj(hmc_map);
+
+    }
+    else // DRAMSim
+    {
         manifold::uarch::PageBasedMap *mc_map = new manifold::uarch::PageBasedMap(
                                         mc_node_idx_vec, 12); // assuming page size= 2^12
 
@@ -691,22 +746,18 @@ void SysBuilder_llp :: dep_injection_for_mcp()
 //====================================================================
 void SysBuilder_llp :: dep_injection_for_iris()
 {
-	const char* mem_chars = m_config.lookup("mc.type");
-	string mem_str = mem_chars;
     if(m_cache_builder->get_type() == CacheBuilder::MCP_CACHE || m_cache_builder->get_type() == CacheBuilder::MCP_L1L2)
     {
         MCP_cache_builder* mcp = dynamic_cast<MCP_cache_builder*>(m_cache_builder);
-        MCPSimLen* simLen = new MCPSimLen(mcp->get_l2_block_size(), mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(),
-                                      this->mc_node_idx_vec);
-        MCPVnet* vnet;
-        if(mem_str == "HMC")
-        	 vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->xbar_node_idx_vec);
-        else
-        	 vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->mc_node_idx_vec);
 
+        MCPSimLen* simLen = simLen = new MCPSimLen(mcp->get_l2_block_size(), mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(),
+                									this->mc_node_idx_vec);
+        MCPVnet* vnet = new MCPVnet(mcp->get_coh_type(), mcp->get_mem_type(), mcp->get_credit_type(), this->mc_node_idx_vec);
         Iris_builder* iris = dynamic_cast<Iris_builder*>(m_network_builder);
-    iris->dep_injection(simLen, vnet);
+        iris->dep_injection(simLen, vnet);
     }
+
+    //TODO: Ask Hugh if I need to modify this part of the code
 }
 
 
@@ -720,7 +771,9 @@ void SysBuilder_llp :: connect_components()
 
     m_proc_builder->connect_proc_cache(m_cache_builder);
     m_cache_builder->connect_cache_network(m_network_builder);
+    cout << "\n Connecting network to HMC" << endl;
     m_mc_builder->connect_mc_network(m_network_builder);
+    cout << "\n Connected network to HMC" << endl;
 
 #ifdef LIBKITFOX
     if(m_kitfox_builder){

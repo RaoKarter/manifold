@@ -1,0 +1,800 @@
+@	1	(tick)upstream credits[3]	10->9	hmc_net_requests.size	1
+@	1	(tick)upstream credits[5]	10->9	hmc_net_requests.size	0
+@	1	(tick)upstream credits[7]	10->9	hmc_net_requests.size	0
+@	1	(tick)upstream credits[9]	10->9	hmc_net_requests.size	1
+@	1	(tick)upstream credits[10]	10->9	hmc_net_requests.size	0
+@	1	(tick)upstream credits[13]	10->9	hmc_net_requests.size	1
+@	1	(tick)upstream credits[14]	10->9	hmc_net_requests.size	0
+@	1	(tick)upstream credits[20]	10->9	hmc_net_requests.size	2
+@	1	(tick)upstream credits[26]	10->9	hmc_net_requests.size	0
+@	1	(tick)upstream credits[28]	10->9	hmc_net_requests.size	0
+@	1	(tick)upstream credits[30]	10->9	hmc_net_requests.size	0
+@	2	(tick)upstream credits[3]	9->8	hmc_net_requests.size	0
+@	2	(tick)upstream credits[9]	9->8	hmc_net_requests.size	0
+@	2	(tick)upstream credits[10]	9->8	hmc_net_requests.size	0
+@	2	(tick)upstream credits[11]	10->9	hmc_net_requests.size	0
+@	2	(tick)upstream credits[13]	9->8	hmc_net_requests.size	0
+@	2	(tick)upstream credits[15]	10->9	hmc_net_requests.size	0
+@	2	(tick)upstream credits[17]	10->9	hmc_net_requests.size	1
+@	2	(tick)upstream credits[20]	9->8	hmc_net_requests.size	1
+@	2	(tick)upstream credits[27]	10->9	hmc_net_requests.size	1
+@	2	(tick)upstream credits[28]	9->8	hmc_net_requests.size	4
+@	2	(tick)upstream credits[30]	9->8	hmc_net_requests.size	3
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	8->9
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	9->10
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	9->10
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	8->9
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	8->9
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	9->10
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	8->9
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	9->10
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	3	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	3	(tick)upstream credits[2]	10->9	hmc_net_requests.size	0
+@	3	(tick)upstream credits[3]	9->8	hmc_net_requests.size	0
+@	3	(tick)upstream credits[4]	10->9	hmc_net_requests.size	2
+@	3	(tick)upstream credits[9]	9->8	hmc_net_requests.size	0
+@	3	(tick)upstream credits[11]	9->8	hmc_net_requests.size	0
+@	3	(tick)upstream credits[12]	10->9	hmc_net_requests.size	0
+@	3	(tick)upstream credits[15]	9->8	hmc_net_requests.size	0
+@	3	(tick)upstream credits[17]	9->8	hmc_net_requests.size	0
+@	3	(tick)upstream credits[20]	9->8	hmc_net_requests.size	0
+@	3	(tick)upstream credits[21]	10->9	hmc_net_requests.size	0
+@	3	(tick)upstream credits[23]	10->9	hmc_net_requests.size	0
+@	3	(tick)upstream credits[25]	10->9	hmc_net_requests.size	0
+@	3	(tick)upstream credits[26]	10->9	hmc_net_requests.size	1
+@	3	(tick)upstream credits[27]	9->8	hmc_net_requests.size	0
+@	3	(tick)upstream credits[28]	9->8	hmc_net_requests.size	3
+@	3	(tick)upstream credits[29]	10->9	hmc_net_requests.size	0
+@	3	(tick)upstream credits[30]	9->8	hmc_net_requests.size	3
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	8->9
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	8->9
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	9->10
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	9->10
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	8->9
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	8->9
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	8->9
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	8->9
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	4	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	4	(tick)upstream credits[1]	10->9	hmc_net_requests.size	0
+@	4	(tick)upstream credits[4]	9->8	hmc_net_requests.size	2
+@	4	(tick)upstream credits[12]	9->8	hmc_net_requests.size	0
+@	4	(tick)upstream credits[14]	10->9	hmc_net_requests.size	2
+@	4	(tick)upstream credits[19]	10->9	hmc_net_requests.size	0
+@	4	(tick)upstream credits[21]	9->8	hmc_net_requests.size	2
+@	4	(tick)upstream credits[24]	10->9	hmc_net_requests.size	1
+@	4	(tick)upstream credits[26]	9->8	hmc_net_requests.size	1
+@	4	(tick)upstream credits[27]	9->8	hmc_net_requests.size	0
+@	4	(tick)upstream credits[28]	9->8	hmc_net_requests.size	3
+@	4	(tick)upstream credits[29]	9->8	hmc_net_requests.size	0
+@	4	(tick)upstream credits[30]	9->8	hmc_net_requests.size	2
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	9->10
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	9->10
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	9->10
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	9->10
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	16	upstream credits[12]	8->9
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	9->10
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	9->10
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	9->10
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	27	upstream credits[23]	9->10
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	29	upstream credits[25]	9->10
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	8->9
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	5	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	5	(tick)upstream credits[4]	9->8	hmc_net_requests.size	1
+@	5	(tick)upstream credits[5]	10->9	hmc_net_requests.size	1
+@	5	(tick)upstream credits[6]	10->9	hmc_net_requests.size	0
+@	5	(tick)upstream credits[7]	10->9	hmc_net_requests.size	0
+@	5	(tick)upstream credits[8]	10->9	hmc_net_requests.size	0
+@	5	(tick)upstream credits[11]	10->9	hmc_net_requests.size	0
+@	5	(tick)upstream credits[13]	10->9	hmc_net_requests.size	0
+@	5	(tick)upstream credits[14]	9->8	hmc_net_requests.size	1
+@	5	(tick)upstream credits[15]	10->9	hmc_net_requests.size	0
+@	5	(tick)upstream credits[16]	10->9	hmc_net_requests.size	0
+@	5	(tick)upstream credits[19]	9->8	hmc_net_requests.size	0
+@	5	(tick)upstream credits[20]	10->9	hmc_net_requests.size	1
+@	5	(tick)upstream credits[21]	9->8	hmc_net_requests.size	1
+@	5	(tick)upstream credits[22]	10->9	hmc_net_requests.size	0
+@	5	(tick)upstream credits[24]	9->8	hmc_net_requests.size	0
+@	5	(tick)upstream credits[26]	9->8	hmc_net_requests.size	0
+@	5	(tick)upstream credits[28]	9->8	hmc_net_requests.size	4
+@	5	(tick)upstream credits[30]	9->8	hmc_net_requests.size	1
+@	5	(tick)upstream credits[31]	10->9	hmc_net_requests.size	0
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	9->10
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	16	upstream credits[12]	9->10
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	8->9
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	8->9
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	8->9
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	9->10
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	9->10
+@	6	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	6	(tick)upstream credits[0]	10->9	hmc_net_requests.size	0
+@	6	(tick)upstream credits[3]	10->9	hmc_net_requests.size	0
+@	6	(tick)upstream credits[4]	9->8	hmc_net_requests.size	1
+@	6	(tick)upstream credits[5]	9->8	hmc_net_requests.size	0
+@	6	(tick)upstream credits[6]	9->8	hmc_net_requests.size	0
+@	6	(tick)upstream credits[9]	10->9	hmc_net_requests.size	0
+@	6	(tick)upstream credits[12]	10->9	hmc_net_requests.size	0
+@	6	(tick)upstream credits[14]	9->8	hmc_net_requests.size	0
+@	6	(tick)upstream credits[17]	10->9	hmc_net_requests.size	0
+@	6	(tick)upstream credits[19]	9->8	hmc_net_requests.size	1
+@	6	(tick)upstream credits[20]	9->8	hmc_net_requests.size	0
+@	6	(tick)upstream credits[21]	9->8	hmc_net_requests.size	0
+@	6	(tick)upstream credits[22]	9->8	hmc_net_requests.size	0
+@	6	(tick)upstream credits[24]	9->8	hmc_net_requests.size	0
+@	6	(tick)upstream credits[25]	10->9	hmc_net_requests.size	1
+@	6	(tick)upstream credits[26]	9->8	hmc_net_requests.size	1
+@	6	(tick)upstream credits[28]	9->8	hmc_net_requests.size	3
+@	6	(tick)upstream credits[30]	9->8	hmc_net_requests.size	1
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	9->10
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	9->10
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	9->10
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	9->10
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	9->10
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	20	upstream credits[16]	9->10
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	7	hmc_id	0	rcvd MC CREDIT pkt @ port	35	upstream credits[31]	9->10
+@	7	(tick)upstream credits[0]	9->8	hmc_net_requests.size	1
+@	7	(tick)upstream credits[4]	9->8	hmc_net_requests.size	1
+@	7	(tick)upstream credits[5]	9->8	hmc_net_requests.size	0
+@	7	(tick)upstream credits[6]	9->8	hmc_net_requests.size	0
+@	7	(tick)upstream credits[7]	10->9	hmc_net_requests.size	0
+@	7	(tick)upstream credits[8]	10->9	hmc_net_requests.size	1
+@	7	(tick)upstream credits[13]	10->9	hmc_net_requests.size	0
+@	7	(tick)upstream credits[18]	10->9	hmc_net_requests.size	0
+@	7	(tick)upstream credits[19]	9->8	hmc_net_requests.size	0
+@	7	(tick)upstream credits[23]	10->9	hmc_net_requests.size	0
+@	7	(tick)upstream credits[25]	9->8	hmc_net_requests.size	0
+@	7	(tick)upstream credits[26]	9->8	hmc_net_requests.size	2
+@	7	(tick)upstream credits[28]	9->8	hmc_net_requests.size	4
+@	7	(tick)upstream credits[30]	9->8	hmc_net_requests.size	1
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	4	upstream credits[0]	8->9
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	9->10
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	8->9
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	8->9
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	9->10
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	16	upstream credits[12]	9->10
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	9->10
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	9->10
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	8->9
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	9->10
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	9->10
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	9->10
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	9->10
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	29	upstream credits[25]	8->9
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	8	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	8	(tick)upstream credits[0]	9->8	hmc_net_requests.size	0
+@	8	(tick)upstream credits[2]	10->9	hmc_net_requests.size	0
+@	8	(tick)upstream credits[4]	9->8	hmc_net_requests.size	1
+@	8	(tick)upstream credits[7]	9->8	hmc_net_requests.size	3
+@	8	(tick)upstream credits[8]	9->8	hmc_net_requests.size	0
+@	8	(tick)upstream credits[11]	10->9	hmc_net_requests.size	0
+@	8	(tick)upstream credits[15]	10->9	hmc_net_requests.size	1
+@	8	(tick)upstream credits[17]	10->9	hmc_net_requests.size	1
+@	8	(tick)upstream credits[18]	9->8	hmc_net_requests.size	0
+@	8	(tick)upstream credits[20]	10->9	hmc_net_requests.size	0
+@	8	(tick)upstream credits[22]	10->9	hmc_net_requests.size	0
+@	8	(tick)upstream credits[24]	10->9	hmc_net_requests.size	0
+@	8	(tick)upstream credits[26]	9->8	hmc_net_requests.size	1
+@	8	(tick)upstream credits[28]	9->8	hmc_net_requests.size	4
+@	8	(tick)upstream credits[30]	9->8	hmc_net_requests.size	0
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	4	upstream credits[0]	8->9
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	9->10
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	9->10
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	8->9
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	9->10
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	22	upstream credits[18]	8->9
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	9->10
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	27	upstream credits[23]	9->10
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	29	upstream credits[25]	9->10
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	9	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	9	(tick)upstream credits[0]	9->8	hmc_net_requests.size	0
+@	9	(tick)upstream credits[1]	10->9	hmc_net_requests.size	0
+@	9	(tick)upstream credits[2]	9->8	hmc_net_requests.size	0
+@	9	(tick)upstream credits[4]	9->8	hmc_net_requests.size	0
+@	9	(tick)upstream credits[5]	10->9	hmc_net_requests.size	0
+@	9	(tick)upstream credits[6]	10->9	hmc_net_requests.size	0
+@	9	(tick)upstream credits[7]	9->8	hmc_net_requests.size	2
+@	9	(tick)upstream credits[8]	9->8	hmc_net_requests.size	1
+@	9	(tick)upstream credits[10]	10->9	hmc_net_requests.size	1
+@	9	(tick)upstream credits[11]	9->8	hmc_net_requests.size	0
+@	9	(tick)upstream credits[14]	10->9	hmc_net_requests.size	0
+@	9	(tick)upstream credits[15]	9->8	hmc_net_requests.size	1
+@	9	(tick)upstream credits[17]	9->8	hmc_net_requests.size	0
+@	9	(tick)upstream credits[19]	10->9	hmc_net_requests.size	0
+@	9	(tick)upstream credits[23]	10->9	hmc_net_requests.size	0
+@	9	(tick)upstream credits[26]	9->8	hmc_net_requests.size	1
+@	9	(tick)upstream credits[28]	9->8	hmc_net_requests.size	3
+@	9	(tick)upstream credits[30]	9->8	hmc_net_requests.size	0
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	4	upstream credits[0]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	22	upstream credits[18]	9->10
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	9->10
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	9->10
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	9->10
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	10	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	10	(tick)upstream credits[1]	9->8	hmc_net_requests.size	0
+@	10	(tick)upstream credits[2]	9->8	hmc_net_requests.size	0
+@	10	(tick)upstream credits[4]	9->8	hmc_net_requests.size	1
+@	10	(tick)upstream credits[5]	9->8	hmc_net_requests.size	0
+@	10	(tick)upstream credits[7]	9->8	hmc_net_requests.size	2
+@	10	(tick)upstream credits[8]	9->8	hmc_net_requests.size	0
+@	10	(tick)upstream credits[9]	10->9	hmc_net_requests.size	1
+@	10	(tick)upstream credits[10]	9->8	hmc_net_requests.size	0
+@	10	(tick)upstream credits[12]	10->9	hmc_net_requests.size	0
+@	10	(tick)upstream credits[14]	9->8	hmc_net_requests.size	0
+@	10	(tick)upstream credits[15]	9->8	hmc_net_requests.size	2
+@	10	(tick)upstream credits[18]	10->9	hmc_net_requests.size	1
+@	10	(tick)upstream credits[25]	10->9	hmc_net_requests.size	0
+@	10	(tick)upstream credits[26]	9->8	hmc_net_requests.size	0
+@	10	(tick)upstream credits[27]	10->9	hmc_net_requests.size	0
+@	10	(tick)upstream credits[28]	9->8	hmc_net_requests.size	2
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	4	upstream credits[0]	9->10
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	9->10
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	9->10
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	9->10
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	9->10
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	27	upstream credits[23]	9->10
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	11	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	9->10
+@	11	(tick)upstream credits[1]	9->8	hmc_net_requests.size	0
+@	11	(tick)upstream credits[3]	10->9	hmc_net_requests.size	0
+@	11	(tick)upstream credits[4]	9->8	hmc_net_requests.size	0
+@	11	(tick)upstream credits[5]	9->8	hmc_net_requests.size	0
+@	11	(tick)upstream credits[6]	10->9	hmc_net_requests.size	0
+@	11	(tick)upstream credits[7]	9->8	hmc_net_requests.size	2
+@	11	(tick)upstream credits[9]	9->8	hmc_net_requests.size	0
+@	11	(tick)upstream credits[10]	9->8	hmc_net_requests.size	0
+@	11	(tick)upstream credits[11]	10->9	hmc_net_requests.size	0
+@	11	(tick)upstream credits[12]	9->8	hmc_net_requests.size	0
+@	11	(tick)upstream credits[13]	10->9	hmc_net_requests.size	0
+@	11	(tick)upstream credits[14]	9->8	hmc_net_requests.size	0
+@	11	(tick)upstream credits[15]	9->8	hmc_net_requests.size	1
+@	11	(tick)upstream credits[16]	10->9	hmc_net_requests.size	0
+@	11	(tick)upstream credits[18]	9->8	hmc_net_requests.size	1
+@	11	(tick)upstream credits[20]	10->9	hmc_net_requests.size	0
+@	11	(tick)upstream credits[22]	10->9	hmc_net_requests.size	0
+@	11	(tick)upstream credits[27]	9->8	hmc_net_requests.size	0
+@	11	(tick)upstream credits[28]	9->8	hmc_net_requests.size	1
+@	11	(tick)upstream credits[30]	10->9	hmc_net_requests.size	0
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	9->10
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	9->10
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	16	upstream credits[12]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	22	upstream credits[18]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	29	upstream credits[25]	9->10
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	9->10
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	8->9
+@	12	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	12	(tick)upstream credits[1]	9->8	hmc_net_requests.size	2
+@	12	(tick)upstream credits[4]	9->8	hmc_net_requests.size	0
+@	12	(tick)upstream credits[5]	9->8	hmc_net_requests.size	0
+@	12	(tick)upstream credits[7]	9->8	hmc_net_requests.size	1
+@	12	(tick)upstream credits[10]	9->8	hmc_net_requests.size	0
+@	12	(tick)upstream credits[11]	9->8	hmc_net_requests.size	1
+@	12	(tick)upstream credits[13]	9->8	hmc_net_requests.size	0
+@	12	(tick)upstream credits[15]	9->8	hmc_net_requests.size	0
+@	12	(tick)upstream credits[18]	9->8	hmc_net_requests.size	1
+@	12	(tick)upstream credits[21]	10->9	hmc_net_requests.size	0
+@	12	(tick)upstream credits[26]	10->9	hmc_net_requests.size	1
+@	12	(tick)upstream credits[28]	9->8	hmc_net_requests.size	0
+@	12	(tick)upstream credits[29]	10->9	hmc_net_requests.size	1
+@	12	(tick)upstream credits[30]	9->8	hmc_net_requests.size	0
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	9->10
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	9->10
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	9->10
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	16	upstream credits[12]	9->10
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	9->10
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	20	upstream credits[16]	9->10
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	22	upstream credits[18]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	9->10
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	9->10
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	9->10
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	13	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	13	(tick)upstream credits[1]	9->8	hmc_net_requests.size	1
+@	13	(tick)upstream credits[6]	10->9	hmc_net_requests.size	1
+@	13	(tick)upstream credits[7]	9->8	hmc_net_requests.size	0
+@	13	(tick)upstream credits[10]	9->8	hmc_net_requests.size	1
+@	13	(tick)upstream credits[11]	9->8	hmc_net_requests.size	1
+@	13	(tick)upstream credits[12]	10->9	hmc_net_requests.size	0
+@	13	(tick)upstream credits[13]	9->8	hmc_net_requests.size	0
+@	13	(tick)upstream credits[15]	9->8	hmc_net_requests.size	0
+@	13	(tick)upstream credits[18]	9->8	hmc_net_requests.size	0
+@	13	(tick)upstream credits[21]	9->8	hmc_net_requests.size	0
+@	13	(tick)upstream credits[24]	10->9	hmc_net_requests.size	1
+@	13	(tick)upstream credits[26]	9->8	hmc_net_requests.size	1
+@	13	(tick)upstream credits[27]	10->9	hmc_net_requests.size	0
+@	13	(tick)upstream credits[28]	9->8	hmc_net_requests.size	0
+@	13	(tick)upstream credits[29]	9->8	hmc_net_requests.size	1
+@	13	(tick)upstream credits[30]	9->8	hmc_net_requests.size	0
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	9->10
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	9->10
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	22	upstream credits[18]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	14	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	14	(tick)upstream credits[1]	9->8	hmc_net_requests.size	0
+@	14	(tick)upstream credits[6]	9->8	hmc_net_requests.size	0
+@	14	(tick)upstream credits[8]	10->9	hmc_net_requests.size	0
+@	14	(tick)upstream credits[10]	9->8	hmc_net_requests.size	2
+@	14	(tick)upstream credits[11]	9->8	hmc_net_requests.size	0
+@	14	(tick)upstream credits[15]	9->8	hmc_net_requests.size	0
+@	14	(tick)upstream credits[18]	9->8	hmc_net_requests.size	0
+@	14	(tick)upstream credits[19]	10->9	hmc_net_requests.size	0
+@	14	(tick)upstream credits[20]	10->9	hmc_net_requests.size	0
+@	14	(tick)upstream credits[21]	9->8	hmc_net_requests.size	0
+@	14	(tick)upstream credits[22]	10->9	hmc_net_requests.size	1
+@	14	(tick)upstream credits[24]	9->8	hmc_net_requests.size	0
+@	14	(tick)upstream credits[25]	10->9	hmc_net_requests.size	0
+@	14	(tick)upstream credits[26]	9->8	hmc_net_requests.size	1
+@	14	(tick)upstream credits[27]	9->8	hmc_net_requests.size	1
+@	14	(tick)upstream credits[28]	9->8	hmc_net_requests.size	0
+@	14	(tick)upstream credits[29]	9->8	hmc_net_requests.size	1
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	9->10
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	16	upstream credits[12]	9->10
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	9->10
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	22	upstream credits[18]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	15	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	9->10
+@	15	(tick)upstream credits[2]	10->9	hmc_net_requests.size	1
+@	15	(tick)upstream credits[4]	10->9	hmc_net_requests.size	0
+@	15	(tick)upstream credits[7]	10->9	hmc_net_requests.size	0
+@	15	(tick)upstream credits[8]	9->8	hmc_net_requests.size	0
+@	15	(tick)upstream credits[9]	10->9	hmc_net_requests.size	0
+@	15	(tick)upstream credits[10]	9->8	hmc_net_requests.size	1
+@	15	(tick)upstream credits[13]	10->9	hmc_net_requests.size	2
+@	15	(tick)upstream credits[15]	9->8	hmc_net_requests.size	0
+@	15	(tick)upstream credits[18]	9->8	hmc_net_requests.size	0
+@	15	(tick)upstream credits[19]	9->8	hmc_net_requests.size	0
+@	15	(tick)upstream credits[21]	9->8	hmc_net_requests.size	0
+@	15	(tick)upstream credits[22]	9->8	hmc_net_requests.size	1
+@	15	(tick)upstream credits[26]	9->8	hmc_net_requests.size	0
+@	15	(tick)upstream credits[27]	9->8	hmc_net_requests.size	1
+@	15	(tick)upstream credits[29]	9->8	hmc_net_requests.size	1
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	9->10
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	9->10
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	8->9
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	9->10
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	8->9
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	22	upstream credits[18]	8->9
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	8->9
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	9->10
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	9->10
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	29	upstream credits[25]	9->10
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	8->9
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	9->10
+@	16	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	16	(tick)upstream credits[2]	9->8	hmc_net_requests.size	0
+@	16	(tick)upstream credits[5]	10->9	hmc_net_requests.size	0
+@	16	(tick)upstream credits[7]	9->8	hmc_net_requests.size	1
+@	16	(tick)upstream credits[8]	9->8	hmc_net_requests.size	0
+@	16	(tick)upstream credits[9]	9->8	hmc_net_requests.size	1
+@	16	(tick)upstream credits[10]	9->8	hmc_net_requests.size	1
+@	16	(tick)upstream credits[13]	9->8	hmc_net_requests.size	1
+@	16	(tick)upstream credits[14]	10->9	hmc_net_requests.size	0
+@	16	(tick)upstream credits[22]	9->8	hmc_net_requests.size	1
+@	16	(tick)upstream credits[24]	10->9	hmc_net_requests.size	1
+@	16	(tick)upstream credits[26]	9->8	hmc_net_requests.size	0
+@	16	(tick)upstream credits[27]	9->8	hmc_net_requests.size	0
+@	16	(tick)upstream credits[28]	10->9	hmc_net_requests.size	0
+@	16	(tick)upstream credits[29]	9->8	hmc_net_requests.size	0
+@	16	(tick)upstream credits[30]	10->9	hmc_net_requests.size	0
+@	16	(tick)upstream credits[31]	10->9	hmc_net_requests.size	1
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	8->9
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	9->10
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	8->9
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	8->9
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	8->9
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	9->10
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	22	upstream credits[18]	9->10
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	9->10
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	9->10
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	8->9
+@	17	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	17	(tick)upstream credits[1]	10->9	hmc_net_requests.size	0
+@	17	(tick)upstream credits[4]	10->9	hmc_net_requests.size	0
+@	17	(tick)upstream credits[7]	9->8	hmc_net_requests.size	1
+@	17	(tick)upstream credits[8]	9->8	hmc_net_requests.size	0
+@	17	(tick)upstream credits[9]	9->8	hmc_net_requests.size	1
+@	17	(tick)upstream credits[10]	9->8	hmc_net_requests.size	1
+@	17	(tick)upstream credits[13]	9->8	hmc_net_requests.size	0
+@	17	(tick)upstream credits[15]	10->9	hmc_net_requests.size	0
+@	17	(tick)upstream credits[17]	10->9	hmc_net_requests.size	0
+@	17	(tick)upstream credits[20]	10->9	hmc_net_requests.size	1
+@	17	(tick)upstream credits[21]	10->9	hmc_net_requests.size	0
+@	17	(tick)upstream credits[22]	9->8	hmc_net_requests.size	2
+@	17	(tick)upstream credits[24]	9->8	hmc_net_requests.size	0
+@	17	(tick)upstream credits[25]	10->9	hmc_net_requests.size	1
+@	17	(tick)upstream credits[30]	9->8	hmc_net_requests.size	0
+@	17	(tick)upstream credits[31]	9->8	hmc_net_requests.size	0
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	9->10
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	9->10
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	8->9
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	8->9
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	8->9
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	9->10
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	8->9
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	9->10
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	9->10
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	9->10
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	9->10
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	8->9
+@	18	hmc_id	0	rcvd MC CREDIT pkt @ port	35	upstream credits[31]	8->9
+@	18	(tick)upstream credits[0]	10->9	hmc_net_requests.size	0
+@	18	(tick)upstream credits[2]	10->9	hmc_net_requests.size	0
+@	18	(tick)upstream credits[3]	10->9	hmc_net_requests.size	2
+@	18	(tick)upstream credits[7]	9->8	hmc_net_requests.size	1
+@	18	(tick)upstream credits[8]	9->8	hmc_net_requests.size	0
+@	18	(tick)upstream credits[9]	9->8	hmc_net_requests.size	0
+@	18	(tick)upstream credits[10]	9->8	hmc_net_requests.size	0
+@	18	(tick)upstream credits[16]	10->9	hmc_net_requests.size	0
+@	18	(tick)upstream credits[17]	9->8	hmc_net_requests.size	0
+@	18	(tick)upstream credits[19]	10->9	hmc_net_requests.size	2
+@	18	(tick)upstream credits[20]	9->8	hmc_net_requests.size	1
+@	18	(tick)upstream credits[22]	9->8	hmc_net_requests.size	2
+@	18	(tick)upstream credits[25]	9->8	hmc_net_requests.size	0
+@	18	(tick)upstream credits[29]	10->9	hmc_net_requests.size	1
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	9->10
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	9->10
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	8->9
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	8->9
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	9->10
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	9->10
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	8->9
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	8->9
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	9->10
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	9->10
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	29	upstream credits[25]	8->9
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	9->10
+@	19	hmc_id	0	rcvd MC CREDIT pkt @ port	35	upstream credits[31]	9->10
+@	19	(tick)upstream credits[2]	9->8	hmc_net_requests.size	1
+@	19	(tick)upstream credits[3]	9->8	hmc_net_requests.size	1
+@	19	(tick)upstream credits[6]	10->9	hmc_net_requests.size	0
+@	19	(tick)upstream credits[7]	9->8	hmc_net_requests.size	1
+@	19	(tick)upstream credits[13]	10->9	hmc_net_requests.size	0
+@	19	(tick)upstream credits[14]	10->9	hmc_net_requests.size	0
+@	19	(tick)upstream credits[15]	10->9	hmc_net_requests.size	0
+@	19	(tick)upstream credits[16]	9->8	hmc_net_requests.size	0
+@	19	(tick)upstream credits[17]	9->8	hmc_net_requests.size	0
+@	19	(tick)upstream credits[19]	9->8	hmc_net_requests.size	1
+@	19	(tick)upstream credits[20]	9->8	hmc_net_requests.size	0
+@	19	(tick)upstream credits[21]	10->9	hmc_net_requests.size	0
+@	19	(tick)upstream credits[22]	9->8	hmc_net_requests.size	3
+@	19	(tick)upstream credits[25]	9->8	hmc_net_requests.size	0
+@	19	(tick)upstream credits[28]	10->9	hmc_net_requests.size	0
+@	19	(tick)upstream credits[29]	9->8	hmc_net_requests.size	2
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	4	upstream credits[0]	9->10
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	8->9
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	8->9
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	9->10
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	13	upstream credits[9]	9->10
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	9->10
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	20	upstream credits[16]	8->9
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	8->9
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	8->9
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	8->9
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	29	upstream credits[25]	8->9
+@	20	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	20	(tick)upstream credits[1]	10->9	hmc_net_requests.size	1
+@	20	(tick)upstream credits[2]	9->8	hmc_net_requests.size	0
+@	20	(tick)upstream credits[3]	9->8	hmc_net_requests.size	1
+@	20	(tick)upstream credits[5]	10->9	hmc_net_requests.size	0
+@	20	(tick)upstream credits[7]	9->8	hmc_net_requests.size	0
+@	20	(tick)upstream credits[10]	10->9	hmc_net_requests.size	0
+@	20	(tick)upstream credits[11]	10->9	hmc_net_requests.size	1
+@	20	(tick)upstream credits[13]	9->8	hmc_net_requests.size	0
+@	20	(tick)upstream credits[16]	9->8	hmc_net_requests.size	0
+@	20	(tick)upstream credits[19]	9->8	hmc_net_requests.size	0
+@	20	(tick)upstream credits[21]	9->8	hmc_net_requests.size	2
+@	20	(tick)upstream credits[22]	9->8	hmc_net_requests.size	3
+@	20	(tick)upstream credits[26]	10->9	hmc_net_requests.size	0
+@	20	(tick)upstream credits[29]	9->8	hmc_net_requests.size	2
+@	20	(tick)upstream credits[30]	10->9	hmc_net_requests.size	0
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	8->9
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	8->9
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	9->10
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	8->9
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	9->10
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	9->10
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	20	upstream credits[16]	8->9
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	9->10
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	8->9
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	9->10
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	29	upstream credits[25]	9->10
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	9->10
+@	21	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	21	(tick)upstream credits[1]	9->8	hmc_net_requests.size	0
+@	21	(tick)upstream credits[2]	9->8	hmc_net_requests.size	1
+@	21	(tick)upstream credits[3]	9->8	hmc_net_requests.size	1
+@	21	(tick)upstream credits[4]	10->9	hmc_net_requests.size	1
+@	21	(tick)upstream credits[5]	9->8	hmc_net_requests.size	0
+@	21	(tick)upstream credits[10]	9->8	hmc_net_requests.size	0
+@	21	(tick)upstream credits[11]	9->8	hmc_net_requests.size	2
+@	21	(tick)upstream credits[17]	10->9	hmc_net_requests.size	0
+@	21	(tick)upstream credits[19]	9->8	hmc_net_requests.size	0
+@	21	(tick)upstream credits[20]	10->9	hmc_net_requests.size	0
+@	21	(tick)upstream credits[21]	9->8	hmc_net_requests.size	1
+@	21	(tick)upstream credits[22]	9->8	hmc_net_requests.size	2
+@	21	(tick)upstream credits[25]	10->9	hmc_net_requests.size	0
+@	21	(tick)upstream credits[28]	10->9	hmc_net_requests.size	0
+@	21	(tick)upstream credits[29]	9->8	hmc_net_requests.size	3
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	9->10
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	9->10
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	20	upstream credits[16]	9->10
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	9->10
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	22	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	9->10
+@	22	(tick)upstream credits[2]	9->8	hmc_net_requests.size	0
+@	22	(tick)upstream credits[3]	9->8	hmc_net_requests.size	0
+@	22	(tick)upstream credits[4]	9->8	hmc_net_requests.size	0
+@	22	(tick)upstream credits[5]	9->8	hmc_net_requests.size	0
+@	22	(tick)upstream credits[6]	10->9	hmc_net_requests.size	0
+@	22	(tick)upstream credits[10]	9->8	hmc_net_requests.size	0
+@	22	(tick)upstream credits[11]	9->8	hmc_net_requests.size	1
+@	22	(tick)upstream credits[13]	10->9	hmc_net_requests.size	0
+@	22	(tick)upstream credits[14]	10->9	hmc_net_requests.size	1
+@	22	(tick)upstream credits[15]	10->9	hmc_net_requests.size	0
+@	22	(tick)upstream credits[17]	9->8	hmc_net_requests.size	1
+@	22	(tick)upstream credits[21]	9->8	hmc_net_requests.size	1
+@	22	(tick)upstream credits[22]	9->8	hmc_net_requests.size	1
+@	22	(tick)upstream credits[26]	10->9	hmc_net_requests.size	1
+@	22	(tick)upstream credits[28]	9->8	hmc_net_requests.size	0
+@	22	(tick)upstream credits[29]	9->8	hmc_net_requests.size	2
+@	22	(tick)upstream credits[30]	10->9	hmc_net_requests.size	0
+@	22	(tick)upstream credits[31]	10->9	hmc_net_requests.size	1
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	5	upstream credits[1]	9->10
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	9->10
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	9->10
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	29	upstream credits[25]	9->10
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	8->9
+@	23	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	23	(tick)upstream credits[0]	10->9	hmc_net_requests.size	0
+@	23	(tick)upstream credits[4]	9->8	hmc_net_requests.size	0
+@	23	(tick)upstream credits[6]	9->8	hmc_net_requests.size	0
+@	23	(tick)upstream credits[7]	10->9	hmc_net_requests.size	1
+@	23	(tick)upstream credits[8]	10->9	hmc_net_requests.size	0
+@	23	(tick)upstream credits[11]	9->8	hmc_net_requests.size	2
+@	23	(tick)upstream credits[13]	9->8	hmc_net_requests.size	0
+@	23	(tick)upstream credits[14]	9->8	hmc_net_requests.size	0
+@	23	(tick)upstream credits[16]	10->9	hmc_net_requests.size	0
+@	23	(tick)upstream credits[17]	9->8	hmc_net_requests.size	1
+@	23	(tick)upstream credits[19]	10->9	hmc_net_requests.size	0
+@	23	(tick)upstream credits[20]	10->9	hmc_net_requests.size	0
+@	23	(tick)upstream credits[21]	9->8	hmc_net_requests.size	0
+@	23	(tick)upstream credits[22]	9->8	hmc_net_requests.size	0
+@	23	(tick)upstream credits[23]	10->9	hmc_net_requests.size	0
+@	23	(tick)upstream credits[26]	9->8	hmc_net_requests.size	0
+@	23	(tick)upstream credits[27]	10->9	hmc_net_requests.size	0
+@	23	(tick)upstream credits[29]	9->8	hmc_net_requests.size	1
+@	23	(tick)upstream credits[31]	9->8	hmc_net_requests.size	1
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	6	upstream credits[2]	9->10
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	9->10
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	9->10
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	14	upstream credits[10]	9->10
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	19	upstream credits[15]	9->10
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	9->10
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	9->10
+@	24	hmc_id	0	rcvd MC CREDIT pkt @ port	35	upstream credits[31]	8->9
+@	24	(tick)upstream credits[3]	10->9	hmc_net_requests.size	2
+@	24	(tick)upstream credits[4]	9->8	hmc_net_requests.size	0
+@	24	(tick)upstream credits[5]	10->9	hmc_net_requests.size	0
+@	24	(tick)upstream credits[7]	9->8	hmc_net_requests.size	1
+@	24	(tick)upstream credits[11]	9->8	hmc_net_requests.size	1
+@	24	(tick)upstream credits[14]	9->8	hmc_net_requests.size	0
+@	24	(tick)upstream credits[16]	9->8	hmc_net_requests.size	0
+@	24	(tick)upstream credits[17]	9->8	hmc_net_requests.size	0
+@	24	(tick)upstream credits[20]	9->8	hmc_net_requests.size	0
+@	24	(tick)upstream credits[21]	9->8	hmc_net_requests.size	0
+@	24	(tick)upstream credits[24]	10->9	hmc_net_requests.size	0
+@	24	(tick)upstream credits[26]	9->8	hmc_net_requests.size	0
+@	24	(tick)upstream credits[27]	9->8	hmc_net_requests.size	0
+@	24	(tick)upstream credits[29]	9->8	hmc_net_requests.size	3
+@	24	(tick)upstream credits[31]	9->8	hmc_net_requests.size	0
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	4	upstream credits[0]	9->10
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	9->10
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	9->10
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	9->10
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	20	upstream credits[16]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	23	upstream credits[19]	9->10
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	26	upstream credits[22]	9->10
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	27	upstream credits[23]	9->10
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	25	hmc_id	0	rcvd MC CREDIT pkt @ port	35	upstream credits[31]	8->9
+@	25	(tick)upstream credits[3]	9->8	hmc_net_requests.size	2
+@	25	(tick)upstream credits[4]	9->8	hmc_net_requests.size	1
+@	25	(tick)upstream credits[5]	9->8	hmc_net_requests.size	0
+@	25	(tick)upstream credits[6]	10->9	hmc_net_requests.size	0
+@	25	(tick)upstream credits[7]	9->8	hmc_net_requests.size	0
+@	25	(tick)upstream credits[8]	10->9	hmc_net_requests.size	0
+@	25	(tick)upstream credits[11]	9->8	hmc_net_requests.size	0
+@	25	(tick)upstream credits[12]	10->9	hmc_net_requests.size	1
+@	25	(tick)upstream credits[13]	10->9	hmc_net_requests.size	0
+@	25	(tick)upstream credits[18]	10->9	hmc_net_requests.size	0
+@	25	(tick)upstream credits[23]	10->9	hmc_net_requests.size	1
+@	25	(tick)upstream credits[24]	9->8	hmc_net_requests.size	0
+@	25	(tick)upstream credits[28]	10->9	hmc_net_requests.size	0
+@	25	(tick)upstream credits[29]	9->8	hmc_net_requests.size	2
+@	25	(tick)upstream credits[30]	10->9	hmc_net_requests.size	0
+@	25	(tick)upstream credits[31]	9->8	hmc_net_requests.size	0
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	8->9
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	8->9
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	8->9
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	8->9
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	18	upstream credits[14]	9->10
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	20	upstream credits[16]	9->10
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	21	upstream credits[17]	9->10
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	24	upstream credits[20]	9->10
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	25	upstream credits[21]	9->10
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	8->9
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	30	upstream credits[26]	9->10
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	31	upstream credits[27]	9->10
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	26	hmc_id	0	rcvd MC CREDIT pkt @ port	35	upstream credits[31]	8->9
+@	26	(tick)upstream credits[3]	9->8	hmc_net_requests.size	1
+@	26	(tick)upstream credits[4]	9->8	hmc_net_requests.size	0
+@	26	(tick)upstream credits[12]	9->8	hmc_net_requests.size	0
+@	26	(tick)upstream credits[23]	9->8	hmc_net_requests.size	0
+@	26	(tick)upstream credits[29]	9->8	hmc_net_requests.size	1
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	8->9
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	8->9
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	9	upstream credits[5]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	10	upstream credits[6]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	11	upstream credits[7]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	12	upstream credits[8]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	15	upstream credits[11]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	16	upstream credits[12]	8->9
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	17	upstream credits[13]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	22	upstream credits[18]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	27	upstream credits[23]	8->9
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	28	upstream credits[24]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	32	upstream credits[28]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	34	upstream credits[30]	9->10
+@	27	hmc_id	0	rcvd MC CREDIT pkt @ port	35	upstream credits[31]	9->10
+@	27	(tick)upstream credits[3]	9->8	hmc_net_requests.size	0
+@	27	(tick)upstream credits[29]	9->8	hmc_net_requests.size	0
+@	28	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	8->9
+@	28	hmc_id	0	rcvd MC CREDIT pkt @ port	8	upstream credits[4]	9->10
+@	28	hmc_id	0	rcvd MC CREDIT pkt @ port	16	upstream credits[12]	9->10
+@	28	hmc_id	0	rcvd MC CREDIT pkt @ port	27	upstream credits[23]	9->10
+@	28	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	8->9
+@	29	hmc_id	0	rcvd MC CREDIT pkt @ port	7	upstream credits[3]	9->10
+@	29	hmc_id	0	rcvd MC CREDIT pkt @ port	33	upstream credits[29]	9->10

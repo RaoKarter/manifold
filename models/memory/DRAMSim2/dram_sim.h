@@ -17,7 +17,6 @@
 #include <assert.h>
 #include "kernel/clock.h"
 
-
 namespace manifold {
 namespace dramsim {
 
@@ -127,43 +126,66 @@ private:
 
 //! Event handler for incoming memory request.
 template<typename T>
-void Dram_sim :: handle_incoming(int, manifold::uarch::NetworkPacket* pkt)
+void Dram_sim :: handle_incoming(int in_port, manifold::uarch::NetworkPacket* pkt)
 {
-    if (pkt->type == CREDIT_MSG_TYPE) {
-    downstream_credits++;
-    delete pkt;
-    return;
+    if (pkt->type == CREDIT_MSG_TYPE)
+    {
+		downstream_credits++;
+		delete pkt;
+#ifdef DBG_DRAMSIM
+    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\trcvd CREDIT pkt @ port\t" << dec << in_port
+    		<< "\tDRAMdownstream credits[" << this->get_nid() << "]\t" << downstream_credits-1 << "->" << downstream_credits << endl;
+#endif
+		return;
     }
 
+#ifdef NOHMC
     assert (pkt->dst == m_nid);
+#endif
 
     T* req = (T*)(pkt->data);
 
-    if (req->is_read()) {
-    stats_n_reads++;
-    stats_n_reads_per_source[pkt->get_src()]++;
+    if (req->is_read())
+    {
+		stats_n_reads++;
+		stats_n_reads_per_source[pkt->get_src()]++;
 #ifdef DBG_DRAMSIM
-cout << "@ " << m_clk->NowTicks() << " >>> mc " << m_nid << " received LD, src= " << pkt->get_src() << " addr= " <<hex<< req->get_addr() <<dec<<endl;
+    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\trcvd LD,\t\t\t\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+					<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << mc_map->get_local_addr(req->get_addr())
+					<< "\tgaddr\t" << req->get_addr() << dec << endl;
 #endif
     }
-    else {
-    stats_n_writes++;
-    stats_n_writes_per_source[pkt->get_src()]++;
+    else
+    {
+		stats_n_writes++;
+		stats_n_writes_per_source[pkt->get_src()]++;
 #ifdef DBG_DRAMSIM
-cout << "@ " << m_clk->NowTicks() << " >>> mc " << m_nid << " received ST, src= " << pkt->get_src() << " addr= " <<hex<< req->get_addr() <<dec<<endl;
+    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\trcvd ST,\t\t\t\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+					<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << mc_map->get_local_addr(req->get_addr())
+					<< "\tgaddr\t" << req->get_addr() << dec << endl;
 #endif
     }
 
     //paddr_t newAddr = m_mc_map->ripAddress(req->addr);
-
+#ifdef NOHMC
     pkt->set_dst(pkt->get_src());
-    pkt->set_dst_port(pkt->get_src_port());
     pkt->set_src(m_nid);
+#else
+    int temp = pkt->get_src();
+	pkt->set_src(pkt->get_dst());
+	pkt->set_dst(temp);
+#endif
+
+    pkt->set_dst_port(pkt->get_src_port());
     pkt->set_src_port(0);
-    pkt->type = 9;
+	pkt->type = 9;
 
     assert(mc_map);
     //put the request in the input buffer
+#ifdef DBG_DRAMSIM
+	cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\tGoing to Process REQ \t\t\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << mc_map->get_local_addr(req->get_addr()) << "\tgaddr\t" << req->get_addr() << dec << endl;
+#endif
     m_incoming_reqs.push_back(Request(m_clk->NowTicks(), mc_map->get_local_addr(req->get_addr()), req->get_addr(), req->is_read(), pkt));
 
 }

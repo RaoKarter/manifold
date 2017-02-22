@@ -52,7 +52,6 @@ Dram_sim::Dram_sim (int nid, const Dram_sim_settings& dram_settings, Clock& clk)
 
 void Dram_sim::read_complete(unsigned id, uint64_t address, uint64_t done_cycle)
 {
-    //cout << "@ " << m_clk->NowTicks() << " (local) " << Manifold::NowTicks() << " (default), read complete\n";
     map<uint64_t, list<Request> >::iterator it = m_pending_reqs.find(address);
     assert (it != m_pending_reqs.end());
 
@@ -65,6 +64,9 @@ void Dram_sim::read_complete(unsigned id, uint64_t address, uint64_t done_cycle)
     assert(req.addr == address);
 
     m_completed_reqs.push_back(req);
+#ifdef DBG_DRAMSIM
+    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\tread complete gaddr\t" << hex << req.gaddr << "\tladdr\t" << req.addr << dec << endl;
+#endif
 }
 
 
@@ -84,6 +86,9 @@ void Dram_sim::write_complete(unsigned id, uint64_t address, uint64_t done_cycle
     //move from pending buffer to completed buffer
     if (m_send_st_response) {
     m_completed_reqs.push_back(req);
+#ifdef DBG_DRAMSIM
+    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\twrite complete gaddr\t" << hex << req.gaddr << "\tladdr\t" << req.addr << dec << endl;
+#endif
     }
 
 #ifdef DRAMSIM_UTEST
@@ -93,26 +98,30 @@ void Dram_sim::write_complete(unsigned id, uint64_t address, uint64_t done_cycle
 
 void Dram_sim :: try_send_reply()
 {
-    if ( !m_completed_reqs.empty() && downstream_credits > 0) {
+    if ( !m_completed_reqs.empty() && downstream_credits > 0)
+    {
         //stats
-    stats_n_reads_sent++;
-    stats_totalMemLat += (m_clk->NowTicks() - m_completed_reqs.front().r_cycle);
+		stats_n_reads_sent++;
+		stats_totalMemLat += (m_clk->NowTicks() - m_completed_reqs.front().r_cycle);
 
-    Request req = m_completed_reqs.front();
-    m_completed_reqs.pop_front();
+		Request req = m_completed_reqs.front();
+		m_completed_reqs.pop_front();
 
-    uarch::Mem_msg mem_msg(req.gaddr, req.read);
+		uarch::Mem_msg mem_msg(req.gaddr, req.read);
 
-    manifold::uarch::NetworkPacket * pkt = (manifold::uarch::NetworkPacket*)(req.extra);
-    pkt->type = MEM_MSG_TYPE;
-    *((uarch::Mem_msg*)(pkt->data)) = mem_msg;
-    pkt->data_size = sizeof(uarch::Mem_msg);
+		manifold::uarch::NetworkPacket * pkt = (manifold::uarch::NetworkPacket*)(req.extra);
+		pkt->type = MEM_MSG_TYPE;
+		*((uarch::Mem_msg*)(pkt->data)) = mem_msg;
+		pkt->data_size = sizeof(uarch::Mem_msg);
 
+		Send(PORT0, pkt);
+		downstream_credits--;
 #ifdef DBG_DRAMSIM
-    cout << "@ " << m_clk->NowTicks() << " MC " << m_nid << " sending reply: addr= " << hex << req.gaddr << dec << " destination= " << pkt->get_dst() << endl;
+		cerr << dec << "@\t" << m_clk->NowTicks() <<"\tdownstream credits[" << this->get_nid() << "]\t" << downstream_credits+1 << "->"
+				<< downstream_credits << "\tm_completed_reqs.size\t" << m_completed_reqs.size()
+				<< "\tVault\t" << this->get_nid() << "\treply src\t" << dec << pkt->get_src()
+				<< "\tdst\t" << pkt->get_dst() << "\tladdr\t" << hex << req.addr << "\tgaddr\t" << hex << req.gaddr << dec << endl;
 #endif
-    Send(PORT0, pkt);
-    downstream_credits--;
     }
 }
 
@@ -121,6 +130,9 @@ void Dram_sim :: send_credit()
 {
     manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
     credit_pkt->type = CREDIT_MSG_TYPE;
+#ifdef DBG_DRAMSIM
+		cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\tsending CREDIT pkt\t" << dec << endl;
+#endif
     Send(PORT0, credit_pkt);
 }
 
@@ -137,14 +149,15 @@ void Dram_sim::tick()
 {
     //cout << "Dram sim tick(), t= " << m_clk->NowTicks() << endl;
     //start new transaction if there is any and the memory can accept
-    if (!m_incoming_reqs.empty() && mem->willAcceptTransaction() && !limitExceeds()) {
-    // if limit exceeds, stop sending credits. interface will stop eventually
-    Request req = m_incoming_reqs.front();
-    m_incoming_reqs.pop_front();
+    if (!m_incoming_reqs.empty() && mem->willAcceptTransaction() && !limitExceeds())
+    {
+		// if limit exceeds, stop sending credits. interface will stop eventually
+		Request req = m_incoming_reqs.front();
+		m_incoming_reqs.pop_front();
 
-    mem->addTransaction(!req.read, req.addr);
+		mem->addTransaction(!req.read, req.addr);
 #ifdef DBG_DRAMSIM
-    cout << "@ " << m_clk->NowTicks() << " MC " << m_nid << ": transaction of address " << hex << req.gaddr << dec << " is pushed to memory" << endl;
+    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\ttransaction of addr\t" << hex << req.addr << dec << "\tis pushed to memory" << endl;
 #endif
     //move from input buffer to pending buffer
         m_pending_reqs[req.addr].push_back(req);
@@ -153,11 +166,13 @@ void Dram_sim::tick()
 
     mem->update();
     try_send_reply();
-
 }
 
 void Dram_sim :: set_mc_map(manifold::uarch::DestMap *m)
 {
+#ifdef HMCDEBUG
+	cerr << dec << "DRAM Vault @ " << this << " set_mc_map " << m << endl;
+#endif
     this->mc_map = m;
 }
 

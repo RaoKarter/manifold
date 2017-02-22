@@ -51,11 +51,14 @@ int main(int argc, char** argv)
 
     Manifold::Init(argc, argv);
 
+    cout << "\n System has been initialized" << endl;
+
     vector<string> args;
 
     SysBuilder_llp sysBuilder(argv[1]);
 
     sysBuilder.config_system();
+    cout << "\n config system has completed" << endl;
 
 
     int N_LPs = 1; //number of LPs
@@ -78,8 +81,10 @@ int main(int argc, char** argv)
     std::cout.rdbuf(DBG_LOG.rdbuf()); // redirect cout
 #endif
 
+    cout << "\n Going to build system" << endl;
     sysBuilder.build_system(args, argv[2], argv[3], N_LPs, SysBuilder_llp::PART_1);
 
+    cout << "\n System has been built" << endl;
 
     //==========================================================================
     //start simulation
@@ -87,16 +92,17 @@ int main(int argc, char** argv)
     sysBuilder.pre_simulation();
     sysBuilder.print_config(cout);
     Manifold::StopAt(sysBuilder.get_stop_tick());
-//    Manifold::Run();
+    cout << "\n Reached until Run" << endl;
+    Manifold::Run();
 
 
-//    sysBuilder.print_stats(cerr);
+    sysBuilder.print_stats(cerr);
 
 
 #ifdef REDIRECT_COUT
-//    std::cout.rdbuf(cout_sbuf);
+    std::cout.rdbuf(cout_sbuf);
 #endif
 
-//    Manifold::Finalize();
+    Manifold::Finalize();
 }
 

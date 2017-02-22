@@ -1,0 +1,361 @@
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/smp_llp.d -c smp_llp.cc -o smp_llp.o
+In file included from ../common/sysBuilder_llp.h:9:0,
+                 from smp_llp.cc:34:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+smp_llp.cc: In function ‘int main(int, char**)’:
+smp_llp.cc:77:21: warning: unused variable ‘cout_sbuf’ [-Wunused-variable]
+     std::streambuf* cout_sbuf = std::cout.rdbuf(); // save original sbuf
+                     ^
+In file included from /home/karthik/Documents/TrialInstall/kitfox/kitfox.h:12:0,
+                 from ../../../models/kitfox/proxy/kitfox_proxy.h:7,
+                 from ../common/kitfox_builder.h:7,
+                 from ../common/proc_builder.h:14,
+                 from ../common/sysBuilder_llp.h:10,
+                 from smp_llp.cc:34:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h: At global scope:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:151:24: warning: ‘libKitFox::KITFOX_DATA_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_DATA_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:192:24: warning: ‘libKitFox::KITFOX_QUEUE_ERROR_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_QUEUE_ERROR_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:214:24: warning: ‘libKitFox::KITFOX_TEMPERATURE_MAPPING_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_TEMPERATURE_MAPPING_STR[] = {
+                        ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/proc_builder.h:8,
+                 from ../common/sysBuilder_llp.h:10,
+                 from smp_llp.cc:34:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/sysBuilder_llp.d -c ../common/sysBuilder_llp.cc -o sysBuilder_llp.o
+In file included from ../common/sysBuilder_llp.h:9:0,
+                 from ../common/sysBuilder_llp.cc:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+../common/sysBuilder_llp.cc: In member function ‘void SysBuilder_llp::dep_injection_for_iris()’:
+../common/sysBuilder_llp.cc:723:47: warning: operation on ‘simLen’ may be undefined [-Wsequence-point]
+                          this->mc_node_idx_vec);
+                                               ^
+In file included from /home/karthik/Documents/TrialInstall/kitfox/kitfox.h:12:0,
+                 from ../../../models/kitfox/proxy/kitfox_proxy.h:7,
+                 from ../common/kitfox_builder.h:7,
+                 from ../common/proc_builder.h:14,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/sysBuilder_llp.cc:1:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h: At global scope:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:151:24: warning: ‘libKitFox::KITFOX_DATA_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_DATA_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:192:24: warning: ‘libKitFox::KITFOX_QUEUE_ERROR_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_QUEUE_ERROR_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:214:24: warning: ‘libKitFox::KITFOX_TEMPERATURE_MAPPING_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_TEMPERATURE_MAPPING_STR[] = {
+                        ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/proc_builder.h:8,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/sysBuilder_llp.cc:1:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/sysBuilder_l1l2.d -c ../common/sysBuilder_l1l2.cc -o sysBuilder_l1l2.o
+In file included from ../common/sysBuilder_llp.h:9:0,
+                 from ../common/sysBuilder_l1l2.h:4,
+                 from ../common/sysBuilder_l1l2.cc:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from /home/karthik/Documents/TrialInstall/kitfox/kitfox.h:12:0,
+                 from ../../../models/kitfox/proxy/kitfox_proxy.h:7,
+                 from ../common/kitfox_builder.h:7,
+                 from ../common/proc_builder.h:14,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/sysBuilder_l1l2.h:4,
+                 from ../common/sysBuilder_l1l2.cc:1:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h: At global scope:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:151:24: warning: ‘libKitFox::KITFOX_DATA_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_DATA_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:192:24: warning: ‘libKitFox::KITFOX_QUEUE_ERROR_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_QUEUE_ERROR_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:214:24: warning: ‘libKitFox::KITFOX_TEMPERATURE_MAPPING_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_TEMPERATURE_MAPPING_STR[] = {
+                        ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/proc_builder.h:8,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/sysBuilder_l1l2.h:4,
+                 from ../common/sysBuilder_l1l2.cc:1:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/proc_builder.d -c ../common/proc_builder.cc -o proc_builder.o
+In file included from ../../../models/cache/mcp-cache/L1_cache.h:11:0,
+                 from ../../../models/cache/mcp-cache/LLP_cache.h:4,
+                 from ../../../models/cache/mcp-cache/MESI_LLP_cache.h:4,
+                 from ../../../models/cache/mcp-cache/lp_lls_unit.h:4,
+                 from ../common/cache_builder.h:6,
+                 from ../common/proc_builder.h:8,
+                 from ../common/proc_builder.cc:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../models/processor/spx/core.h:11:0,
+                 from ../common/proc_builder.cc:9:
+../../../models/processor/spx/qsim-proxy.h: In constructor ‘manifold::spx::qsim_proxy_request_t::qsim_proxy_request_t(int, int, bool)’:
+../../../models/processor/spx/qsim-proxy.h:90:10: warning: ‘manifold::spx::qsim_proxy_request_t::extended’ will be initialized after [-Wreorder]
+     bool extended;
+          ^
+../../../models/processor/spx/qsim-proxy.h:89:14: warning:   ‘unsigned int manifold::spx::qsim_proxy_request_t::num_queue_items’ [-Wreorder]
+     unsigned num_queue_items;
+              ^
+../../../models/processor/spx/qsim-proxy.h:27:5: warning:   when initialized here [-Wreorder]
+     qsim_proxy_request_t(int CoreID, int PortID, bool ex = false) : core_id(CoreID),
+     ^
+In file included from ../common/proc_builder.cc:10:0:
+../../../models/qsim/proxy/proxy.h: In instantiation of ‘void manifold::qsim_proxy::qsim_proxy_t::handle_core_request(int, T*) [with T = manifold::spx::qsim_proxy_request_t]’:
+../common/proc_builder.cc:533:67:   required from here
+../../../models/qsim/proxy/proxy.h:63:41: warning: ‘bool Qsim::OSDomain::booted(unsigned int) const’ is deprecated (declared at /home/karthik/Documents/TrialInstall/qsim-2.3.1/include/qsim.h:284) [-Wdeprecated-declarations]
+             if(!qsim_osd->booted(core_id)) {
+                                         ^
+In file included from /home/karthik/Documents/TrialInstall/kitfox/component.h:9:0,
+                 from /home/karthik/Documents/TrialInstall/kitfox/kitfox.h:13,
+                 from ../../../models/kitfox/proxy/kitfox_proxy.h:7,
+                 from ../common/kitfox_builder.h:7,
+                 from ../common/proc_builder.h:14,
+                 from ../common/proc_builder.cc:1:
+/home/karthik/Documents/TrialInstall/kitfox/queue.h: In member function ‘T libKitFox::data_queue_t<T>::get(libKitFox::Second, libKitFox::Second) [with T = double; libKitFox::Second = double]’:
+/home/karthik/Documents/TrialInstall/kitfox/queue.h:369:20: warning: ‘data’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+             return data;
+                    ^
+In file included from /home/karthik/Documents/TrialInstall/kitfox/kitfox.h:12:0,
+                 from ../../../models/kitfox/proxy/kitfox_proxy.h:7,
+                 from ../common/kitfox_builder.h:7,
+                 from ../common/proc_builder.h:14,
+                 from ../common/proc_builder.cc:1:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h: At global scope:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:151:24: warning: ‘libKitFox::KITFOX_DATA_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_DATA_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:192:24: warning: ‘libKitFox::KITFOX_QUEUE_ERROR_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_QUEUE_ERROR_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:214:24: warning: ‘libKitFox::KITFOX_TEMPERATURE_MAPPING_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_TEMPERATURE_MAPPING_STR[] = {
+                        ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/proc_builder.h:8,
+                 from ../common/proc_builder.cc:1:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/cache_builder.d -c ../common/cache_builder.cc -o cache_builder.o
+In file included from ../../../models/cache/mcp-cache/L1_cache.h:11:0,
+                 from ../../../models/cache/mcp-cache/LLP_cache.h:4,
+                 from ../../../models/cache/mcp-cache/MESI_LLP_cache.h:4,
+                 from ../../../models/cache/mcp-cache/lp_lls_unit.h:4,
+                 from ../common/cache_builder.h:6,
+                 from ../common/cache_builder.cc:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from /home/karthik/Documents/TrialInstall/kitfox/kitfox.h:12:0,
+                 from ../../../models/kitfox/proxy/kitfox_proxy.h:7,
+                 from ../common/kitfox_builder.h:7,
+                 from ../common/proc_builder.h:14,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/cache_builder.cc:5:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h: At global scope:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:151:24: warning: ‘libKitFox::KITFOX_DATA_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_DATA_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:192:24: warning: ‘libKitFox::KITFOX_QUEUE_ERROR_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_QUEUE_ERROR_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:214:24: warning: ‘libKitFox::KITFOX_TEMPERATURE_MAPPING_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_TEMPERATURE_MAPPING_STR[] = {
+                        ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/cache_builder.cc:1:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/mc_builder.d -c ../common/mc_builder.cc -o mc_builder.o
+In file included from ../../../models/memory/CaffDRAM/McMap.h:4:0,
+                 from ../../../models/memory/CaffDRAM/Controller.h:15,
+                 from ../common/mc_builder.h:6,
+                 from ../common/mc_builder.cc:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+../common/mc_builder.cc: In member function ‘void HMC_builder::create_drams(int, int, int*)’:
+../common/mc_builder.cc:542:21: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  for(int i = 0; i < m_NUM_VAULTS; i++)
+                     ^
+../common/mc_builder.cc: In member function ‘void HMC_builder::connect_xbar_mc()’:
+../common/mc_builder.cc:651:22: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i = 0; i < m_NUM_XBAR_MC_PORTS; i++)
+                      ^
+../common/mc_builder.cc:664:51: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    if(xbar_it == m_mc_id_cid_map.end() && (i+1 == m_NUM_XBAR_MC_PORTS) )
+                                                   ^
+../common/mc_builder.cc:646:7: warning: unused variable ‘xbar_node_id’ [-Wunused-variable]
+   int xbar_node_id = (*xbar_it).first;
+       ^
+In file included from /home/karthik/Documents/TrialInstall/kitfox/kitfox.h:12:0,
+                 from ../../../models/kitfox/proxy/kitfox_proxy.h:7,
+                 from ../common/kitfox_builder.h:7,
+                 from ../common/proc_builder.h:14,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/mc_builder.cc:2:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h: At global scope:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:151:24: warning: ‘libKitFox::KITFOX_DATA_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_DATA_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:192:24: warning: ‘libKitFox::KITFOX_QUEUE_ERROR_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_QUEUE_ERROR_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:214:24: warning: ‘libKitFox::KITFOX_TEMPERATURE_MAPPING_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_TEMPERATURE_MAPPING_STR[] = {
+                        ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/proc_builder.h:8,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/mc_builder.cc:2:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/network_builder.d -c ../common/network_builder.cc -o network_builder.o
+In file included from ../../../models/cache/mcp-cache/L1_cache.h:11:0,
+                 from ../../../models/cache/mcp-cache/LLP_cache.h:4,
+                 from ../../../models/cache/mcp-cache/MESI_LLP_cache.h:4,
+                 from ../../../models/cache/mcp-cache/lp_lls_unit.h:4,
+                 from ../common/cache_builder.h:6,
+                 from ../common/network_builder.cc:2:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../models/network/iris/genericTopology/genericTopoCreator.h:21:0,
+                 from ../common/network_builder.h:5,
+                 from ../common/network_builder.cc:1:
+../../../models/network/iris/genericTopology/torus6p.h: In instantiation of ‘void manifold::iris::Torus6p<T>::connect_routers() [with T = manifold::uarch::NetworkPacket]’:
+../../../models/network/iris/genericTopology/torus6p.h:235:21:   required from ‘manifold::iris::Torus6p<T>::Torus6p(manifold::kernel::Clock&, manifold::iris::torus6p_init_params*, const manifold::iris::Terminal_to_net_mapping*, manifold::iris::SimulatedLen<T>*, manifold::iris::VnetAssign<T>*, int, std::vector<int>*) [with T = manifold::uarch::NetworkPacket]’
+../../../models/network/iris/genericTopology/genericTopoCreator.h:97:8:   required from ‘static manifold::iris::Torus6p<T>* manifold::iris::topoCreator<T>::create_torus6p(manifold::kernel::Clock&, manifold::iris::torus6p_init_params*, const manifold::iris::Terminal_to_net_mapping*, manifold::iris::SimulatedLen<T>*, manifold::iris::VnetAssign<T>*, int, std::vector<int>*) [with T = manifold::uarch::NetworkPacket]’
+../common/network_builder.cc:141:46:   required from here
+../../../models/network/iris/genericTopology/torus6p.h:287:20: warning: unused variable ‘no_nodes’ [-Wunused-variable]
+     const unsigned no_nodes = x_dim * y_dim;
+                    ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/network_builder.cc:1:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h: At global scope:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/qsim_builder.d -c ../common/qsim_builder.cc -o qsim_builder.o
+In file included from ../common/sysBuilder_llp.h:9:0,
+                 from ../common/qsim_builder.cc:2:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from /home/karthik/Documents/TrialInstall/kitfox/kitfox.h:12:0,
+                 from ../../../models/kitfox/proxy/kitfox_proxy.h:7,
+                 from ../common/kitfox_builder.h:7,
+                 from ../common/proc_builder.h:14,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/qsim_builder.cc:2:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h: At global scope:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:151:24: warning: ‘libKitFox::KITFOX_DATA_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_DATA_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:192:24: warning: ‘libKitFox::KITFOX_QUEUE_ERROR_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_QUEUE_ERROR_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:214:24: warning: ‘libKitFox::KITFOX_TEMPERATURE_MAPPING_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_TEMPERATURE_MAPPING_STR[] = {
+                        ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/proc_builder.h:8,
+                 from ../common/sysBuilder_llp.h:10,
+                 from ../common/qsim_builder.cc:2:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/kitfox_builder.d -c ../common/kitfox_builder.cc -o kitfox_builder.o
+In file included from /home/karthik/Documents/TrialInstall/kitfox/kitfox.h:12:0,
+                 from ../../../models/kitfox/proxy/kitfox_proxy.h:7,
+                 from ../common/kitfox_builder.h:7,
+                 from ../common/kitfox_builder.cc:1:
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:151:24: warning: ‘libKitFox::KITFOX_DATA_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_DATA_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:192:24: warning: ‘libKitFox::KITFOX_QUEUE_ERROR_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_QUEUE_ERROR_STR[] = {
+                        ^
+/home/karthik/Documents/TrialInstall/kitfox/kitfox-defs.h:214:24: warning: ‘libKitFox::KITFOX_TEMPERATURE_MAPPING_STR’ defined but not used [-Wunused-variable]
+     static const char *KITFOX_TEMPERATURE_MAPPING_STR[] = {
+                        ^
+mpic++  -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -c -o hmc_xbar.o ../common/hmc_xbar.cpp
+In file included from ../common/hmc_xbar.h:4:0,
+                 from ../common/hmc_xbar.cpp:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../common/hmc_xbar.cpp:1:0:
+../common/hmc_xbar.h: In constructor ‘manifold::hmc_xbar::HMC_xbar::HMC_xbar(int, const manifold::hmc_xbar::HMC_xbar_settings&, manifold::kernel::Clock&)’:
+../common/hmc_xbar.h:88:9: warning: ‘manifold::hmc_xbar::HMC_xbar::xbar_nid’ will be initialized after [-Wreorder]
+     int xbar_nid;
+         ^
+../common/hmc_xbar.h:85:30: warning:   ‘manifold::kernel::Clock& manifold::hmc_xbar::HMC_xbar::xbar_clk’ [-Wreorder]
+     manifold::kernel::Clock& xbar_clk;
+                              ^
+../common/hmc_xbar.cpp:16:1: warning:   when initialized here [-Wreorder]
+ HMC_xbar :: HMC_xbar(int nid, const HMC_xbar_settings& hmcxbar_settings, Clock& clk) :
+ ^
+mpic++ smp_llp.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_builder.o mc_builder.o network_builder.o qsim_builder.o kitfox_builder.o hmc_xbar.o -osmp_llp  -lqsim -L/home/karthik/Documents/TrialInstall/qsim-2.3.1/lib -lKitFox -L/home/karthik/Documents/TrialInstall/kitfox -lmcpat -L/home/karthik/Documents/TrialInstall/kitfox -l3dice -L/home/karthik/Documents/TrialInstall/kitfox -lmcp-iris -L../../../models/cross/mcp_cache-iris -liris -L../../../models/network/iris -lmcp-cache -L../../../models/cache/mcp-cache -lspx -L../../../models/processor/spx -lqsim_proxy -L../../../models/qsim/proxy -lqsim_interrupt_handler -L../../../models/qsim/interrupt_handler -lkitfox_proxy -L../../../models/kitfox/proxy  -lcaffdram -L../../../models/memory/CaffDRAM -lDRAMSim2 -L../../../models/memory/DRAMSim2 -lDRAMSim2proper -L../../../models/memory/DRAMSim2/DRAMSim2-2.2.2  -L../../../kernel -lmanifold -ldl -lrt -lconfig++

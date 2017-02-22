@@ -1,0 +1,29 @@
+
+ System has been initialized
+
+ config system has completed
+Number of LPs = 1
+Restoring state
+Copying benchmark binary...
+Executing benchmark
+==================================================================
+   ________                    .__   __________.___  ________ 
+  /  _____/___________  ______ |  |__\______   \   |/  _____/ 
+ /   \  __\_  __ \__  \ \____ \|  |  \|    |  _/   /   \  ___ 
+ \    \_\  \  | \// __ \|  |_> >   Y  \    |   \   \    \_\  \
+  \______  /__|  (____  /   __/|___|  /______  /___|\______  /
+         \/           \/|__|        \/       \/            \/ 
+                                                                 
+==================================================================
+Benchmark: Betweenness Centrality
+loading data... 
+undirected graph
+Enabling callback generation for pid 49 on core 2.
+arch_type 2
+mem addr mask: 0xffffffffffffffff
+arch_type 2
+mem addr mask: 0xffffffffffffffff
+arch_type 2
+mem addr mask: 0xffffffffffffffff
+arch_type 2
+mem addr mask: 0xffffffffffffffff

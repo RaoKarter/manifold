@@ -77,7 +77,7 @@ int main(int argc, char** argv)
     sysBuilder.pre_simulation();
     sysBuilder.print_config(cout);
     Manifold::StopAt(sysBuilder.get_stop_tick());
-    Manifold::Run();
+//    Manifold::Run();
 
 
     sysBuilder.print_stats(cerr);

@@ -75,9 +75,9 @@ echo -e "Building simulator ..."
 cd QsimProxy
 make clean
 if [  -z "$KITFOX_PREFIX" ]; then
-    make -j4
+    make 
 else
-    make -j4 -f Makefile.kitfox
+    make -f Makefile.kitfox
 fi
 
 
@@ -87,3 +87,18 @@ if [ $? -eq "0" ]; then
   echo -e "cd simulator/smp/QsimProxy"
   echo -e "smp_llp ../config/conf2x3_spx_torus_llp.cfg ../state/state.4 ../benchmark/graphbig_x86/bc.tar"
 fi
+
+: <<'END'
+make clean -f Makefile.kitfox.HUT
+if [  -z "$KITFOX_PREFIX" ]; then
+    make -j4
+else
+    make -f Makefile.kitfox.HUT &> build_log_HUT.txt; tail build_log_HUT.txt
+fi
+if [ $? -eq "0" ]; then
+  echo -e "\n${bold}Manifold built successfully!${normal}\n\n"
+  echo -e "Simulation Example:"
+  echo -e "cd simulator/smp/QsimProxy"
+  echo -e "smp_hmc_unit_test ../config/HMC_Unit_Test.cfg"
+fi
+END

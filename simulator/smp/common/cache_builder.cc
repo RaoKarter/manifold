@@ -82,7 +82,6 @@ void MCP_lp_lls_builder :: create_caches(Clock& clk)
 
     PageBasedMap* l2_map = new PageBasedMap(node_idx_vec, 12); //page size = 2^12
 
-
     for(map<int,int>::iterator it = id_lp.begin(); it != id_lp.end(); ++it) {
         int node_id = (*it).first;
         int lp = (*it).second;
@@ -101,6 +100,7 @@ void MCP_lp_lls_builder :: create_caches(Clock& clk)
 
 void MCP_lp_lls_builder :: set_mc_map_obj(manifold::uarch::DestMap* mc_map)
 {
+	cout << "Cache Builder set_mc_map_obj mc_map " << mc_map << endl;
     for(map<int, LP_LLS_unit*>::iterator it = m_caches.begin(); it != m_caches.end(); ++it) {
         LP_LLS_unit* unit = (*it).second;
         if (unit->get_lls())
@@ -155,6 +155,7 @@ void MCP_lp_lls_builder :: connect_cache_network(NetworkBuilder* net_builder)
                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);
                         break;
                     case MemControllerBuilder::DRAMSIM:
+                    case MemControllerBuilder::HMC:
                         Manifold :: Connect(cache_cid, MuxDemux::PORT_NET, &MuxDemux::handle_net<manifold::uarch::Mem_msg>,
                                             ni_cids[node_id], GenNetworkInterface<NetworkPacket>::TERMINAL_PORT,
                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);

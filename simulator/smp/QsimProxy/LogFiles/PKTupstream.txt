@@ -1,0 +1,80 @@
+@	0	(tick)PKTupstream credits[0]	10->9
+@	0	(tick)PKTupstream credits[1]	10->9
+@	0	(tick)PKTupstream credits[2]	10->9
+@	0	(tick)PKTupstream credits[3]	10->9
+@	1	(tick)PKTupstream credits[0]	9->8
+@	1	(tick)PKTupstream credits[1]	9->8
+@	1	(tick)PKTupstream credits[2]	9->8
+@	1	(tick)PKTupstream credits[3]	9->8
+@	2	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	8->9
+@	2	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	8->9
+@	2	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	8->9
+@	2	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	8->9
+@	2	(tick)PKTupstream credits[0]	9->8
+@	2	(tick)PKTupstream credits[1]	9->8
+@	2	(tick)PKTupstream credits[2]	9->8
+@	2	(tick)PKTupstream credits[3]	9->8
+@	3	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	8->9
+@	3	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	8->9
+@	3	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	8->9
+@	3	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	8->9
+@	3	(tick)PKTupstream credits[0]	9->8
+@	3	(tick)PKTupstream credits[1]	9->8
+@	3	(tick)PKTupstream credits[2]	9->8
+@	3	(tick)PKTupstream credits[3]	9->8
+@	4	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	8->9
+@	4	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	8->9
+@	4	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	8->9
+@	4	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	8->9
+@	4	(tick)PKTupstream credits[0]	9->8
+@	4	(tick)PKTupstream credits[1]	9->8
+@	4	(tick)PKTupstream credits[2]	9->8
+@	4	(tick)PKTupstream credits[3]	9->8
+@	5	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	8->9
+@	5	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	8->9
+@	5	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	8->9
+@	5	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	8->9
+@	5	(tick)PKTupstream credits[0]	9->8
+@	5	(tick)PKTupstream credits[1]	9->8
+@	5	(tick)PKTupstream credits[2]	9->8
+@	5	(tick)PKTupstream credits[3]	9->8
+@	6	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	8->9
+@	6	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	8->9
+@	6	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	8->9
+@	6	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	8->9
+@	6	(tick)PKTupstream credits[0]	9->8
+@	6	(tick)PKTupstream credits[1]	9->8
+@	6	(tick)PKTupstream credits[2]	9->8
+@	6	(tick)PKTupstream credits[3]	9->8
+@	7	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	8->9
+@	7	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	8->9
+@	7	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	8->9
+@	7	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	8->9
+@	7	(tick)PKTupstream credits[0]	9->8
+@	7	(tick)PKTupstream credits[1]	9->8
+@	7	(tick)PKTupstream credits[2]	9->8
+@	7	(tick)PKTupstream credits[3]	9->8
+@	8	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	8->9
+@	8	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	8->9
+@	8	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	8->9
+@	8	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	8->9
+@	8	(tick)PKTupstream credits[0]	9->8
+@	8	(tick)PKTupstream credits[1]	9->8
+@	8	(tick)PKTupstream credits[2]	9->8
+@	8	(tick)PKTupstream credits[3]	9->8
+@	9	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	8->9
+@	9	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	8->9
+@	9	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	8->9
+@	9	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	8->9
+@	9	(tick)PKTupstream credits[0]	9->8
+@	9	(tick)PKTupstream credits[1]	9->8
+@	9	(tick)PKTupstream credits[2]	9->8
+@	9	(tick)PKTupstream credits[3]	9->8
+@	10	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	8->9
+@	10	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	8->9
+@	10	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	8->9
+@	10	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	8->9
+@	11	pkt_gen	0	rcvd HMC CREDIT pkt	0	PKTupstream credits[0]	9->10
+@	11	pkt_gen	1	rcvd HMC CREDIT pkt	0	PKTupstream credits[1]	9->10
+@	11	pkt_gen	2	rcvd HMC CREDIT pkt	0	PKTupstream credits[2]	9->10
+@	11	pkt_gen	3	rcvd HMC CREDIT pkt	0	PKTupstream credits[3]	9->10

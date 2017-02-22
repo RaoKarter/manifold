@@ -1,0 +1,190 @@
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DHMCDEBUG=1 -DHUTDEBUG=1 -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/smp_hmc_unit_test.d -c smp_hmc_unit_test.cc -o smp_hmc_unit_test.o
+In file included from ../common/sysBuilder_llp_HUT.h:18:0,
+                 from smp_hmc_unit_test.cc:40:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:56:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../uarch/DestMap.h:5:0,
+                 from ../common/sysBuilder_llp_HUT.h:18,
+                 from smp_hmc_unit_test.cc:40:
+../../../uarch/DestMap.h: In member function ‘virtual int manifold::uarch::HMCDestMap::lookup(uint64_t)’:
+../../../uarch/DestMap.h:189:57: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   assert( (p_rand + (num_serdes * idx)) <= m_nodes.size() );
+                                                         ^
+In file included from ../common/sysBuilder_llp_HUT.h:18:0,
+                 from smp_hmc_unit_test.cc:40:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::HMCDestMap::get_idx(int)’:
+../../../uarch/DestMap.h:205:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+mpic++  -Wall -g -DUSE_QSIM -DSTATS -DHMCDEBUG=1 -DHUTDEBUG=1 -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -c -o sysBuilder_llp_HUT.o ../common/sysBuilder_llp_HUT.cpp
+In file included from ../common/sysBuilder_llp_HUT.h:18:0,
+                 from ../common/sysBuilder_llp_HUT.cpp:10:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:56:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../uarch/DestMap.h:5:0,
+                 from ../common/sysBuilder_llp_HUT.h:18,
+                 from ../common/sysBuilder_llp_HUT.cpp:10:
+../../../uarch/DestMap.h: In member function ‘virtual int manifold::uarch::HMCDestMap::lookup(uint64_t)’:
+../../../uarch/DestMap.h:189:57: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   assert( (p_rand + (num_serdes * idx)) <= m_nodes.size() );
+                                                         ^
+In file included from ../common/sysBuilder_llp_HUT.h:18:0,
+                 from ../common/sysBuilder_llp_HUT.cpp:10:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::HMCDestMap::get_idx(int)’:
+../../../uarch/DestMap.h:205:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+../common/sysBuilder_llp_HUT.cpp: In member function ‘virtual void SysBuilder_llp_HUT::do_partitioning_1_part(int)’:
+../common/sysBuilder_llp_HUT.cpp:163:9: warning: variable ‘lp_idx’ set but not used [-Wunused-but-set-variable]
+     int lp_idx = 1; //the network is LP 0
+         ^
+mpic++ -Wall -g -DUSE_QSIM -DSTATS -DHMCDEBUG=1 -DHUTDEBUG=1 -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -MMD -MF dep/mc_builder.d -c ../common/mc_builder.cc -o mc_builder.o
+In file included from ../../../models/memory/CaffDRAM/McMap.h:4:0,
+                 from ../../../models/memory/CaffDRAM/Controller.h:15,
+                 from ../common/mc_builder.h:7,
+                 from ../common/mc_builder.cc:2:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:56:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../uarch/DestMap.h:5:0,
+                 from ../../../models/memory/CaffDRAM/McMap.h:4,
+                 from ../../../models/memory/CaffDRAM/Controller.h:15,
+                 from ../common/mc_builder.h:7,
+                 from ../common/mc_builder.cc:2:
+../../../uarch/DestMap.h: In member function ‘virtual int manifold::uarch::HMCDestMap::lookup(uint64_t)’:
+../../../uarch/DestMap.h:189:57: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   assert( (p_rand + (num_serdes * idx)) <= m_nodes.size() );
+                                                         ^
+In file included from ../../../models/memory/CaffDRAM/McMap.h:4:0,
+                 from ../../../models/memory/CaffDRAM/Controller.h:15,
+                 from ../common/mc_builder.h:7,
+                 from ../common/mc_builder.cc:2:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::HMCDestMap::get_idx(int)’:
+../../../uarch/DestMap.h:205:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../models/network/iris/genericTopology/../components/genOneVcIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/CrossBar.h:18,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:20,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/mc_builder.cc:4:
+../common/mc_builder.cc: In member function ‘virtual void HMC_builder::read_config(libconfig::Config&)’:
+../common/mc_builder.cc:411:53: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+      assert( (m_NUM_SERDES > 0) && (m_NUM_SERDES <= max_serdes) && ((num_hmc_links % m_NUM_SERDES) == 0) );
+                                                     ^
+../common/mc_builder.cc:431:52: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+      assert(m_NUM_VAULTS >=1 && ( (m_NUM_VAULTS == max_vaults) || (m_NUM_VAULTS == (max_vaults/2) ) ) );
+                                                    ^
+../common/mc_builder.cc:431:97: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+      assert(m_NUM_VAULTS >=1 && ( (m_NUM_VAULTS == max_vaults) || (m_NUM_VAULTS == (max_vaults/2) ) ) );
+                                                                                                 ^
+../common/mc_builder.cc:438:20: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i=0; i < m_NUM_VAULTS; i++)
+                    ^
+../common/mc_builder.cc: In member function ‘virtual void HMC_builder::create_mcs(std::map<int, int>&)’:
+../common/mc_builder.cc:605:21: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  for(int i = 0; i < m_NUM_HMCs; i++)
+                     ^
+../common/mc_builder.cc:632:36: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  for(int i = 0; i < m_NUM_SERDES * m_NUM_HMCs; i++)
+                                    ^
+../common/mc_builder.cc: In member function ‘void HMC_builder::create_drams(int, int*, manifold::uarch::PageBasedMap*)’:
+../common/mc_builder.cc:689:22: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  for (int i = 0; i < m_NUM_HMCs; i++)
+                      ^
+../common/mc_builder.cc:696:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int j = 0; j < m_NUM_VAULTS; j++)
+                       ^
+In file included from ../../../models/network/iris/genericTopology/../components/genOneVcIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/CrossBar.h:18,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:20,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/mc_builder.cc:4:
+../common/mc_builder.cc: In member function ‘virtual void HMC_builder::connect_mc_network()’:
+../common/mc_builder.cc:749:32: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     assert(j <= m_NUM_SERDES * m_NUM_HMCs);
+                                ^
+../common/mc_builder.cc: In member function ‘virtual void HMC_builder::print_stats(std::ostream&)’:
+../common/mc_builder.cc:906:21: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  for(int i = 0; i < m_NUM_HMCs; i++)
+                     ^
+In file included from ../../../models/network/iris/genericTopology/../interfaces/genericIrisInterface.h:25:0,
+                 from ../../../models/network/iris/genericTopology/ring.h:17,
+                 from ../../../models/network/iris/genericTopology/genericTopoCreator.h:18,
+                 from ../common/network_builder.h:5,
+                 from ../common/cache_builder.h:7,
+                 from ../common/mc_builder.cc:4:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h: At global scope:
+../../../models/network/iris/genericTopology/../interfaces/../components/simpleRouter.h:72:20: warning: ‘manifold::iris::RouterPipeStageStr’ defined but not used [-Wunused-variable]
+ static const char* RouterPipeStageStr[] = {
+                    ^
+mpic++  -Wall -g -DUSE_QSIM -DSTATS -DHMCDEBUG=1 -DHUTDEBUG=1 -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -c -o hmc_xbar.o ../common/hmc_xbar.cpp
+In file included from ../common/hmc_xbar.h:4:0,
+                 from ../common/hmc_xbar.cpp:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:56:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../uarch/DestMap.h:5:0,
+                 from ../common/hmc_xbar.h:4,
+                 from ../common/hmc_xbar.cpp:1:
+../../../uarch/DestMap.h: In member function ‘virtual int manifold::uarch::HMCDestMap::lookup(uint64_t)’:
+../../../uarch/DestMap.h:189:57: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   assert( (p_rand + (num_serdes * idx)) <= m_nodes.size() );
+                                                         ^
+In file included from ../common/hmc_xbar.h:4:0,
+                 from ../common/hmc_xbar.cpp:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::HMCDestMap::get_idx(int)’:
+../../../uarch/DestMap.h:205:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../common/hmc_xbar.cpp:1:0:
+../common/hmc_xbar.h: In constructor ‘manifold::hmc_xbar::HMC_xbar::HMC_xbar(int, const manifold::hmc_xbar::HMC_xbar_settings&, manifold::kernel::Clock&)’:
+../common/hmc_xbar.h:105:9: warning: ‘manifold::hmc_xbar::HMC_xbar::hmc_id’ will be initialized after [-Wreorder]
+     int hmc_id;
+         ^
+../common/hmc_xbar.h:101:30: warning:   ‘manifold::kernel::Clock& manifold::hmc_xbar::HMC_xbar::hmc_clk’ [-Wreorder]
+     manifold::kernel::Clock& hmc_clk;
+                              ^
+../common/hmc_xbar.cpp:16:1: warning:   when initialized here [-Wreorder]
+ HMC_xbar :: HMC_xbar(int id, const HMC_xbar_settings& hmcxbar_settings, Clock& clk) :
+ ^
+mpic++  -Wall -g -DUSE_QSIM -DSTATS -DHMCDEBUG=1 -DHUTDEBUG=1 -DLIBKITFOX=1 -I/home/karthik/Documents/TrialInstall/qsim-2.3.1/include -I/home/karthik/Documents/TrialInstall/kitfox -I ../../.. -I../../../models/processor -I../../../models/qsim -I../../../models/cache -I../../../models/network -I../../../models/memory -I../../../models/cross -I../../../models/kitfox/proxy -std=c++11  -c -o pkt_generator.o ../common/pkt_generator.cpp
+In file included from ../common/pkt_generator.h:4:0,
+                 from ../common/pkt_generator.cpp:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::PageBasedMap::get_idx(int)’:
+../../../uarch/DestMap.h:56:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../../../uarch/DestMap.h:5:0,
+                 from ../common/pkt_generator.h:4,
+                 from ../common/pkt_generator.cpp:1:
+../../../uarch/DestMap.h: In member function ‘virtual int manifold::uarch::HMCDestMap::lookup(uint64_t)’:
+../../../uarch/DestMap.h:189:57: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   assert( (p_rand + (num_serdes * idx)) <= m_nodes.size() );
+                                                         ^
+In file included from ../common/pkt_generator.h:4:0,
+                 from ../common/pkt_generator.cpp:1:
+../../../uarch/DestMap.h: In member function ‘int manifold::uarch::HMCDestMap::get_idx(int)’:
+../../../uarch/DestMap.h:205:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         for (int i = 0; i < m_nodes.size(); i++) {
+                                          ^
+In file included from ../common/pkt_generator.cpp:1:0:
+../common/pkt_generator.h: In constructor ‘manifold::pkt_generator::PKT_gen::PKT_gen(int, manifold::kernel::Clock&, int&, int&)’:
+../common/pkt_generator.h:49:6: warning: ‘manifold::pkt_generator::PKT_gen::pkt_gen_id’ will be initialized after [-Wreorder]
+  int pkt_gen_id;
+      ^
+../common/pkt_generator.h:47:27: warning:   ‘manifold::kernel::Clock& manifold::pkt_generator::PKT_gen::pkt_gen_clk’ [-Wreorder]
+  manifold::kernel::Clock& pkt_gen_clk;
+                           ^
+../common/pkt_generator.cpp:18:1: warning:   when initialized here [-Wreorder]
+ PKT_gen :: PKT_gen(int id, Clock& clk, int &credits, int &num_bits) :
+ ^
+mpic++ smp_hmc_unit_test.o sysBuilder_llp_HUT.o mc_builder.o hmc_xbar.o pkt_generator.o -osmp_hmc_unit_test  -lqsim -L/home/karthik/Documents/TrialInstall/qsim-2.3.1/lib -lKitFox -L/home/karthik/Documents/TrialInstall/kitfox -lmcpat -L/home/karthik/Documents/TrialInstall/kitfox -l3dice -L/home/karthik/Documents/TrialInstall/kitfox -lmcp-iris -L../../../models/cross/mcp_cache-iris -liris -L../../../models/network/iris -lmcp-cache -L../../../models/cache/mcp-cache -lspx -L../../../models/processor/spx -lqsim_proxy -L../../../models/qsim/proxy -lqsim_interrupt_handler -L../../../models/qsim/interrupt_handler -lkitfox_proxy -L../../../models/kitfox/proxy  -lcaffdram -L../../../models/memory/CaffDRAM -lDRAMSim2 -L../../../models/memory/DRAMSim2 -lDRAMSim2proper -L../../../models/memory/DRAMSim2/DRAMSim2-2.2.2  -L../../../kernel -lmanifold -ldl -lrt -lconfig++
