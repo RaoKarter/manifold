@@ -65,6 +65,9 @@ void Dram_sim::read_complete(unsigned id, uint64_t address, uint64_t done_cycle)
     assert(req.addr == address);
 
     m_completed_reqs.push_back(req);
+#ifdef DBG_DRAMSIM
+    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\tread complete gaddr\t" << hex << req.gaddr << "\tladdr\t" << req.addr << dec << endl;
+#endif
 }
 
 
@@ -84,6 +87,9 @@ void Dram_sim::write_complete(unsigned id, uint64_t address, uint64_t done_cycle
     //move from pending buffer to completed buffer
     if (m_send_st_response) {
     m_completed_reqs.push_back(req);
+#ifdef DBG_DRAMSIM
+    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\twrite complete gaddr\t" << hex << req.gaddr << "\tladdr\t" << req.addr << dec << endl;
+#endif
     }
 
 #ifdef DRAMSIM_UTEST
@@ -109,11 +115,14 @@ void Dram_sim :: try_send_reply()
     *((uarch::Mem_msg*)(pkt->data)) = mem_msg;
     pkt->data_size = sizeof(uarch::Mem_msg);
 
-#ifdef DBG_DRAMSIM
-    cout << "@ " << m_clk->NowTicks() << " MC " << m_nid << " sending reply: addr= " << hex << req.gaddr << dec << " destination= " << pkt->get_dst() << endl;
-#endif
     Send(PORT0, pkt);
     downstream_credits--;
+#ifdef DBG_DRAMSIM
+		cerr << dec << "@\t" << m_clk->NowTicks() <<"\tdownstream credits[" << this->get_nid() << "]\t" << downstream_credits+1 << "->"
+				<< downstream_credits << "\tm_completed_reqs.size\t" << m_completed_reqs.size()
+				<< "\tVault\t" << this->get_nid() << "\treply src\t" << dec << pkt->get_src()
+				<< "\tdst\t" << pkt->get_dst() << "\tladdr\t" << hex << req.addr << "\tgaddr\t" << hex << req.gaddr << dec << endl;
+#endif
     }
 }
 
@@ -123,6 +132,9 @@ void Dram_sim :: send_credit()
     manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
     credit_pkt->type = CREDIT_MSG_TYPE;
     Send(PORT0, credit_pkt);
+#ifdef DBG_DRAMSIM
+		cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\tsending CREDIT pkt\t" << dec << endl;
+#endif
 }
 
 

@@ -154,9 +154,14 @@ void SysBuilder_llp :: config_components()
         //memory controller
         const char* mem_chars = m_config.lookup("mc.type");
         string mem_str = mem_chars;
-        if(mem_str == "CAFFDRAM") m_mc_builder = new CaffDRAM_builder(this);
-        else if(mem_str == "DRAMSIM") m_mc_builder = new DramSim_builder(this);
-        else {
+        if(mem_str == "CAFFDRAM")
+        	m_mc_builder = new CaffDRAM_builder(this);
+        else if(mem_str == "DRAMSIM")
+        	m_mc_builder = new DramSim_builder(this);
+        else if(mem_str == "HMC")
+        	m_mc_builder = new HMC_builder(this);
+        else 
+	{
             cerr << "Memory controller type  " << mem_str << "  not supported\n";
             exit(1);
         }
@@ -180,19 +185,46 @@ void SysBuilder_llp :: config_components()
 
 
         //memory controller assignment
-        //the node indices of MC are in an array, each value between 0 and MAX_NODES-1
-        Setting& setting_mc = m_config.lookup("mc.node_idx");
-        int num_mc = setting_mc.getLength(); //number of mem controllers
-        assert(num_mc >=1 && num_mc <= MAX_NODES);
+        if(mem_str == "HMC")
+        {
+		//xbar assignment
+		//the node indices of xbar are in an array, each value between 0 and MAX_NODES-1
+        	MAX_VAULTS = m_config.lookup("max_vaults");
+        	MAX_SERDES = m_config.lookup("max_serdes");
+		Setting& setting_hmc_xbar = m_config.lookup("mc.xbar.node_idx");
+		num_serdes = m_config.lookup("mc.xbar.num_serdes");
+		int num_xbar_nodes = setting_hmc_xbar.getLength(); //number of IRIS network nodes
+		assert(num_xbar_nodes >=1 && num_xbar_nodes <= MAX_NODES);
+		trans_size = m_config.lookup("mc.trans_size");
 
-        this->mc_node_idx_vec.resize(num_mc);
+		this->mc_node_idx_vec.resize(num_xbar_nodes);
 
-        for(int i=0; i<num_mc; i++) {
-            assert((int)setting_mc[i] >=0 && (int)setting_mc[i] < MAX_NODES);
-            mc_node_idx_set.insert((int)setting_mc[i]);
-            this->mc_node_idx_vec[i] = (int)setting_mc[i];
+		for(int i=0; i < num_xbar_nodes; i++)
+		{
+			assert((int)setting_hmc_xbar[i] >=0 && (int)setting_hmc_xbar[i] < MAX_NODES);
+			mc_node_idx_set.insert((int)setting_hmc_xbar[i]);
+			this->mc_node_idx_vec[i] = (int)setting_hmc_xbar[i];
+		}
+		assert(mc_node_idx_set.size() == (unsigned)num_xbar_nodes); //verify no 2 indices are the same
         }
-        assert(mc_node_idx_set.size() == (unsigned)num_mc); //verify no 2 indices are the same
+        else
+        {
+        	//memory controller assignment
+		//the node indices of mc are in an array, each value between 0 and MAX_NODES-1
+		Setting& setting_mc = m_config.lookup("mc.node_idx");
+		int num_mc = setting_mc.getLength(); //number of SerDes links
+		assert(num_mc >=1 && num_mc <= MAX_NODES);
+
+		this->mc_node_idx_vec.resize(num_mc);
+
+		for(int i=0; i<num_mc; i++)
+		{
+			assert((int)setting_mc[i] >=0 && (int)setting_mc[i] < MAX_NODES);
+			mc_node_idx_set.insert((int)setting_mc[i]);
+			this->mc_node_idx_vec[i] = (int)setting_mc[i];
+		}
+		assert(mc_node_idx_set.size() == (unsigned)num_mc); //verify no 2 indices are the same
+        }
 
 //      //verify MC indices are not used by processors
 //      for(int i=0; i<num_mc; i++) {
@@ -310,17 +342,22 @@ void SysBuilder_llp :: build_system(vector<string>& args, const char* appFile, i
 
     //??????????????? todo: network should be able to use different clock
     m_network_builder->create_network(*m_default_clock, PART_1);
+    cout << "\n Network has been created" << endl;
 
 #ifdef LIBKITFOX
     m_kitfox_builder->create_proxy();
 #endif
 
+    cout << "\n Kitfox proxy has been created" << endl;
     assert(m_proc_builder->get_fe_type() == ProcBuilder::INVALID_FE_TYPE);
     m_proc_builder->set_fe_type(ProcBuilder::QSIMPROXY);
+    cout << "\n Going into create_qsimproxy_nodes" << endl;
     create_qsimproxy_nodes(args,appFile,n_lps,part);
 
     //connect components
+    cout << "\n connecting components..." << endl;
     connect_components();
+    cout << "\n connecting components done." << endl;
 }
 
 
@@ -450,7 +487,9 @@ void SysBuilder_llp :: create_qsimproxy_nodes(vector<string>& args, const char* 
         default: { assert(0); }
     }
 
+    cout << "\n Going to create nodes...";
     create_nodes(FT_QSIMPROXY, n_lps, part);
+    cout << "\n Nodes created" << endl;
 }
 
 
@@ -528,8 +567,12 @@ void SysBuilder_llp :: create_nodes(int type, int n_lps, int part)
 
 
     //??????????????????? todo cache should have separate clock
+    cout<<"\n Create_caches";
     m_cache_builder->create_caches(*m_default_clock);
+    cout<<"\n Created caches";
+    cout<<"\n Create_mcs" << endl;
     m_mc_builder->create_mcs(mc_id_lp_map);
+    cout<<"\n Created mcs" << endl;
 
     if(m_cache_builder->get_type() == CacheBuilder::MCP_CACHE || m_cache_builder->get_type() == CacheBuilder::MCP_L1L2) {
         dep_injection_for_mcp();
@@ -625,12 +668,36 @@ void SysBuilder_llp :: dep_injection_for_mcp()
 
         m_cache_builder->set_mc_map_obj(mc_map);
         m_mc_builder->set_mc_map_obj(mc_map);
-    } else {
+    } 
+    else if(m_mc_builder->get_type() == MemControllerBuilder::HMC) //HMC
+    {
+    	manifold::uarch::HMCDestMap *hmc_map = new manifold::uarch::HMCDestMap(
+    	                                        mc_node_idx_vec, num_serdes, int(MAX_VAULTS / MAX_SERDES), trans_size );
+    	cout << "hmc_map object " << hmc_map << endl;
+    	cout << "HMCMap nodes size " << hmc_map->get_nodes_size() << endl;
+   	    cout << "HMCDestMap selector bits " << dec << hmc_map->get_selector_bits() << endl;
+   	    cout << "HMCDestMap selector mask " << hex << hmc_map->get_selector_mask() << endl;
+    	/*
+    	 * num_serdes can be 2 or 4. The number of HMCs = length(mc_node_idx_vec) / num_serdes
+    	 * Eg: 			length(mc_node_idx_vec) = 16
+    	 * 				num_serdes = 4
+    	 * 				number of HMCs = 16 / 4 = 4
+    	 */
+		m_cache_builder->set_mc_map_obj(hmc_map);
+		m_mc_builder->set_mc_map_obj(hmc_map);
+
+    }
+    else if(m_mc_builder->get_type() == MemControllerBuilder::DRAMSIM)// DRAMSim
+    {
         manifold::uarch::PageBasedMap *mc_map = new manifold::uarch::PageBasedMap(
                                         mc_node_idx_vec, 12); // assuming page size= 2^12
 
         m_cache_builder->set_mc_map_obj(mc_map);
         m_mc_builder->set_mc_map_obj(mc_map);
+    }
+    else
+    {
+        assert(0);
     }
 }
 

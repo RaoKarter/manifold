@@ -141,6 +141,7 @@ void MCP_lp_lls_builder :: connect_cache_network(NetworkBuilder* net_builder)
                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);
                         break;
                     case MemControllerBuilder::DRAMSIM:
+                    case MemControllerBuilder::HMC:
                         //     cout << node_id << " " << ni_cids[node_id] << endl;
                         Manifold :: Connect(cache_cid, MuxDemux::PORT_NET, &MuxDemux::handle_net<manifold::uarch::Mem_msg>,
                                             ni_cids[node_id*2], GenNetworkInterface<NetworkPacket>::TERMINAL_PORT,
@@ -162,6 +163,7 @@ void MCP_lp_lls_builder :: connect_cache_network(NetworkBuilder* net_builder)
                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);
                         break;
                     case MemControllerBuilder::DRAMSIM:
+                    case MemControllerBuilder::HMC:
                         Manifold :: Connect(cache_cid, MuxDemux::PORT_NET, &MuxDemux::handle_net<manifold::uarch::Mem_msg>,
                                             ni_cids[node_id], GenNetworkInterface<NetworkPacket>::TERMINAL_PORT,
                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);

@@ -78,6 +78,8 @@ protected:
     MemControllerBuilder* m_mc_builder;
     QsimBuilder *m_qsim_builder;
 
+    int num_serdes;
+
 #ifdef LIBKITFOX
     KitFoxBuilder *m_kitfox_builder;
 #endif
@@ -85,16 +87,35 @@ protected:
     Qsim::OSDomain *m_qsim_osd;
 
     int MAX_NODES;
+    int MAX_VAULTS;
+    int MAX_SERDES;
+    int trans_size;
     manifold::kernel::Ticks_t STOP; //simulation stop time
     uint64_t m_DEFAULT_CLOCK_FREQ; //default clock's frequency
 
     std::vector<Node_conf_llp> m_node_conf;
+    /*
+     * For HMC, "mc_node_idx_vec" is the vector containing the node_ids
+     * of all the HMCs connected to the network. Each HMC will have a fixed
+     * number of SerDes links given by the length of xbar.node_idx configuration
+     * input.
+     *
+     * "mc_node_idx_set" is the set which will contain the node_ids of all
+     * the HMCs connected to the network.
+     *
+     * "mc_id_lp_map" contains the lp to node_id mapping for each HMC.
+     * Currently, all the HMC nodes are on lp = 0;
+     * !!!!!!!!!!!!!TODO: Need to figure out mpi implementation of HMC!!!!!!!!!!!!!
+     *
+     */
 
     std::vector<int> proc_node_idx_vec;
     std::vector<int> mc_node_idx_vec;
+    std::vector<int> vault_node_idx_vec;
 
     std::set<int> proc_node_idx_set; //set is used to ensure each index is unique
     std::set<int> mc_node_idx_set; //set is used to ensure each index is unique
+    std::set<int> vault_node_idx_set; //set is used to ensure each index is unique
 
     std::map<int, int> proc_id_lp_map; //maps proc's node id to its LP
     std::map<int, int> mc_id_lp_map; //maps mc's node id to its LP
