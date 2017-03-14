@@ -1,0 +1,3174 @@
+diff --git a/models/kitfox/proxy/COPYING b/models/kitfox/proxy/COPYING
+index caeca07..88798ab 120000
+--- a/models/kitfox/proxy/COPYING
++++ b/models/kitfox/proxy/COPYING
+@@ -1 +1 @@
+-/usr/share/automake-1.14/COPYING
+\ No newline at end of file
++/usr/share/automake-1.15/COPYING
+\ No newline at end of file
+diff --git a/models/kitfox/proxy/INSTALL b/models/kitfox/proxy/INSTALL
+index f812f5a..ddcdb76 120000
+--- a/models/kitfox/proxy/INSTALL
++++ b/models/kitfox/proxy/INSTALL
+@@ -1 +1 @@
+-/usr/share/automake-1.14/INSTALL
+\ No newline at end of file
++/usr/share/automake-1.15/INSTALL
+\ No newline at end of file
+diff --git a/models/memory/DRAMSim2/dram_sim.cpp b/models/memory/DRAMSim2/dram_sim.cpp
+index 3d3d48d..3200fde 100644
+--- a/models/memory/DRAMSim2/dram_sim.cpp
++++ b/models/memory/DRAMSim2/dram_sim.cpp
+@@ -65,9 +65,6 @@ void Dram_sim::read_complete(unsigned id, uint64_t address, uint64_t done_cycle)
+     assert(req.addr == address);
+ 
+     m_completed_reqs.push_back(req);
+-#ifdef DBG_DRAMSIM
+-    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\tread complete gaddr\t" << hex << req.gaddr << "\tladdr\t" << req.addr << dec << endl;
+-#endif
+ }
+ 
+ 
+@@ -87,9 +84,6 @@ void Dram_sim::write_complete(unsigned id, uint64_t address, uint64_t done_cycle
+     //move from pending buffer to completed buffer
+     if (m_send_st_response) {
+     m_completed_reqs.push_back(req);
+-#ifdef DBG_DRAMSIM
+-    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\twrite complete gaddr\t" << hex << req.gaddr << "\tladdr\t" << req.addr << dec << endl;
+-#endif
+     }
+ 
+ #ifdef DRAMSIM_UTEST
+@@ -115,14 +109,11 @@ void Dram_sim :: try_send_reply()
+     *((uarch::Mem_msg*)(pkt->data)) = mem_msg;
+     pkt->data_size = sizeof(uarch::Mem_msg);
+ 
+-    Send(PORT0, pkt);
+-    downstream_credits--;
+ #ifdef DBG_DRAMSIM
+-		cerr << dec << "@\t" << m_clk->NowTicks() <<"\tdownstream credits[" << this->get_nid() << "]\t" << downstream_credits+1 << "->"
+-				<< downstream_credits << "\tm_completed_reqs.size\t" << m_completed_reqs.size()
+-				<< "\tVault\t" << this->get_nid() << "\treply src\t" << dec << pkt->get_src()
+-				<< "\tdst\t" << pkt->get_dst() << "\tladdr\t" << hex << req.addr << "\tgaddr\t" << hex << req.gaddr << dec << endl;
++    cout << "@ " << m_clk->NowTicks() << " MC " << m_nid << " sending reply: addr= " << hex << req.gaddr << dec << " destination= " << pkt->get_dst() << endl;
+ #endif
++    Send(PORT0, pkt);
++    downstream_credits--;
+     }
+ }
+ 
+@@ -132,9 +123,6 @@ void Dram_sim :: send_credit()
+     manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
+     credit_pkt->type = CREDIT_MSG_TYPE;
+     Send(PORT0, credit_pkt);
+-#ifdef DBG_DRAMSIM
+-		cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\tsending CREDIT pkt\t" << dec << endl;
+-#endif
+ }
+ 
+ 
+diff --git a/models/memory/DRAMSim2/dram_sim.h b/models/memory/DRAMSim2/dram_sim.h
+index 0efed3c..b6eec88 100644
+--- a/models/memory/DRAMSim2/dram_sim.h
++++ b/models/memory/DRAMSim2/dram_sim.h
+@@ -127,21 +127,15 @@ private:
+ 
+ //! Event handler for incoming memory request.
+ template<typename T>
+-void Dram_sim :: handle_incoming(int in_port, manifold::uarch::NetworkPacket* pkt)
++void Dram_sim :: handle_incoming(int, manifold::uarch::NetworkPacket* pkt)
+ {
+     if (pkt->type == CREDIT_MSG_TYPE) {
+     downstream_credits++;
+     delete pkt;
+-#ifdef DBG_DRAMSIM
+-    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\trcvd CREDIT pkt @ port\t" << dec << in_port
+-    		<< "\tDRAMdownstream credits[" << this->get_nid() << "]\t" << downstream_credits-1 << "->" << downstream_credits << endl;
+-#endif
+     return;
+     }
+ 
+-#ifdef NOHMC
+     assert (pkt->dst == m_nid);
+-#endif
+ 
+     T* req = (T*)(pkt->data);
+ 
+@@ -149,42 +143,27 @@ void Dram_sim :: handle_incoming(int in_port, manifold::uarch::NetworkPacket* pk
+     stats_n_reads++;
+     stats_n_reads_per_source[pkt->get_src()]++;
+ #ifdef DBG_DRAMSIM
+-    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\trcvd LD,\t\t\t\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+-					<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << mc_map->get_local_addr(req->get_addr())
+-					<< "\tgaddr\t" << req->get_addr() << dec << endl;
++cout << "@ " << m_clk->NowTicks() << " >>> mc " << m_nid << " received LD, src= " << pkt->get_src() << " addr= " <<hex<< req->get_addr() <<dec<<endl;
+ #endif
+     }
+     else {
+     stats_n_writes++;
+     stats_n_writes_per_source[pkt->get_src()]++;
+ #ifdef DBG_DRAMSIM
+-    cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\trcvd ST,\t\t\t\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+-					<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << mc_map->get_local_addr(req->get_addr())
+-					<< "\tgaddr\t" << req->get_addr() << dec << endl;
++cout << "@ " << m_clk->NowTicks() << " >>> mc " << m_nid << " received ST, src= " << pkt->get_src() << " addr= " <<hex<< req->get_addr() <<dec<<endl;
+ #endif
+     }
+ 
+     //paddr_t newAddr = m_mc_map->ripAddress(req->addr);
+ 
+-#ifdef NOHMC
+     pkt->set_dst(pkt->get_src());
+-    pkt->set_src(m_nid);
+-#else
+-    int temp = pkt->get_src();
+-    pkt->set_src(pkt->get_dst());
+-    pkt->set_dst(temp);
+-#endif
+-
+     pkt->set_dst_port(pkt->get_src_port());
++    pkt->set_src(m_nid);
+     pkt->set_src_port(0);
+     pkt->type = 9;
+ 
+     assert(mc_map);
+     //put the request in the input buffer
+-#ifdef DBG_DRAMSIM
+-	cerr << dec << "@\t" << m_clk->NowTicks() << "\tVault\t" << this->get_nid() << "\tGoing to Process REQ \t\t\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+-			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << mc_map->get_local_addr(req->get_addr()) << "\tgaddr\t" << req->get_addr() << dec << endl;
+-#endif
+     m_incoming_reqs.push_back(Request(m_clk->NowTicks(), mc_map->get_local_addr(req->get_addr()), req->get_addr(), req->is_read(), pkt));
+ 
+ }
+diff --git a/simulator/smp/QsimProxy/Makefile.kitfox b/simulator/smp/QsimProxy/Makefile.kitfox
+index acad6f4..a13e29b 100644
+--- a/simulator/smp/QsimProxy/Makefile.kitfox
++++ b/simulator/smp/QsimProxy/Makefile.kitfox
+@@ -3,21 +3,21 @@ QSIM_ROOT = ${QSIM_PREFIX}
+ KITFOX_ROOT = ${KITFOX_PREFIX}
+ KITFOX_LIBS = -lmcpat -L${KITFOX_ROOT} -l3dice -L${KITFOX_ROOT}
+ MODELS_DIR = ../../../models
+-CPPFLAGS += -Wall -g -DUSE_QSIM -DSTATS -DADDRDEBUG=1 -DLIBKITFOX=1 -I$(QSIM_ROOT)/include -I$(KITFOX_ROOT) -I ../../.. -I$(MODELS_DIR)/processor -I$(MODELS_DIR)/qsim -I$(MODELS_DIR)/cache -I$(MODELS_DIR)/network -I$(MODELS_DIR)/memory -I$(MODELS_DIR)/cross -I$(MODELS_DIR)/kitfox/proxy -std=c++11
++CPPFLAGS += -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -I$(QSIM_ROOT)/include -I$(KITFOX_ROOT) -I ../../.. -I$(MODELS_DIR)/processor -I$(MODELS_DIR)/qsim -I$(MODELS_DIR)/cache -I$(MODELS_DIR)/network -I$(MODELS_DIR)/memory -I$(MODELS_DIR)/cross -I$(MODELS_DIR)/kitfox/proxy -std=c++11
+ LDFLAGS = -lqsim -L$(QSIM_ROOT)/lib -lKitFox -L$(KITFOX_ROOT) ${KITFOX_LIBS} -lmcp-iris -L$(MODELS_DIR)/cross/mcp_cache-iris -liris -L$(MODELS_DIR)/network/iris -lmcp-cache -L$(MODELS_DIR)/cache/mcp-cache -lspx -L$(MODELS_DIR)/processor/spx -lqsim_proxy -L$(MODELS_DIR)/qsim/proxy -lqsim_interrupt_handler -L$(MODELS_DIR)/qsim/interrupt_handler -lkitfox_proxy -L$(MODELS_DIR)/kitfox/proxy  -lcaffdram -L$(MODELS_DIR)/memory/CaffDRAM -lDRAMSim2 -L$(MODELS_DIR)/memory/DRAMSim2 -lDRAMSim2proper -L$(MODELS_DIR)/memory/DRAMSim2/DRAMSim2-2.2.2  -L../../../kernel -lmanifold -ldl -lrt
+ 
+ VPATH = ../common
+ 
+-EXECS = smp_llp #smp_l1l2
++EXECS = smp_llp smp_l1l2
+ 
+ 
+ ALL: $(EXECS)
+ 
+ 
+-smp_llp: smp_llp.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_builder.o mc_builder.o network_builder.o qsim_builder.o kitfox_builder.o hmc_xbar.o
++smp_llp: smp_llp.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_builder.o mc_builder.o network_builder.o qsim_builder.o kitfox_builder.o
+ 	$(CXX) $^ -o$@  $(LDFLAGS) -lconfig++
+ 
+-smp_l1l2: smp_l1l2.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_builder.o mc_builder.o network_builder.o qsim_builder.o kitfox_builder.o hmc_xbar.o
++smp_l1l2: smp_l1l2.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_builder.o mc_builder.o network_builder.o qsim_builder.o kitfox_builder.o
+ 	$(CXX) $^ -o$@  $(LDFLAGS) -lconfig++
+ 
+ 
+@@ -29,5 +29,5 @@ smp_l1l2: smp_l1l2.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_bui
+ 
+ .PHONY: clean
+ clean:
+-	rm -f $(EXECS) *.d *.o DBG* core*.out dramsim.log dramsim.*.log build_log*
++	rm -f $(EXECS) *.d *.o DBG* core*.out
+ 	rm -rf dep
+diff --git a/simulator/smp/QsimProxy/Makefile.kitfox.HUT b/simulator/smp/QsimProxy/Makefile.kitfox.HUT
+deleted file mode 100644
+index 7d03137..0000000
+--- a/simulator/smp/QsimProxy/Makefile.kitfox.HUT
++++ /dev/null
+@@ -1,30 +0,0 @@
+-CXX = mpic++
+-QSIM_ROOT = ${QSIM_PREFIX}
+-KITFOX_ROOT = ${KITFOX_PREFIX}
+-KITFOX_LIBS = -lmcpat -L${KITFOX_ROOT} -l3dice -L${KITFOX_ROOT}
+-MODELS_DIR = ../../../models
+-CPPFLAGS += -Wall -g -DUSE_QSIM -DSTATS -DHMCDEBUG=1 -DHUTDEBUG=1 -DLIBKITFOX=1 -I$(QSIM_ROOT)/include -I$(KITFOX_ROOT) -I ../../.. -I$(MODELS_DIR)/processor -I$(MODELS_DIR)/qsim -I$(MODELS_DIR)/cache -I$(MODELS_DIR)/network -I$(MODELS_DIR)/memory -I$(MODELS_DIR)/cross -I$(MODELS_DIR)/kitfox/proxy -std=c++11
+-LDFLAGS = -lqsim -L$(QSIM_ROOT)/lib -lKitFox -L$(KITFOX_ROOT) ${KITFOX_LIBS} -lmcp-iris -L$(MODELS_DIR)/cross/mcp_cache-iris -liris -L$(MODELS_DIR)/network/iris -lmcp-cache -L$(MODELS_DIR)/cache/mcp-cache -lspx -L$(MODELS_DIR)/processor/spx -lqsim_proxy -L$(MODELS_DIR)/qsim/proxy -lqsim_interrupt_handler -L$(MODELS_DIR)/qsim/interrupt_handler -lkitfox_proxy -L$(MODELS_DIR)/kitfox/proxy  -lcaffdram -L$(MODELS_DIR)/memory/CaffDRAM -lDRAMSim2 -L$(MODELS_DIR)/memory/DRAMSim2 -lDRAMSim2proper -L$(MODELS_DIR)/memory/DRAMSim2/DRAMSim2-2.2.2  -L../../../kernel -lmanifold -ldl -lrt
+-
+-VPATH = ../common
+-
+-EXECS = smp_hmc_unit_test 
+-
+-
+-ALL: $(EXECS)
+-
+-
+-smp_hmc_unit_test: smp_hmc_unit_test.o sysBuilder_llp_HUT.o mc_builder.o hmc_xbar.o pkt_generator.o
+-	$(CXX) $^ -o$@  $(LDFLAGS) -lconfig++
+-
+-%.o: %.cc
+-	@[ -d dep ] || mkdir -p dep
+-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MMD -MF dep/$*.d -c $< -o $*.o
+-
+--include $(wildcard dep/*.d)
+-
+-.PHONY: clean
+-clean:
+-	rm -f $(EXECS) *.d *.o DBG* core*.out dramsim.log dramsim.*.log build_log_HUT*
+-	rm -rf dep
+-
+diff --git a/simulator/smp/QsimProxy/smp_hmc_unit_test.cc b/simulator/smp/QsimProxy/smp_hmc_unit_test.cc
+deleted file mode 100644
+index 6c575d4..0000000
+--- a/simulator/smp/QsimProxy/smp_hmc_unit_test.cc
++++ /dev/null
+@@ -1,110 +0,0 @@
+-/*
+- * smp_hmc_unit_test.cc
+- *
+- *  Created on: Feb 14, 2017
+- *      Author: Karthik Rao
+- *
+- *
+- *      //! @verbatim
+-//!                                            -----------------------
+-//!      -----------       -----------        | DRAM0 	    	DRAMn |
+-//!     | processor |     | processor |       |   |  DRAM1    	  |   |
+-//!      -----------       -----------        |   |    | . . .    |   |
+-//!           |                 |              -----------------------
+-//!        ----------           ----------      |       HMC        |
+-//!        ----------           ----------      |     Crossbar     |
+-//!       | L1 cache |         | L1 cache |      ------------------
+-//!         |     |              |     |          |    |    |	 |
+-//!  ----------   |       ----------   |          |    |    |	 |
+-//! | L2 cache |  |      | L2 cache |  |          |    |    |	 |
+-//!  ----------   |       ----------   |          |    |    |	 |
+-//!       |       |            |       |          |    |    |	 |
+-//!        ----   |             ----   |          |    |    |	 |
+-//!            |  |                 |  |          |    |    |	 |
+-//!           -----                -----          |    |    |	 |
+-//!          | mux |              | mux |         |    |    |	 |
+-//!           -----                -----          |    |    |	 |
+-//!             |                    |            |    |    |	 |
+-//!  ---------------------------------------------------------------------------
+-//!       ------------         ------------       ------------      ------------
+-//!      | NetIntface |       | NetIntface |     | NetIntface |    | NetIntface |
+-//!       ------------         ------------       ------------      ------------
+-//!  ---------------------------------------------------------------------------
+-//! @endverbatim
+- *
+- * This file tests the HMC unit independently. The crossbar ports will send and
+- * receive dummy requests to test the functionality of the unit as a whole.
+- */
+-
+-
+-#include "../common/sysBuilder_llp_HUT.h"
+-#include "kernel/manifold.h"
+-#include <iostream>
+-#include "mpi.h"
+-
+-
+-using namespace std;
+-using namespace manifold::kernel;
+-
+-int main(int argc, char** argv)
+-{
+-	if(argc != 2)
+-	{
+-		cerr << "Usage: smp_hmc_unit_test <config_file>" << endl;
+-		exit(1);
+-	}
+-
+-	Manifold::Init(argc, argv);
+-	cout << "\n System has been initialized" << endl;
+-
+-	SysBuilder_llp_HUT sysBuilder(argv[1]);
+-
+-	sysBuilder.config_system();
+-	cout << "\n config system has completed" << endl;
+-
+-	int N_LPs = 1; //number of LPs
+-	MPI_Comm_size(MPI_COMM_WORLD, &N_LPs);
+-	cout << "\n Number of LPs = " << N_LPs << endl;
+-
+-
+-#define REDIRECT_COUT
+-
+-#ifdef REDIRECT_COUT
+-	// create a file into which to write debug/stats info.
+-	int Mytid;
+-	MPI_Comm_rank(MPI_COMM_WORLD, &Mytid);
+-	char buf[10];
+-	sprintf(buf, "DBG_LOG_HUT%d", Mytid);
+-	ofstream DBG_LOG_HUT(buf);
+-
+-	//redirect cout to file.
+-	std::streambuf* cout_sbuf = std::cout.rdbuf(); // save original sbuf
+-	std::cout.rdbuf(DBG_LOG_HUT.rdbuf()); // redirect cout
+-#endif
+-
+-	cout << "\n Going to build system" << endl;
+-	sysBuilder.build_system();
+-	cout << "\n System has been built" << endl;
+-
+-
+-	//==========================================================================
+-	//start simulation
+-	//==========================================================================
+-	sysBuilder.print_config(cout);
+-	Manifold::StopAt(sysBuilder.get_stop_tick());
+-//	assert(0);
+-	Manifold::Run();
+-
+-
+-	sysBuilder.print_stats(cerr);
+-
+-
+-#ifdef REDIRECT_COUT
+-	std::cout.rdbuf(cout_sbuf);
+-#endif
+-
+-	Manifold::Finalize();
+-}
+-
+-
+-
+diff --git a/simulator/smp/common/cache_builder.cc b/simulator/smp/common/cache_builder.cc
+index 0093e07..ef66579 100644
+--- a/simulator/smp/common/cache_builder.cc
++++ b/simulator/smp/common/cache_builder.cc
+@@ -141,7 +141,6 @@ void MCP_lp_lls_builder :: connect_cache_network(NetworkBuilder* net_builder)
+                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);
+                         break;
+                     case MemControllerBuilder::DRAMSIM:
+-                    case MemControllerBuilder::HMC:
+                         //     cout << node_id << " " << ni_cids[node_id] << endl;
+                         Manifold :: Connect(cache_cid, MuxDemux::PORT_NET, &MuxDemux::handle_net<manifold::uarch::Mem_msg>,
+                                             ni_cids[node_id*2], GenNetworkInterface<NetworkPacket>::TERMINAL_PORT,
+@@ -163,7 +162,6 @@ void MCP_lp_lls_builder :: connect_cache_network(NetworkBuilder* net_builder)
+                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);
+                         break;
+                     case MemControllerBuilder::DRAMSIM:
+-                    case MemControllerBuilder::HMC:
+                         Manifold :: Connect(cache_cid, MuxDemux::PORT_NET, &MuxDemux::handle_net<manifold::uarch::Mem_msg>,
+                                             ni_cids[node_id], GenNetworkInterface<NetworkPacket>::TERMINAL_PORT,
+                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);
+diff --git a/simulator/smp/common/hmc_xbar.cpp b/simulator/smp/common/hmc_xbar.cpp
+deleted file mode 100644
+index c2e7038..0000000
+--- a/simulator/smp/common/hmc_xbar.cpp
++++ /dev/null
+@@ -1,342 +0,0 @@
+-#include "hmc_xbar.h"
+-#include "kernel/component.h"
+-#include "kernel/manifold.h"
+-
+-using namespace manifold::kernel;
+-using namespace manifold::uarch;
+-
+-
+-namespace manifold {
+-namespace hmc_xbar {
+-
+-int HMC_xbar :: MEM_MSG_TYPE = -1;
+-int HMC_xbar :: CREDIT_MSG_TYPE = -1;
+-bool HMC_xbar :: Msg_type_set = false;
+-
+-HMC_xbar :: HMC_xbar(int id, const HMC_xbar_settings& hmcxbar_settings, Clock& clk) :
+-		hmc_id(id) , hmc_clk(clk)
+-{
+-	hmc_num_mc_ports = hmcxbar_settings.num_mem_links;
+-	hmc_num_net_ports = hmcxbar_settings.num_hmc_net_links;
+-	downstream_credits = new int [hmc_num_net_ports];
+-	upstream_credits = new int [hmc_num_mc_ports];
+-	this->hmcxbar_vault_map = hmcxbar_settings.s_vault_map;
+-
+-#ifdef HMCDEBUG
+-	cerr << dec << " HMC xbar @\t" << this << "\tvault map\t" << hmcxbar_vault_map << endl;
+-#endif
+-
+-	for(int i = 0; i < hmc_num_net_ports; i++) // size is number of network ports
+-		downstream_credits[i] = hmcxbar_settings.downstream_credits;
+-
+-	for(int i = 0; i < hmc_num_mc_ports; i++) // size is number of vaults
+-		upstream_credits[i] = hmcxbar_settings.upstream_credits;
+-
+-	/*
+-	 * hmc_net_it is the iterator for the id_lp_map passed along with hmcxbar_settings
+-	 *
+-	 * This iterator will be initialized to point to the first network port of the HMC
+-	 * instance. The iterator can now be used to get rest of the network port ids to
+-	 * which the HMC instance is connected.
+-	 */
+-	hmc_net_it = hmcxbar_settings.id_lp_map->begin();
+-	std::advance (hmc_net_it, hmc_id * hmc_num_net_ports);
+-
+-    assert(Msg_type_set);
+-    assert(MEM_MSG_TYPE != CREDIT_MSG_TYPE);
+-
+-	// Create ports for hmc to communicate with the network
+-	assert(hmc_num_net_ports <= MAX_NET_PORT);
+-
+-	string f;
+-	for (int i = 0; i < hmc_num_net_ports; ++i)
+-	{
+-		f = to_string((*hmc_net_it).first);
+-		hmc_nid_portid_map[f] = i;
+-//		hmc_nid_portid_map[i] = (*hmc_net_it).first;
+-#ifdef HMCDEBUG
+-		cerr << dec << "hmc_nid_portid_map[" << f << "] = " << i << endl;
+-//		cerr << dec << "hmc_nid_portid_map[" << i << "] = " << (*hmc_net_it).first << endl;
+-#endif
+-		net_ports[i] = i;
+-		std::advance(hmc_net_it, 1);
+-	}
+-
+-	std::advance(hmc_net_it, -hmc_num_net_ports);
+-#ifdef HMCDEBUG
+-		cerr << dec << "Iterator location NOW " << (*hmc_net_it).first << endl;
+-#endif
+-
+-	hmc_map = NULL;
+-
+-	// Create ports for hmc to communicate with memory vaults
+-	assert(hmc_num_mc_ports <= MAX_MEM_PORT);
+-//	vault_node_idx_vec.resize(hmc_num_mc_ports);
+-
+-	int j = 0;
+-	for (int i = net_ports[hmc_num_net_ports-1] + 1 ; i < hmc_num_mc_ports + hmc_num_net_ports; ++i)
+-	{
+-		m_ports[j] = i;
+-		j++;
+-//		vault_node_idx_vec.push_back(i);
+-	}
+-
+-//	vault_map = new manifold::uarch::PageBasedMap(vault_node_idx_vec, 0);
+-
+-	//register with clock
+-	Clock :: Register(clk, this, &HMC_xbar::tick, (void(HMC_xbar::*)(void)) 0 );
+-
+-	// Create one request buffer for each connected memory vault
+-	hmc_net_requests = new std::list<manifold::uarch::NetworkPacket*>[hmc_num_mc_ports];
+-
+-	// Create one response buffer for each connected network port
+-	hmc_mc_responses = new std::list<manifold::uarch::NetworkPacket*>[hmc_num_net_ports];
+-
+-    //stats
+-	stats_num_net_incoming_msg = 0;
+-	stats_num_net_outgoing_msg = 0;
+-	stats_num_net_incoming_credits = 0;
+-	stats_num_net_outgoing_credits = 0;
+-	stats_num_mc_incoming_msg = 0;
+-	stats_num_mc_outgoing_msg = 0;
+-	stats_num_mc_incoming_credits = 0;
+-	stats_num_mc_outgoing_credits = 0;
+-}
+-
+-void HMC_xbar :: tick()
+-{
+-	/*
+-	 * Network sends requests and the Vaults respond to those requests.
+-	 * Since multiple requests can arrive at the same time, we process
+-	 * these in a deterministic manner. First we process the network
+-	 * requests and then process the memory responses.
+-	 */
+-
+-	for(int i = 0; i < get_num_mc_ports(); i++) // For each vault
+-	{
+-		if ( hmc_net_requests[i].size() > 0 && upstream_credits[i] > 0) // buffer containing handled network requests
+-		{
+-			NetworkPacket* pkt = hmc_net_requests[i].front();
+-			hmc_net_requests[i].pop_front();
+-
+-			// Send the pkt to the vault
+-			Send(m_ports[i], pkt);
+-			upstream_credits[i]--;
+-			stats_num_mc_outgoing_msg++;
+-#ifdef HMCDEBUG
+-	cerr << dec << "@\t" << m_clk->NowTicks() <<"\t(tick)HMCupstream credits[" << i << "]\t" << upstream_credits[i]+1
+-			<< "->" << upstream_credits[i] << "\thmc_net_requests.size\t" << hmc_net_requests[i].size() << endl;
+-	manifold::mcp_cache_namespace::Mem_msg* req = (manifold::mcp_cache_namespace::Mem_msg*)pkt->data;
+-	uint64_t pkt_laddr = req->get_addr(); // Local address right now
+-	uint64_t pkt_gaddr = hmc_map->get_global_addr(pkt_laddr, this->get_hmc_id()); // Global address
+-	cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending MSG pkt from MC port\t"
+-			<< dec << m_ports[i] << "(" << m_ports[i] - hmc_num_net_ports << ")\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+-			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << dec << endl;
+-#endif
+-		}
+-	}
+-
+-	// Now start to process memory responses
+-	for(int i = 0; i < get_num_net_ports(); i++) // For each SerDes link
+-	{
+-		if ( hmc_mc_responses[i].size() > 0 && downstream_credits[i] > 0) // buffer containing memory responses
+-		{
+-			NetworkPacket* pkt = hmc_mc_responses[i].front();
+-			hmc_mc_responses[i].pop_front();
+-
+-			// Send the packet into the network
+-			Send(net_ports[i],pkt);
+-			downstream_credits[i]--;
+-			stats_num_net_outgoing_msg++;
+-#ifdef HMCDEBUG
+-		cerr << dec << "@\t" << m_clk->NowTicks() <<"\t(tick)HMCdownstream credits[" << i << "]\t" << downstream_credits[i]+1
+-					<< "->" << downstream_credits[i] << "\thmc_mc_responses.size\t" << hmc_mc_responses[i].size() << endl;
+-		manifold::uarch::Mem_msg* req = (manifold::uarch::Mem_msg*)pkt->data;
+-		uint64_t pkt_gaddr = req->get_addr(); // Global address right now
+-		uint64_t pkt_laddr = hmc_map->get_local_addr(pkt_gaddr); // Local address
+-		cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending MSG pkt from NET port\t"
+-			<< dec << net_ports[i] << "\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+-			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << dec << endl;
+-#endif
+-		}
+-	}
+-
+-}
+-
+-
+-
+-void HMC_xbar :: send_credit_downstream(int port)
+-{
+-	manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
+-	credit_pkt->type = CREDIT_MSG_TYPE;
+-	Send(m_ports[port], credit_pkt);
+-#ifdef HMCDEBUG
+-	cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending CREDIT pkt from MC port\t"
+-			<< dec << m_ports[port] << endl;
+-#endif
+-    stats_num_mc_outgoing_credits++;
+-}
+-
+-void HMC_xbar :: send_credit_upstream(int port)
+-{
+-	manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
+-	credit_pkt->type = CREDIT_MSG_TYPE;
+-	Send(net_ports[port], credit_pkt);
+-#ifdef HMCDEBUG
+-	cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending CREDIT pkt from NET port\t"
+-			<< dec << net_ports[port] << endl;
+-#endif
+-    stats_num_net_outgoing_credits++;
+-}
+-
+-void HMC_xbar :: set_hmc_map(manifold::uarch::DestMap *m)
+-{
+-#ifdef HMCDEBUG
+-	cout << "HMC xbar @\t" << this << "\tset_hmc_map\t" << m << endl;
+-#endif
+-    this->hmc_map = m;
+-}
+-
+-
+-void HMC_xbar :: print_stats(ostream& out)
+-{
+-	//TODO: This needs to be printed carefully
+-    out << "****** HMCXBAR " << hmc_id << "********* stats:" << endl
+-	<< "  incoming mc msg: " << stats_num_mc_incoming_msg << endl
+-	<< "  outgoing mc msg: " << stats_num_mc_outgoing_msg << endl
+-	<< "  incoming net msg: " << stats_num_net_incoming_msg << endl
+-	<< "  outgoing net msg: " << stats_num_net_outgoing_msg << endl
+-	<< "  incoming net credits: " << stats_num_net_incoming_credits << endl
+-    << "  incoming mc credits: " << stats_num_mc_incoming_credits << endl
+-    << "  mc outgoing credits: " << stats_num_mc_outgoing_credits << endl
+-    << "  net outgoing credits: " << stats_num_net_outgoing_credits << endl;
+-}
+-
+-
+-#ifdef FORECAST_NULL
+-void MuxDemux :: do_output_to_net_prediction()
+-{
+-
+-    Ticks_t now = m_clk.NowTicks();
+-
+-    manifold::kernel::BorderPort* bp = this->border_ports[PORT_NET];
+-    assert(bp);
+-
+-    if(!m_llp->m_downstream_output_buffer.empty() || !m_lls->m_downstream_output_buffer.empty()) { //if output buffer has msg
+-	bp->update_output_tick(now);
+-        return;
+-    }
+-
+-    //remove all old values
+-    while(m_llp->m_msg_out_ticks.size() > 0)
+-        if(m_llp->m_msg_out_ticks.front() < now)
+-	    m_llp->m_msg_out_ticks.pop_front();
+-	else
+-	    break;
+-    while(m_llp->m_credit_out_ticks.size() > 0)
+-        if(m_llp->m_credit_out_ticks.front() < now)
+-	    m_llp->m_credit_out_ticks.pop_front();
+-	else
+-	    break;
+-
+-    while(m_lls->m_msg_out_ticks.size() > 0)
+-        if(m_lls->m_msg_out_ticks.front() < now)
+-	    m_lls->m_msg_out_ticks.pop_front();
+-	else
+-	    break;
+-    while(m_lls->m_credit_out_ticks.size() > 0)
+-        if(m_lls->m_credit_out_ticks.front() < now)
+-	    m_lls->m_credit_out_ticks.pop_front();
+-	else
+-	    break;
+-
+-    //The earliest tick for possible outgoing msg/credit is the minimum of the following
+-    //3 values:
+-    //(1) earliest scheduled msg or credit
+-    //(2) min lookup time; note, if (1) exists, it must be smaller than (2)
+-    //(3) credit for unprocessed incoming msg
+-
+-    //Find the earliest output msg or credit
+-    Ticks_t out_ticks[4];
+-    int count = 0;
+-    if(m_llp->m_msg_out_ticks.size() > 0)
+-        out_ticks[count++] =  m_llp->m_msg_out_ticks.front();
+-    if(m_llp->m_credit_out_ticks.size() > 0)
+-        out_ticks[count++] =  m_llp->m_credit_out_ticks.front();
+-    if(m_lls->m_msg_out_ticks.size() > 0)
+-        out_ticks[count++] =  m_lls->m_msg_out_ticks.front();
+-    if(m_lls->m_credit_out_ticks.size() > 0)
+-        out_ticks[count++] =  m_lls->m_credit_out_ticks.front();
+-
+-    //find the minimum
+-    Ticks_t min = 0;
+-    if(count > 0) {
+-        min = out_ticks[0];
+-	for(int i=1; i<count; i++)
+-	    if(out_ticks[i] < min)
+-	        min = out_ticks[i];
+-    }
+-
+-    if(min == now) {
+-	bp->update_output_tick(now);
+-        return; //short circuit; no need to continue
+-    }
+-
+-
+-    //at this point, min==0 (count==0) OR min > now
+-    assert(bp->get_clk() == &m_clk);
+-
+-    if(count == 0) {
+-        min = now + ((m_llp->my_table->get_lookup_time() < m_lls->my_table->get_lookup_time()) ?
+-	             m_llp->my_table->get_lookup_time() : m_lls->my_table->get_lookup_time());
+-    }
+-
+-    //at this point min is earliest outgoing msg/credit without considering unprocessed incoming msgs.
+-
+-    //check if any incoming msg scheduled for current or future cycle; credit is sent for each incoming msg.
+-    while(m_input_msg_ticks.size() > 0)
+-        if(m_input_msg_ticks.front() < now) //if earlier than now, it must have been processed already, and
+-	    m_input_msg_ticks.pop_front();  //if any output, than it must be in m_msg_out_ticks or m_credit_out_ticks.
+-	else
+-	    break;
+-    if(m_input_msg_ticks.size() > 0) {
+-        if(m_input_msg_ticks.front() == now) {
+-	    m_input_msg_ticks.pop_front();
+-	    bp->update_output_tick(now + 1); //asumption: credit is sent one tick after msg; the earliest to send credit is next tick
+-            return; //can't be smaller than now+1
+-        }
+-        else {//event scheduled for future
+-	    Ticks_t t = m_input_msg_ticks.front() + 1; //assumption: credit is sent one tick after msg
+-            min = (min < t) ? min : t; //get the smaller
+-        }
+-    }
+-
+-    bp->update_output_tick(min);
+-    //cout << "@ " << m_clk.NowTicks() << " mux preddd " << min << "\n";
+-//cout.flush();
+-
+-}
+-
+-
+-void MuxDemux :: remote_input_notify(Ticks_t when, void* data, int port)
+-{
+-    NetworkPacket* pkt = (NetworkPacket*)data;
+-    if(pkt->get_type() == CREDIT_MSG_TYPE) {
+-        //ignore
+-    }
+-    else {
+-        if(m_input_msg_ticks.size() > 0) {
+-            assert(m_input_msg_ticks.back() <= when);
+-        }
+-        m_input_msg_ticks.push_back(when);
+-    }
+-}
+-
+-#endif //ifdef FORECAST_NULL
+-
+-
+-
+-
+-
+-} // namespace xbar_namespace
+-} //namespace manifold
+diff --git a/simulator/smp/common/hmc_xbar.h b/simulator/smp/common/hmc_xbar.h
+deleted file mode 100644
+index 8502fa6..0000000
+--- a/simulator/smp/common/hmc_xbar.h
++++ /dev/null
+@@ -1,257 +0,0 @@
+-#ifndef MANIFOLD_HMC_XBAR_H
+-#define MANIFOLD_HMC_XBAR_H
+-#include "kernel/component-decl.h"
+-#include "uarch/DestMap.h"
+-#include "kernel/clock.h"
+-#include "uarch/networkPacket.h"
+-#include "uarch/memMsg.h"
+-#include <list>
+-#include <algorithm>
+-#include <iterator>
+-#include <string>
+-
+-#ifdef HMCDEBUG
+-#include "mcp-cache/coh_mem_req.h"
+-#include "mcp-cache/cache_req.h"
+-#endif
+-
+-namespace manifold {
+-namespace hmc_xbar{
+-
+-//! The HMC needs a network interface. This class is a xbar that connects
+-//! HMC vaults to the network via a SerDes link
+-
+-struct HMC_xbar_settings {
+-	HMC_xbar_settings(int num_net_links, int num_dram_links, int d_credits, int u_credits) :
+-		num_hmc_net_links(num_net_links), num_mem_links(num_dram_links), downstream_credits(d_credits), upstream_credits(u_credits)
+-    {}
+-
+-	int num_hmc_net_links; // These are the number of serdes links per HMC
+-    int num_mem_links; // These are the number of DRAM instances per HMC
+-    int downstream_credits;
+-    int upstream_credits;
+-    std::map<int, int>* id_lp_map;
+-    manifold::uarch::PageBasedMap *s_vault_map;
+-};
+-
+-
+-class HMC_xbar : public manifold::kernel::Component {
+-public:
+-    enum {
+-    	MAX_NET_PORT = 4,
+-        MAX_MEM_PORT = 32,
+-    };
+-
+-    HMC_xbar(int id, const HMC_xbar_settings& hmcxbar_settings, manifold::kernel::Clock&);
+-    ~HMC_xbar() {};
+-
+-    int get_hmc_id() { return hmc_id; }
+-
+-    int get_mem_port(int i) const { return m_ports[i];   }
+-
+-    int get_net_port(int i) const { return net_ports[i]; }
+-
+-    int get_num_mc_ports() { return hmc_num_mc_ports; }
+-
+-    int get_num_net_ports() { return hmc_num_net_ports; }
+-
+-    void set_hmc_map(manifold::uarch::DestMap *m);
+-
+-    // This is the function where routing of the packets to different vaults takes place
+-    void tick();
+-    // Handler for incoming requests from the network
+-    template<typename T> void handle_net(int, manifold::uarch::NetworkPacket* pkt);
+-    // Handler for incoming requests from the Vault mem controllers
+-    template<typename T> void handle_mc_incoming(int, manifold::uarch::NetworkPacket* pkt);
+-
+-    void send_credit_downstream(int);
+-    void send_credit_upstream(int);
+-
+-    #ifdef FORECAST_NULL
+-    void do_output_to_net_prediction();
+-    #endif
+-
+-    static void Set_msg_types(int mem, int credit) // Set some interface parameters
+-	{
+-		assert(Msg_type_set == false);
+-		MEM_MSG_TYPE = mem;
+-		CREDIT_MSG_TYPE = credit;
+-		Msg_type_set = true;
+-	}
+-
+-    void print_stats(ostream&);
+-
+-protected:
+-    #ifdef FORECAST_NULL
+-    //overwrite base class
+-    void remote_input_notify(manifold::kernel::Ticks_t, void* data, int port);
+-    #endif
+-
+-    // NEED BUFFERS FOR EACH VAULT AND EACH NETWORK PORT
+-    std::list<manifold::uarch::NetworkPacket*>* hmc_mc_responses; //store responses from all connected vaults
+-    std::list<manifold::uarch::NetworkPacket*>* hmc_net_requests; //store requests from network for each vault
+-private:
+-    static int MEM_MSG_TYPE;
+-	static int CREDIT_MSG_TYPE;
+-	static bool Msg_type_set;
+-
+-    int m_ports[MAX_MEM_PORT];        // Depending on the size of the HMC each xbar will have sizeof(m_ports) number of vaults connected to it
+-    int net_ports[MAX_NET_PORT];        // Depending on the SerDes link width of the HMC each xbar will have sizeof(net_ports) number of network ports
+-
+-    manifold::kernel::Clock& hmc_clk;
+-
+-    int hmc_num_mc_ports;
+-    int hmc_num_net_ports;
+-    int hmc_id;
+-    int* downstream_credits;     // NI credits
+-    int* upstream_credits;		// Vault side credits
+-    manifold::uarch::DestMap *hmc_map;
+-    manifold::uarch::PageBasedMap *hmcxbar_vault_map;
+-    std::map<int,int>::iterator hmc_net_it;
+-//    std::map<int,int> hmc_nid_portid_map;
+-    std::map<string,int> hmc_nid_portid_map;
+-    std::vector<int> vault_node_idx_vec;
+-
+-    #ifdef FORECAST_NULL
+-    //std::list<manifold::kernel::Ticks_t> m_output_ticks;
+-    std::list<manifold::kernel::Ticks_t> m_input_msg_ticks;
+-    #endif
+-
+-    //stats
+-    unsigned stats_num_net_incoming_msg;
+-    unsigned stats_num_net_outgoing_msg;
+-    unsigned stats_num_net_incoming_credits;
+-    unsigned stats_num_net_outgoing_credits;
+-    unsigned stats_num_mc_incoming_msg;
+-    unsigned stats_num_mc_outgoing_msg;
+-    unsigned stats_num_mc_incoming_credits;
+-    unsigned stats_num_mc_outgoing_credits;
+-};
+-
+-//! handle vault responses; type T is the message type from vault memory controller: uarch::Mem_msg
+-template<typename T>
+-void HMC_xbar :: handle_mc_incoming(int in_port, manifold::uarch::NetworkPacket* pkt)
+-{
+-	// Logic to check if incoming message is from port assigned to mem controller
+-	int * p;
+-	p = std::find(m_ports, m_ports + get_num_mc_ports(), in_port);
+-	assert(*p == in_port);
+-
+-	/*
+-	 * When vault sends credit message what do I do?
+-	 */
+-	if (pkt->type == CREDIT_MSG_TYPE)
+-	{
+-		upstream_credits[in_port - hmc_num_net_ports]++;
+-		stats_num_mc_incoming_credits++;
+-#ifdef HMCDEBUG
+-		cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\trcvd MC CREDIT pkt @ port\t" << dec  << in_port
+-				<<"\tupstream credits[" << in_port - hmc_num_net_ports << "]\t" << upstream_credits[in_port - hmc_num_net_ports]-1
+-				<< "->" << upstream_credits[in_port - hmc_num_net_ports] << endl;
+-#endif
+-		delete pkt;
+-		return;
+-	}
+-
+-	stats_num_mc_incoming_msg++;
+-	// Modify the pkt address field from local address to global address
+-	// i.e. append HMC address bits to the lower end of the pkt address
+-	T* req = (T*)pkt->data;
+-	uint64_t pkt_laddr = req->get_addr(); // Local address now
+-	assert(hmc_map);
+-	uint64_t pkt_gaddr = hmc_map->get_global_addr(pkt_laddr, this->get_hmc_id());
+-	req->addr = pkt_gaddr;
+-
+-#ifdef ADDRDEBUG
+-    cerr << dec << "@\t" << m_clk->NowTicks() << "\tHMCReceivedMC\t" << hex << pkt_gaddr << dec << endl;
+-#endif
+-#ifdef HMCDEBUG
+-	cerr << dec << "@\t" << m_clk->NowTicks() << "\t(B)hmc_id\t" << this->get_hmc_id() << "\trcvd MC MSG pkt @ port\t"
+-			<< dec << in_port << "\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+-			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t"
+-			<< hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << endl;
+-#endif
+-
+-	string f = to_string(pkt->get_src());
+-	std::map<string,int>::iterator it = hmc_nid_portid_map.find(f);
+-	assert (it != hmc_nid_portid_map.end());
+-
+-/*
+-	std::map<int,int>::iterator it = hmc_nid_portid_map.find(pkt->get_dst_port());
+-	assert (it != hmc_nid_portid_map.end());
+-	pkt->set_src(it->second);
+-	pkt->set_src_port(pkt->get_dst_port());
+-	// pkt->get_dst_port() has to be handled
+-*/
+-
+-#ifdef HMCDEBUG
+-	cerr << dec << "@\t" << m_clk->NowTicks() << "\t(A)hmc_id\t" << this->get_hmc_id() << "\trcvd MC MSG pkt @ port\t"
+-			<< dec << in_port << "\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+-			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t"
+-			<< hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << endl;
+-#endif
+-    hmc_mc_responses[it->second].push_back(pkt);
+-    send_credit_downstream(in_port - hmc_num_net_ports); //Send credits to vaults (upstream_credits)
+-}
+-
+-//! handle memory requests incoming from network; type T is Mem_msg type
+-template<typename T>
+-void HMC_xbar :: handle_net(int in_port, manifold::uarch::NetworkPacket* pkt)
+-{
+-	// Check if the pkt is coming from the network layer
+-	int *p;
+-	p = std::find(net_ports, net_ports + get_num_net_ports(), in_port);
+-	assert(*p == in_port);
+-
+-	if (pkt->type == CREDIT_MSG_TYPE)
+-    {
+-    	downstream_credits[in_port]++;
+-    	stats_num_net_incoming_credits++;
+-#ifdef HMCDEBUG
+-		cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\trcvd NET CREDIT pkt @ port\t" << dec << in_port
+-				<<"\tHMCdownstream credits[" << in_port << "]\t" << downstream_credits[in_port]-1 << "->" << downstream_credits[in_port] << endl;
+-#endif
+-    	delete pkt;
+-		return;
+-    }
+-
+-	stats_num_net_incoming_msg++;
+-	T* req = (T*)pkt->data;
+-    uint64_t pkt_gaddr = req->get_addr(); // Global address
+-
+-#ifdef ADDRDEBUG
+-    cerr << dec << "@\t" << m_clk->NowTicks() << "\tHMCReceivedNET\t" << hex << pkt_gaddr << dec << endl;
+-#endif
+-
+-    // get laddr. then figure out vault_id
+-    // Create pkt with address field where HMC address bits are stripped off
+-    uint64_t lowbits = pkt_gaddr & 0x1f;
+-    assert ( (lowbits ^ 0x0) == 0 );
+-    uint64_t pkt_laddr = hmc_map->get_local_addr(pkt_gaddr);
+-
+-    req->addr = pkt_laddr;
+-
+-    int vault_id = 0;
+-	assert(hmcxbar_vault_map);
+-	vault_id = hmcxbar_vault_map->lookup(req->addr);
+-//	pkt->set_src_port(in_port);
+-
+-	// Check if local addr is within range of associated DRAMSims
+-	assert(vault_id >= 0 && vault_id <= hmc_num_mc_ports);
+-
+-	// Push the pkt to the FIFO queue for the appropriate DRAMSim Vault
+-//    pkt->set_dst_port(vault_id + hmc_num_net_ports);
+-
+-#ifdef HMCDEBUG
+-	cerr << dec << "@\t" << m_clk->NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\trcvd NET MSG pkt @ port\t"
+-			<< dec << in_port << "\tsrc_id\t" << pkt->get_src() << "\tpkt->src_port\t" << pkt->get_src_port()
+-			<< "\tdst_id\t" << pkt->get_dst() << "\tpkt->dst_port\t" << pkt->get_dst_port() << "\tladdr\t"
+-			<< hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << endl;
+-#endif
+-	hmc_net_requests[vault_id].push_back(pkt);
+-	send_credit_upstream(in_port); // Send credits to Network (downstream_credits)
+-}
+-
+-} //hmc_xbar namespace
+-} //namespace manifold
+-#endif
+diff --git a/simulator/smp/common/mc_builder.cc b/simulator/smp/common/mc_builder.cc
+index d26a242..8715587 100644
+--- a/simulator/smp/common/mc_builder.cc
++++ b/simulator/smp/common/mc_builder.cc
+@@ -1,12 +1,8 @@
+ #include "mc_builder.h"
++#include "sysBuilder_llp.h"
+ #include "cache_builder.h"
+ #include "mcp-cache/coh_mem_req.h"
+ #include "CaffDRAM/McMap.h"
+-#ifdef HUTDEBUG
+-#include "sysBuilder_llp_HUT.h"
+-#else
+-#include "sysBuilder_llp.h"
+-#endif
+ 
+ using namespace libconfig;
+ using namespace manifold::kernel;
+@@ -15,11 +11,6 @@ using namespace manifold::mcp_cache_namespace;
+ using namespace manifold::caffdram;
+ using namespace manifold::dramsim;
+ using namespace manifold::iris;
+-using namespace manifold::hmc_xbar;
+-
+-#ifdef HUTDEBUG
+-using namespace manifold::pkt_generator;
+-#endif
+ 
+ void MemControllerBuilder :: print_config(std::ostream& out)
+ {
+@@ -29,7 +20,7 @@ void MemControllerBuilder :: print_config(std::ostream& out)
+ }
+ 
+ 
+-#ifndef HUTDEBUG
++
+ 
+ void CaffDRAM_builder :: read_config(Config& config)
+ {
+@@ -342,568 +333,3 @@ void DramSim_builder :: print_stats(std::ostream& out)
+         mc->print_stats(out);
+     }
+ }
+-
+-#endif //HUTDEBUG
+-
+-//####################################################################
+-// HMC
+-//####################################################################
+-
+-/*
+- * read_config()
+- * INPUT			Config& 		: 	This is the pointer to the
+- * 										config file passed to the
+- * 										simulator
+- * 		This function reads various configuration parameters passed to
+- * 		the simulator and stores it in different class variables. For
+- * 		the HMC_builder, there are multiple parameters that are explained
+- * 		below, only ones pertinent to HMC are explained
+- *
+- * 	private:
+- *		unsigned m_VAULT_SIZE; //size of each vault
+- *		unsigned m_MEM_SIZE; //mem size = m_NUM_VAULTS x m_VAULT_SIZE
+- *		unsigned m_NUM_VAULTS; //number of vaults in each HMC
+- *		unsigned m_NUM_SERDES; //number of SerDes links to each HMC
+- *		unsigned m_NUM_HMCs; // number of HMCs
+- *		std::vector<int> vault_node_idx_vec; //vector that contains vault ids
+- *											 //used only to decide the DRAM address map
+- *		std::set<int> vault_node_idx_set; //set is used to ensure each index is unique
+- *
+- *		void create_drams(int lp, int vault_node_id, int hmc_cid, manifold::uarch::PageBasedMap *mc_map);
+- *		//function to create drams from within create_mcs();
+- *
+- *	protected:
+- *		bool hmc_use_default_clock;
+- *		std::vector<double> hmc_CLOCK_FREQ;
+- *		std::vector<manifold::kernel::Clock*> hmc_clocks; //clock for the HMC xbar
+- *		std::map<int, int> m_hmc_id_cid_map; //hmc id to cid map
+- *		std::map<int,int>* m_vault_id_cid_map; //vault id to cid map
+- */
+-
+-void HMC_builder :: read_config(Config& config)
+-{
+-    try
+-    {
+-    	int max_vaults = config.lookup("max_vaults");
+-    	int max_serdes = config.lookup("max_serdes");
+-    	Setting& hmc_links = config.lookup("mc.xbar.node_idx");
+-    	int num_hmc_links = hmc_links.getLength();
+-    	m_NUM_SERDES = config.lookup("mc.xbar.num_serdes");
+-
+-    	// Check if number of SerDes links to the network is good
+-    	assert( (m_NUM_SERDES > 0) && (m_NUM_SERDES <= max_serdes) && ((num_hmc_links % m_NUM_SERDES) == 0) );
+-
+-    	// Num of SerDes links must be 2 or 4
+-    	assert(m_NUM_SERDES == 2 || m_NUM_SERDES == 4);
+-
+-    	// Assumption is that each HMC has same number of SerDes links
+-    	m_NUM_HMCs = num_hmc_links / m_NUM_SERDES;
+-
+-    	// Support 1, 2, 4 or 8 HMCs
+-    	assert((m_NUM_HMCs == 1) || (m_NUM_HMCs == 2) || (m_NUM_HMCs == 4) || (m_NUM_HMCs == 8));
+-
+-    	// Create an array of std::maps to map component ids of DRAMs
+-    	// to the node ids *in each HMC*.
+-    	// Eg: m_vault_id_cid_map[HMC_ID_NUMBER][key] = Mapped Var
+-    	m_vault_id_cid_map = new std::map<int,int>[m_NUM_HMCs];
+-
+-    	//vault assignment
+-    	m_NUM_VAULTS = config.lookup("mc.num_vaults"); // number of vaults per HMC
+-
+-    	// Num of vaults must be 16 or 32 as per HMC2.0 spec
+-   		assert(m_NUM_VAULTS >=1 && ( (m_NUM_VAULTS == max_vaults) || (m_NUM_VAULTS == (max_vaults/2) ) ) );
+-
+-   		m_NUM_MC = m_NUM_VAULTS * m_NUM_HMCs; // Because each vault has a mem controller
+-
+-   		// Creating a vector of length m_NUM_VAULTS
+-   		this->vault_node_idx_vec.resize(m_NUM_VAULTS);
+-
+-		for(int i=0; i < m_NUM_VAULTS; i++)
+-		{
+-			vault_node_idx_set.insert(i);
+-			this->vault_node_idx_vec[i] = i;
+-		}
+-		assert(vault_node_idx_set.size() == (unsigned)m_NUM_VAULTS); //verify no 2 indices are the same
+-
+-		/*
+-		 * Create clocks for all the DRAMSim vaults
+-		 * Eg:			m_NUM_VAULTS = 32
+-		 * 				sizeof(m_CLOCK_FREQ) = 32
+-		 */
+-
+-		try
+-		{
+-			Setting& mc_clocks = config.lookup("mc.clocks");
+-			assert((unsigned)mc_clocks.getLength() == m_NUM_VAULTS );
+-			m_CLOCK_FREQ.resize(m_NUM_VAULTS);
+-
+-			for(unsigned i=0; i< m_NUM_VAULTS; i++)
+-				m_CLOCK_FREQ[i] = (double)mc_clocks[i];
+-
+-			m_use_default_clock = false;
+-		}
+-
+-		catch (SettingNotFoundException e)
+-		{
+-			//mc clock not defined; use default
+-			m_use_default_clock = true;
+-		}
+-
+-		/*
+-		 * Create clocks for all the HMC xbars instances
+-		 * Eg:			m_NUM_HMCs = 2
+-		 * 				sizeof(hmc_CLOCK_FREQ) = 2 i.e 2 clocks must be created
+-		 * 											each HMC xbar will have different clock
+-		 * 											but same clock for all network links
+-		 */
+-
+-		try
+-		{
+-			Setting& HMC_clocks = config.lookup("xbar.clocks");
+-			assert((unsigned)HMC_clocks.getLength() == m_NUM_HMCs);
+-			hmc_CLOCK_FREQ.resize(m_NUM_HMCs);
+-
+-			for(unsigned i=0; i<m_NUM_HMCs; i++)
+-				hmc_CLOCK_FREQ[i] = (double)HMC_clocks[i];
+-
+-			hmc_use_default_clock = false;
+-		}
+-		catch (SettingNotFoundException e)
+-		{
+-			// HMC xbar clocks not defined; use default
+-			hmc_use_default_clock = true;
+-		}
+-
+-		// Downstream and upstream credits are separated for HMC xbars and the DRAMs
+-		m_HMC_DOWNSTREAM_CREDITS = config.lookup("mc.xbar.downstream_credits");
+-		m_HMC_UPSTREAM_CREDITS = config.lookup("mc.xbar.upstream_credits");
+-		m_MC_DOWNSTREAM_CREDITS = config.lookup("mc.downstream_credits");
+-
+-		m_MEM_MSG_TYPE = config.lookup("network.mem_msg_type");
+-		m_CREDIT_MSG_TYPE = config.lookup("network.credit_msg_type");
+-
+-		//libconfig++ cannot assigned to string directly
+-		const char* chars = config.lookup("mc.vault.dev_file");
+-		m_DEV_FILE = chars;
+-		chars = config.lookup("mc.vault.sys_file");
+-		m_SYS_FILE = chars;
+-		m_VAULT_SIZE = config.lookup("mc.vault.size");
+-		m_MEM_SIZE = m_NUM_VAULTS * m_VAULT_SIZE * m_NUM_HMCs;
+-    }
+-    catch (SettingNotFoundException e)
+-    {
+-		cout << e.getPath() << " not set." << endl;
+-		exit(1);
+-    }
+-    catch (SettingTypeException e)
+-    {
+-		cout << e.getPath() << " has incorrect type." << endl;
+-		exit(1);
+-    }
+-
+-}
+-
+-/*
+- * create_mcs()
+- * INPUT			map<int, int>& id_lp		= 	id_lp contains the mapping between
+- * 													logical process and the hmc instance
+- *
+- * 					Iterations over id_lp is used to create hmc instances. This function
+- * 					also calls create_drams() which creates m_NUM_VAULTS * m_NUM_HMCs
+- * 					number of DRAMSim instances and connects m_NUM_VAULTS to each HMC
+- *
+- * 	OUTPUT
+- * 					NONE
+- */
+-
+-void HMC_builder :: create_mcs(map<int, int>& id_lp)
+-{
+-	// First create xbars
+-    // create clocks if necessary
+-	if(hmc_use_default_clock == false)
+-	{
+-		if(hmc_CLOCK_FREQ.size() != 1 && hmc_CLOCK_FREQ.size() != (m_NUM_HMCs) )
+-		{
+-			cerr << "Wrong number of clocks for HMC; requires 1 or " << (m_NUM_HMCs) << endl;
+-		}
+-		hmc_clocks.resize(m_NUM_HMCs);
+-		for(unsigned i=0; i < m_NUM_HMCs; i++)
+-		{
+-			hmc_clocks[i] = new manifold::kernel::Clock(hmc_CLOCK_FREQ[i]);
+-		}
+-	}
+-
+-	HMC_xbar :: Set_msg_types(m_MEM_MSG_TYPE, m_CREDIT_MSG_TYPE);
+-
+-	HMC_xbar_settings hmc_settings(m_NUM_SERDES, m_NUM_VAULTS, m_HMC_DOWNSTREAM_CREDITS, m_HMC_UPSTREAM_CREDITS);
+-
+-	Clock* xbar_clock = 0;
+-
+-	/*
+-	 * Set up vault_map here based on m_NUM_VAULTS. The size of vault_node_idx_vec decides
+-	 * the number of bits in the address dedicated to vault addressing.
+-	 *
+-	 * Eg:			PageBasedMap(Param1, Param2)
+-	 * 				Param1		=	length(vault_node_idx_vec) = 16
+-	 * 				Param2		=	0 -> These are PageOffsetBits
+-	 * 		The constructor of PageBasedMap will now set m_selector_bits = 4 and
+-	 * 		m_selector_mask = 0xf. This means, the lower 4 bits of address which comes to
+-	 * 		the HMC xbar will be removed when the address is sent to the DRAM as a request.
+-	 * 		However, based on the vault_id, these bits will be appended back to the address
+-	 * 		during a response.
+-	 *
+-	 */
+-	manifold::uarch::PageBasedMap *vault_map = new manifold::uarch::PageBasedMap(vault_node_idx_vec, 0);
+-
+-#ifdef HMCDEBUG
+-	cout << "Vault map object address " << vault_map << endl;
+-	cout << "Vault map node size " << vault_map->get_nodes_size() << endl;
+-	cout << "Vault map selector bits " << dec << vault_map->get_selector_bits() << endl;
+-	cout << "Vault map selector mask " << hex << vault_map->get_selector_mask() << dec << endl;
+-#endif
+-
+-	hmc_settings.s_vault_map = vault_map;
+-
+-	/*
+-	 * Iterate over all the mc_node_idx_vec i.e. over all the network nodes
+-	 * connected to the HMC components. Increment iterator by m_NUM_SERDES nodes
+-	 */
+-
+-	int cid[m_NUM_HMCs];
+-	hmc_settings.id_lp_map = &id_lp;
+-	map<int,int>::iterator it = id_lp.begin();
+-	int node_id = (*it).first;
+-	int lp = (*it).second;
+-	/*
+-	 * hmc_settings at this point will contain number of network links and number of
+-	 * DRAM links connected to each HMC xbar component. By passing the id_lp and 'i', the Create
+-	 * function for HMC_xbar will internally figure out how to assign network node ids to the
+-	 * different network ports of the HMC xbar.
+-	 *
+-	 * Eg:			ld_lp = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+-	 * 				i	  = 1 => HMC1 i.e. 2nd HMC
+-	 * 		Therefore, network node_ids 8, 9, 10 and 11 will be mapped to net_ports 0, 1, 2 and 3
+-	 * 		of HMC1.
+-	 */
+-	for(int i = 0; i < m_NUM_HMCs; i++)
+-	{
+-		if(hmc_use_default_clock)
+-		{
+-			xbar_clock = m_sysBuilder->get_default_clock();
+-			cid[i] = Component :: Create<HMC_xbar>(lp, i, hmc_settings, *xbar_clock);
+-		}
+-		else
+-		{
+-			xbar_clock = hmc_clocks[i];
+-			cid[i] = Component :: Create<HMC_xbar>(lp, i, hmc_settings, *xbar_clock);
+-		}
+-		m_hmc_id_cid_map[node_id] = cid[i];
+-#ifdef HMCDEBUG
+-		cout << "Created HMC: "<< i << " with cid " << cid[i] << endl;
+-#endif
+-
+-		node_id += m_NUM_SERDES; // Assuming HMCs are connected to sequential nodes
+-	}
+-#ifdef HUTDEBUG
+-	int pkt_cid[m_NUM_SERDES * m_NUM_HMCs];
+-	Clock* pkt_gen_clk = m_sysBuilder->get_default_clock();
+-	int pkt_gen_credits = 10;
+-	cout << "Creating pkt_generators." << endl;
+-	PKT_gen :: Set_msg_types(m_MEM_MSG_TYPE, m_CREDIT_MSG_TYPE);
+-	int num_HMC_bits = HMCLog2(m_NUM_HMCs);
+-
+-	for(int i = 0; i < m_NUM_SERDES * m_NUM_HMCs; i++)
+-	{
+-		// Create the pkt_generators
+-		pkt_cid[i] = Component :: Create<PKT_gen>(lp, i, *pkt_gen_clk, pkt_gen_credits, num_HMC_bits);
+-		m_pkt_gen_id_cid_map[i] = pkt_cid[i];
+-	}
+-	cout << "Created " << m_NUM_SERDES * m_NUM_HMCs << " pkt generators." << endl;
+-#endif
+-
+-#ifdef HMCDEBUG
+-	cout << "Done creating HMCs. Going to create vaults" << endl;
+-#endif
+-	create_drams(lp, cid, vault_map);
+-
+-#ifdef HMCDEBUG
+-	cout << "DRAMs created" << endl;
+-#endif
+-}
+-
+-/*
+- * create_drams()
+- * INPUTS
+- * 						lp 				= logical process
+- * 						hmc_cid			= pointer to array containing hmc component ids
+- * 						mc_map			= structure pointer to a memory mapping scheme
+- * 				This function instantiates all the DRAMSims. While doing so
+- * 				it associates m_NUM_VAULTS number of DRAMSims to each HMCxbar so that
+- * 				each DRAMSim will know which network port it has to send the pkt to.
+- *
+- * OUTPUT
+- * 						NONE
+- *
+- */
+-void HMC_builder :: create_drams(int lp, int* hmc_cid, manifold::uarch::PageBasedMap *mc_map)
+-{
+-	Clock* dram_clock = 0;
+-	Dram_sim* vault;
+-	int vault_cid = 0;
+-	//create clocks for vaults if necessary
+-	if(m_use_default_clock == false)
+-	{
+-		if(m_CLOCK_FREQ.size() != 1 && m_CLOCK_FREQ.size() != m_NUM_VAULTS)
+-		{
+-			cerr << "Wrong number of clocks for vaults; requires 1 or " << m_NUM_VAULTS << endl;
+-		}
+-
+-		m_clocks.resize(m_NUM_VAULTS);
+-		for(unsigned i=0; i<m_NUM_VAULTS; i++)
+-		{
+-			m_clocks[i] = new manifold::kernel::Clock(m_CLOCK_FREQ[i]);
+-		}
+-	}
+-
+-	Dram_sim :: Set_msg_types(m_MEM_MSG_TYPE, m_CREDIT_MSG_TYPE);
+-
+-	Dram_sim_settings vault_settings(m_DEV_FILE.c_str(), m_SYS_FILE.c_str(), m_VAULT_SIZE, false, m_MC_DOWNSTREAM_CREDITS);
+-
+-	for (int i = 0; i < m_NUM_HMCs; i++)
+-	{
+-		HMC_xbar* hmcxbar = Component :: GetComponent<HMC_xbar>(hmc_cid[i]);
+-#ifdef HMCDEBUG
+-		cout << "HMC: " << hmcxbar->get_hmc_id() << " cid: " << hmc_cid[i] << endl;
+-#endif
+-
+-		for (int j = 0; j < m_NUM_VAULTS; j++)
+-		{
+-			if(m_use_default_clock)
+-			{
+-				dram_clock = m_sysBuilder->get_default_clock();
+-				vault_cid = Component :: Create<Dram_sim>(lp, j, vault_settings, *dram_clock);
+-			}
+-			else
+-			{
+-				dram_clock = m_clocks[j];
+-				vault_cid = Component :: Create<Dram_sim>(lp, j, vault_settings, *dram_clock);
+-			}
+-			m_vault_id_cid_map[i][j] = vault_cid;
+-#ifdef HMCDEBUG
+-			cout << "Created DRAM " << j << endl;
+-#endif
+-
+-			vault = Component :: GetComponent<Dram_sim>(vault_cid);
+-#ifdef HMCDEBUG
+-			cout << "Connecting HMC: " << hmc_cid[i] <<" with hmc_mem_port " << hmcxbar->get_mem_port(j) << " with DRAM cid " << vault_cid << " PORT0" << endl;
+-#endif
+-			Manifold :: Connect(hmc_cid[i], hmcxbar->get_mem_port(j), &HMC_xbar::handle_mc_incoming<manifold::uarch::Mem_msg>,
+-								vault_cid, Controller::PORT0, &Dram_sim::handle_incoming<manifold::mcp_cache_namespace::Mem_msg>,
+-								*(hmcxbar->get_clock()), *(vault->get_clock()), 1, 1);
+-
+-#ifdef HMCDEBUG
+-			cout << "Dram sim @ " << vault << " vault map " << mc_map << endl;
+-#endif
+-			vault->set_mc_map(mc_map);
+-#ifdef HMCDEBUG
+-			cout << "Connected HMC " << dec << hmc_cid[i] << " with DRAM " << dec << j << endl;
+-#endif
+-		}
+-	}
+-
+-	return;
+-}
+-
+-#ifdef HUTDEBUG
+-void HMC_builder :: connect_mc_network()
+-{
+-	int j = 0;
+-	PKT_gen* pkt_gen = NULL;
+-	for(map<int, int>::iterator it = m_hmc_id_cid_map.begin(); it != m_hmc_id_cid_map.end(); ++it)
+-	{
+-		int hmc_node_id = (*it).first;
+-		int hmc_cid = (*it).second;
+-		HMC_xbar* hmcxbar = Component :: GetComponent<HMC_xbar>(hmc_cid);
+-		cout << "Connecting HMC to pkt_generator. HMC: " << dec << hmc_node_id << " with cid: " << dec << hmc_cid << endl;
+-		if (hmcxbar)
+-		{
+-			for (int i = 0; i < hmcxbar->get_num_net_ports(); i++)
+-			{
+-				assert(j <= m_NUM_SERDES * m_NUM_HMCs);
+-				pkt_gen = Component :: GetComponent<PKT_gen>(m_pkt_gen_id_cid_map[j]);
+-				cout << "Connecting HMC: " << dec << hmc_cid <<" with hmc_net_port " << dec << hmcxbar->get_net_port(i) << " to pkt_generator cid " << dec << m_pkt_gen_id_cid_map[j] << " PORT0" << endl;
+-				Manifold :: Connect(hmc_cid, hmcxbar->get_net_port(i), &HMC_xbar::handle_net<manifold::mcp_cache_namespace::Mem_msg>,
+-							m_pkt_gen_id_cid_map[j], Controller::PORT0, &PKT_gen::handle_hmc_incoming<manifold::uarch::Mem_msg>,
+-							*(hmcxbar->get_clock()), *(pkt_gen->get_clock()), 1, 1);
+-				j++;
+-			}
+-		}
+-	}
+-}
+-
+-#else
+-
+-/*
+- * connect_mc_network()
+- * INPUT
+- * 							NetworkBuilder* net_builder		= network object
+- *
+- * 				This function will connect the xbar to the network ports and also connect
+- * 				the DRAMSim instances to the xbars. The network topology must be TORUS.
+- * 				The PORT_NET port of the xbar connects to the TERMINAL_PORT of IRIS.
+- *
+- * 	OUTPUT
+- * 							NONE
+- */
+-void HMC_builder :: connect_mc_network(NetworkBuilder* net_builder)
+-{
+-	//Connect HMC xbar to Network.
+-    switch(net_builder->get_type())
+-    {
+-        case NetworkBuilder::IRIS:
+-        {
+-			Iris_builder* irisBuilder = dynamic_cast<Iris_builder*>(net_builder);
+-			assert(irisBuilder != 0);
+-
+-			const std::vector<CompId_t>& ni_cids = net_builder->get_interface_cid();
+-			// Iterate over all HMC ports. Connect the ports to the network. Dramsims instances are already connected
+-			// to the HMC xbars
+-			for(map<int, int>::iterator it = m_hmc_id_cid_map.begin(); it != m_hmc_id_cid_map.end(); ++it)
+-			{
+-				int hmc_node_id = (*it).first;
+-				int hmc_cid = (*it).second;
+-				HMC_xbar* hmcxbar = Component :: GetComponent<HMC_xbar>(hmc_cid);
+-#ifdef HMCDEBUG
+-				cout << "Connecting HMC to network. HMC: " << dec << hmc_node_id << " with cid: " << dec << hmc_cid << endl;
+-#endif
+-				if (irisBuilder->get_topology() == "TORUS6P")
+-				{
+-					// For HMC the IRIS network should be TORUS
+-					assert(0);
+-					break;
+-				}
+-				else
+-				{
+-					assert(hmc_node_id >= 0 && hmc_node_id < int(ni_cids.size()) );
+-					if(hmcxbar)
+-					{
+-						//no need to call Connect if MC is not in this LP
+-						//????????????????????????? todo: MCP use proper clock!!
+-						switch(m_sysBuilder->get_cache_builder()->get_type())
+-						{
+-							case CacheBuilder::MCP_CACHE:
+-							case CacheBuilder::MCP_L1L2:
+-								for (int i = 0; i < hmcxbar->get_num_net_ports(); i++)
+-								{
+-#ifdef HMCDEBUG
+-									cout << "Connecting HMC: " << dec << hmc_cid <<" with hmc_net_port " << dec << hmcxbar->get_net_port(i) << " with network cid " << dec << ni_cids[hmc_node_id + i] << " TERMINAL PORT" << endl;
+-#endif
+-									Manifold :: Connect(hmc_cid, hmcxbar->get_net_port(i), &HMC_xbar::handle_net<manifold::mcp_cache_namespace::Mem_msg>,
+-													    ni_cids[hmc_node_id + i], GenNetworkInterface<NetworkPacket>::TERMINAL_PORT, &GenNetworkInterface<NetworkPacket>::handle_new_packet_event,
+-														*(hmcxbar->get_clock()), Clock::Master(), 1, 1);
+-								}
+-								break;
+-							default:
+-								assert(0);
+-						}
+-					}
+-				}// if TORUS
+-			}// HMC for loop
+-        } // case: IRIS
+-		break;
+-		default:
+-			assert(0);
+-			break;
+-	}//switch
+-}
+-
+-#endif
+-
+-void HMC_builder :: set_mc_map_obj(manifold::uarch::DestMap *hmc_map)
+-{
+-#ifdef HMCDEBUG
+-	cout << "HMC builder set_mc_map_obj " << hmc_map << endl;
+-#endif
+-    for(map<int, int>::iterator it = m_hmc_id_cid_map.begin(); it != m_hmc_id_cid_map.end(); ++it)
+-    {
+-        int node_id = (*it).first;
+-#ifdef HMCDEBUG
+-        cout << "set_mc_map_obj node_id=" << node_id << endl;
+-#endif
+-        HMC_xbar* hmc = manifold::kernel::Component :: GetComponent<HMC_xbar>(m_hmc_id_cid_map[node_id]);
+-
+-        if (hmc)
+-            hmc->set_hmc_map(hmc_map);
+-    }
+-#ifdef HUTDEBUG
+-    for (map<int,int>::iterator it = m_pkt_gen_id_cid_map.begin(); it != m_pkt_gen_id_cid_map.end(); ++it)
+-    {
+-    	int cid = (*it).second;
+-    	PKT_gen* pkt_gen = manifold::kernel::Component :: GetComponent<PKT_gen>(cid);
+-
+-		if (pkt_gen)
+-			pkt_gen->set_hmc_map(hmc_map);
+-    }
+-#endif
+-}
+-
+-void HMC_builder :: print_config(std::ostream& out)
+-{
+-    out << "  MC type: HMC\n";
+-    out << "  num of HMCs : " << dec <<  m_NUM_HMCs << endl;
+-    out << "  num of SerDes links : " << dec << m_NUM_SERDES << endl;
+-    out << "  device file : " << m_DEV_FILE << "\n"
+-        << "  system file : " << m_SYS_FILE << "\n"
+-    << " Total Mem Size(MB): " << dec << m_MEM_SIZE << "\n Vault Size(MB): " << dec << m_VAULT_SIZE << "\n";
+-    out << "  vault_clock: ";
+-    if(m_use_default_clock)
+-        out << "default\n";
+-    else
+-    {
+-        for(unsigned i=0; i<m_CLOCK_FREQ.size()-1; i++)
+-        out << dec << m_CLOCK_FREQ[i] << ", ";
+-    out << m_CLOCK_FREQ[m_CLOCK_FREQ.size()-1] << "\n";
+-    }
+-
+-    out << "  HMC_xbar_clock: ";
+-	if(hmc_use_default_clock)
+-		out << "default\n";
+-	else
+-	{
+-		for(unsigned i=0; i<hmc_CLOCK_FREQ.size()-1; i++)
+-		out << dec << hmc_CLOCK_FREQ[i] << ", ";
+-	out << hmc_CLOCK_FREQ[hmc_CLOCK_FREQ.size()-1] << "\n";
+-	}
+-}
+-
+-void HMC_builder :: print_stats(std::ostream& out)
+-{
+-	for(map<int, int>::iterator it = m_hmc_id_cid_map.begin(); it != m_hmc_id_cid_map.end(); ++it)
+-	{
+-		int cid = (*it).second;
+-		HMC_xbar* xbar = Component :: GetComponent<HMC_xbar>(cid);
+-		if(xbar)
+-			xbar->print_stats(out);
+-	}
+-
+-	for(int i = 0; i < m_NUM_HMCs; i++)
+-	{
+-		for(map<int, int>::iterator it = m_vault_id_cid_map[i].begin(); it != m_vault_id_cid_map[i].end(); ++it)
+-		{
+-			int cid = (*it).second;
+-			Dram_sim* vault = Component :: GetComponent<Dram_sim>(cid);
+-			if(vault)
+-				vault->print_stats(out);
+-		}
+-	}
+-#ifdef HUTDEBUG
+-
+-	for(map<int, int>::iterator it = m_pkt_gen_id_cid_map.begin(); it != m_pkt_gen_id_cid_map.end(); ++it)
+-	{
+-		int cid = (*it).second;
+-		PKT_gen* Gen = Component :: GetComponent<PKT_gen>(cid);
+-		if(Gen)
+-			Gen->print_stats(out);
+-	}
+-#endif
+-}
+diff --git a/simulator/smp/common/mc_builder.h b/simulator/smp/common/mc_builder.h
+index 298be46..6916cc8 100644
+--- a/simulator/smp/common/mc_builder.h
++++ b/simulator/smp/common/mc_builder.h
+@@ -6,28 +6,17 @@
+ #include "CaffDRAM/Controller.h"
+ #include "DRAMSim2/dram_sim.h"
+ #include "uarch/DestMap.h"
+-#include "hmc_xbar.h"
+-#ifdef HUTDEBUG
+-#include "pkt_generator.h"
+-#endif
+ 
+ 
+-#ifdef HUTDEBUG
+-class SysBuilder_llp_HUT;
+-#else
++
+ class SysBuilder_llp;
+ class NetworkBuilder;
+-#endif
+ 
+ class MemControllerBuilder {
+ public:
+-    enum {CAFFDRAM, DRAMSIM, HMC}; //mc types
++    enum {CAFFDRAM, DRAMSIM}; //mc types
+ 
+-#ifdef HUTDEBUG
+-    MemControllerBuilder(SysBuilder_llp_HUT* b) : m_sysBuilder(b) {}
+-#else
+     MemControllerBuilder(SysBuilder_llp* b) : m_sysBuilder(b) {}
+-#endif
+ 
+     virtual ~MemControllerBuilder() {}
+ 
+@@ -35,21 +24,13 @@ public:
+ 
+     virtual void read_config(libconfig::Config&) = 0;
+     virtual void create_mcs(std::map<int, int>& id_lp) = 0;
+-#ifdef HUTDEBUG
+-    virtual void connect_mc_network() = 0;
+-#else
+     virtual void connect_mc_network(NetworkBuilder*) = 0;
+-#endif
+     virtual void print_config(std::ostream&);
+     virtual void print_stats(std::ostream&) = 0;
+     virtual void set_mc_map_obj(manifold::uarch::DestMap *mc_map) = 0;
+ 
+ protected:
+-#ifdef HUTDEBUG
+-    SysBuilder_llp_HUT* m_sysBuilder;
+-#else
+     SysBuilder_llp* m_sysBuilder;
+-#endif
+ 
+     unsigned m_NUM_MC;
+     std::vector<double> m_CLOCK_FREQ;
+@@ -60,7 +41,7 @@ protected:
+ };
+ 
+ 
+-#ifndef HUTDEBUG
++
+ //builder for CaffDRAM
+ class CaffDRAM_builder : public MemControllerBuilder {
+ public:
+@@ -111,73 +92,9 @@ private:
+     unsigned m_MEM_SIZE; //mem size;
+ };
+ 
+-#endif // HUTDEBUG
+-
+-//builder for HMC
+-class HMC_builder : public MemControllerBuilder
+-{
+-public:
+-#ifdef HUTDEBUG
+-	HMC_builder(SysBuilder_llp_HUT* b) : MemControllerBuilder(b) {}
+-#else
+-	HMC_builder(SysBuilder_llp* b) : MemControllerBuilder(b) {}
+-#endif
+-
+-	int get_type() { return HMC; }
+-
+-    void read_config(libconfig::Config&);
+-    void create_mcs(std::map<int, int>& id_lp);
+-#ifdef HUTDEBUG
+-    void connect_mc_network();
+-    static int HMCLog2(unsigned num)
+-	{
+-		assert(num > 0);
+-
+-		int bits = 0;
+-		while(((unsigned)0x1 << bits) < num)
+-		{
+-			bits++;
+-		}
+-		return bits;
+-	}
+-#else
+-    void connect_mc_network(NetworkBuilder*);
+-#endif
+-    void set_mc_map_obj(manifold::uarch::DestMap *hmc_map);
+-
+-    void print_config(std::ostream&);
+-    void print_stats(std::ostream&);
+-
+-private:
+-    int m_HMC_DOWNSTREAM_CREDITS; //credits for sending up to network
+-    int m_HMC_UPSTREAM_CREDITS; //credits for sending down to vault
+-    int m_MC_DOWNSTREAM_CREDITS; //credits for sending up to HMC xbar
+-    int m_MEM_MSG_TYPE;
+-    int m_CREDIT_MSG_TYPE;
+-    std::string m_DEV_FILE; //device file name
+-    std::string m_SYS_FILE; //system file name
+-    unsigned m_VAULT_SIZE; //size of each vault
+-    unsigned m_MEM_SIZE; //mem size = m_NUM_VAULTS x m_VAULT_SIZE
+-    unsigned m_NUM_VAULTS; //number of vaults in each HMC
+-    unsigned m_NUM_SERDES; //number of SerDes links to each HMC
+-    unsigned m_NUM_HMCs; // number of HMCs
+-    std::vector<int> vault_node_idx_vec;
+-    std::set<int> vault_node_idx_set; //set is used to ensure each index is unique
+ 
+-    void create_drams(int lp, int* hmc_cid, manifold::uarch::PageBasedMap *mc_map);
+-    //function to create drams from within create_mcs();
+ 
+-protected:
+-    bool hmc_use_default_clock;
+-    std::vector<double> hmc_CLOCK_FREQ;
+-    std::vector<manifold::kernel::Clock*> hmc_clocks; //clock for the HMC xbar
+-    std::map<int, int> m_hmc_id_cid_map; //hmc id to cid map
+-    std::map<int,int>* m_vault_id_cid_map; //vault id to cid map
+-#ifdef HUTDEBUG
+-    std::map<int,int> m_pkt_gen_id_cid_map;
+-#endif
+ 
+ 
+-};
+ 
+-#endif // #ifndef MC_BUILDER_H
++#endif // #ifndef NETWORK_BUILDER_H
+diff --git a/simulator/smp/common/pkt_generator.cpp b/simulator/smp/common/pkt_generator.cpp
+deleted file mode 100644
+index 9c4bde2..0000000
+--- a/simulator/smp/common/pkt_generator.cpp
++++ /dev/null
+@@ -1,177 +0,0 @@
+-#include "pkt_generator.h"
+-#include "kernel/component.h"
+-#include "kernel/manifold.h"
+-#include <stdlib.h>
+-#define ADDR_MAX 0x7fffffffffff
+-
+-using namespace manifold::kernel;
+-using namespace manifold::mcp_cache_namespace;
+-
+-
+-namespace manifold {
+-namespace pkt_generator {
+-
+-int PKT_gen :: MEM_MSG_TYPE = -1;
+-int PKT_gen :: CREDIT_MSG_TYPE = -1;
+-bool PKT_gen :: Msg_type_set = false;
+-
+-PKT_gen :: PKT_gen(int id, Clock& clk, int &credits, int &num_bits) :
+-		pkt_gen_id(id) , pkt_gen_clk(clk), upstream_credits(credits), num_select_bits(num_bits)
+-{
+-	cerr << " pkt_gen @ " << this << endl;
+-	assert(Msg_type_set);
+-	assert(MEM_MSG_TYPE != CREDIT_MSG_TYPE);
+-
+-	pktgen_map = NULL;
+-
+-	//register with clock
+-	Clock :: Register(clk, this, &PKT_gen::tick, (void(PKT_gen::*)(void)) 0 );
+-
+-	num_pkts_sent = 0;
+-	num_pkts_rcvd = 0;
+-	num_outgoing_credits = 0;
+-	num_incoming_credits = 0;
+-	PKTS_COUNTER = 0;
+-}
+-
+-void PKT_gen :: tick()
+-{
+-	if (PKTS_COUNTER >= 100)
+-		return;
+-	for (int i = 0; i < 1; i++)
+-	{
+-
+-	//	uint64_t send_addr = 0xfffffffc0 + i;
+-		uint64_t send_addr = 0;
+-		send_addr = rand() % ADDR_MAX; // pow(2,36)
+-		cerr << hex << "pkt_gen_map->lookup(" << send_addr << ") = " << pktgen_map->lookup(send_addr) << dec << endl;
+-		int HMC_add = this->get_id() / 4;
+-		switch(HMC_add)
+-		{
+-		case 0: // HMC 0
+-			{
+-				send_addr = (send_addr << num_select_bits);
+-				send_addr = (send_addr << 5);
+-//				cerr << hex << send_addr << dec << "\t" << HMC_add << endl;
+-				break;
+-			}
+-		case 1: // HMC 1
+-			{
+-				send_addr = (send_addr << num_select_bits) | 1;
+-				send_addr = (send_addr << 5);
+-//				cerr << hex << send_addr << dec << "\t" << HMC_add << endl;
+-				break;
+-			}
+-		case 2: // HMC 2
+-			{
+-				send_addr = (send_addr << num_select_bits) | 2;
+-				send_addr = (send_addr << 5);
+-//				cerr << hex << send_addr << dec << "\t" << HMC_add << endl;
+-				break;
+-			}
+-		case 3: // HMC 3
+-			{
+-				send_addr = (send_addr << num_select_bits) | 3;
+-				send_addr = (send_addr << 5);
+-//				cerr << hex << send_addr << dec << "\t" << HMC_add << endl;
+-				break;
+-			}
+-		case 4: // HMC 4
+-			{
+-				send_addr = (send_addr << num_select_bits) | 4;
+-				send_addr = (send_addr << 5);
+-//				cerr << hex << send_addr << dec << "\t" << HMC_add << endl;
+-				break;
+-			}
+-		case 5: // HMC 5
+-			{
+-				send_addr = (send_addr << num_select_bits) | 5;
+-				send_addr = (send_addr << 5);
+-//				cerr << hex << send_addr << dec << "\t" << HMC_add << endl;
+-				break;
+-			}
+-		case 6: // HMC 6
+-			{
+-				send_addr = (send_addr << num_select_bits) | 6;
+-				send_addr = (send_addr << 5);
+-//				cerr << hex << send_addr << dec << "\t" << HMC_add << endl;
+-				break;
+-			}
+-		case 7: // HMC 7
+-			{
+-				send_addr = (send_addr << num_select_bits) | 7;
+-				send_addr = (send_addr << 5);
+-//				cerr << hex << send_addr << dec << "\t" << HMC_add << endl;
+-				break;
+-			}
+-		default:
+-			{
+-				assert(0);
+-			}
+-		}
+-
+-		manifold::mcp_cache_namespace::Mem_msg req;
+-		req.addr = send_addr;
+-		req.op_type = OpMemLd; //Mem LD
+-
+-		// Choosing the pkt source randomly
+-		int r_src = rand() % 4; // Source id depends on the number of CPUs.
+-		req.src_id = r_src;
+-		req.dst_id = this->get_id() + 4; // Change 4 to the starting number in HMC_Unit_Test.cfg file
+-
+-		manifold::uarch::NetworkPacket *pkt = new manifold::uarch::NetworkPacket;
+-		pkt->set_type(MEM_MSG_TYPE);
+-		pkt->set_src(r_src);
+-		pkt->set_src_port(rand() % 10);
+-		pkt->set_dst(this->get_id() + 4);  // The pkt_gen is connected to the HMC node with same node id
+-		pkt->set_dst_port(rand() % 10);
+-	
+-		*((manifold::mcp_cache_namespace::Mem_msg*)(pkt->data)) = req;
+-		pkt->data_size = sizeof(manifold::mcp_cache_namespace::Mem_msg);
+-	
+-		if (upstream_credits > 0)
+-		{
+-			Send(PORT0, pkt);
+-			upstream_credits--;
+-			num_pkts_sent++;
+-			cerr << dec << "@\t" << m_clk->NowTicks() <<"\t(tick)PKTupstream credits[" << this->get_id() << "]\t" << upstream_credits+1 << "->"
+-						<< upstream_credits << endl;
+-			cerr << dec << "@\t" << m_clk->NowTicks() << "\tpkt_gen_id\t" << this->get_id()
+-						<< "\tREQUEST pkt_addr\t" << hex << req.get_addr() << "\tsrc_id\t"
+-						<< dec << pkt->get_src() << "\tdst_id\t" << pkt->get_dst()
+-						<< "\tpkt_src_port\t" << pkt->get_src_port()
+-						<< "\tpkt_dst_port\t" << pkt->get_dst_port() << endl;
+-		}
+-			PKTS_COUNTER++;
+-	}
+-}
+-
+-void PKT_gen :: send_credit_downstream()
+-{
+-	manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
+-	credit_pkt->type = CREDIT_MSG_TYPE;
+-	Send(PORT0, credit_pkt);
+-	cerr << dec << "@\t" << m_clk->NowTicks() << "\tpkt_gen\t" << this->get_id() << "\tsending CREDIT pkt\t" << dec << endl;
+-	num_outgoing_credits++;
+-}
+-
+-void PKT_gen :: set_hmc_map(manifold::uarch::DestMap *m)
+-{
+-	cout << "PKT_gen @\t" << this << "\tset_mc_map\t" << m << endl;
+-	this->pktgen_map = m;
+-}
+-
+-
+-void PKT_gen :: print_stats(ostream& out)
+-{
+-	out << "****** PKT_GEN " << pkt_gen_id << "********* stats:" << endl
+-	<< "  incoming msg: " << num_pkts_rcvd << endl
+-	<< "  outgoing msg: " << num_pkts_sent << endl
+-	<< "  num outgoing credits: " << num_outgoing_credits << endl
+-	<< "  num incoming credits: " << num_incoming_credits << endl;
+-}
+-
+-
+-} // namespace pkt_generator
+-} //namespace manifold
+-
+diff --git a/simulator/smp/common/pkt_generator.h b/simulator/smp/common/pkt_generator.h
+deleted file mode 100644
+index 6a399ad..0000000
+--- a/simulator/smp/common/pkt_generator.h
++++ /dev/null
+@@ -1,93 +0,0 @@
+-#ifndef MANIFOLD_PKT_GENERATOR_H
+-#define MANIFOLD_PKT_GENERATOR_H
+-#include "kernel/component-decl.h"
+-#include "uarch/DestMap.h"
+-#include "kernel/clock.h"
+-#include "uarch/networkPacket.h"
+-#include "uarch/memMsg.h"
+-#include "mcp-cache/coh_mem_req.h"
+-#include "mcp-cache/cache_req.h"
+-#include <list>
+-#include <algorithm>
+-
+-namespace manifold {
+-namespace pkt_generator{
+-
+-class PKT_gen : public manifold::kernel::Component {
+-public:
+-	enum { PORT0 };
+-
+-	PKT_gen(int id, manifold::kernel::Clock&, int &credits, int &num_bits);
+-	~PKT_gen() {};
+-
+-	int get_id() { return pkt_gen_id; }
+-
+-	void set_hmc_map(manifold::uarch::DestMap *m);
+-
+-	// This is the function where routing of the packets to different vaults takes place
+-	void tick();
+-	template<typename T> void handle_hmc_incoming(int, manifold::uarch::NetworkPacket* pkt);
+-
+-	void send_credit_downstream();
+-
+-	static void Set_msg_types(int mem, int credit) // Set some interface parameters
+-	{
+-		assert(Msg_type_set == false);
+-		MEM_MSG_TYPE = mem;
+-		CREDIT_MSG_TYPE = credit;
+-		Msg_type_set = true;
+-	}
+-
+-	void print_stats(ostream&);
+-private:
+-	static int MEM_MSG_TYPE;
+-	static int CREDIT_MSG_TYPE;
+-	static bool Msg_type_set;
+-
+-	manifold::kernel::Clock& pkt_gen_clk;
+-
+-	int pkt_gen_id;
+-	int upstream_credits;     // NI credits
+-	manifold::uarch::DestMap *pktgen_map;
+-
+-	//stats
+-	unsigned num_pkts_sent;
+-	unsigned num_pkts_rcvd;
+-	unsigned num_outgoing_credits;
+-	unsigned num_incoming_credits;
+-	unsigned num_select_bits;
+-	unsigned PKTS_COUNTER;
+-};
+-
+-//! handle vault responses; type T is the message type from vault memory controller: uarch::Mem_msg
+-template<typename T>
+-void PKT_gen :: handle_hmc_incoming(int in_port, manifold::uarch::NetworkPacket* pkt)
+-{
+-	if (pkt->type == CREDIT_MSG_TYPE)
+-	{
+-		upstream_credits++;
+-		delete pkt;
+-		num_incoming_credits++;
+-		cerr << dec << "@\t" << m_clk->NowTicks() << "\tpkt_gen\t" << this->get_id() << "\trcvd HMC CREDIT pkt\t" << dec << in_port
+-		    		<< "\tPKTupstream credits[" << this->get_id() << "]\t" << upstream_credits-1 << "->" << upstream_credits << endl;
+-		return;
+-	}
+-
+-	T* req = (T*)pkt->data;
+-
+-	uint64_t pkt_addr = req->get_addr(); //  Should be global address
+-	cerr << "@\t" << m_clk->NowTicks() << "\tpkt_gen_id\t" << this->get_id() << "\tRESPONSE pkt_addr\t"
+-			<< hex << pkt_addr << "\tpkt_src\t" << dec << pkt->get_src() << "\tpkt_dst\t"<< pkt->get_dst()
+-			<< "\tpkt_src_port\t" << pkt->get_src_port()
+-			<< "\tpkt_dst_port\t" << pkt->get_dst_port() << endl;
+-	send_credit_downstream();
+-	num_pkts_rcvd++;
+-	delete pkt;
+-	return;
+-}
+-
+-
+-
+-} //pkt_generator namespace
+-} //namespace manifold
+-#endif
+diff --git a/simulator/smp/common/sysBuilder_llp.cc b/simulator/smp/common/sysBuilder_llp.cc
+index 3c706c3..8052b68 100644
+--- a/simulator/smp/common/sysBuilder_llp.cc
++++ b/simulator/smp/common/sysBuilder_llp.cc
+@@ -154,14 +154,9 @@ void SysBuilder_llp :: config_components()
+         //memory controller
+         const char* mem_chars = m_config.lookup("mc.type");
+         string mem_str = mem_chars;
+-        if(mem_str == "CAFFDRAM")
+-        	m_mc_builder = new CaffDRAM_builder(this);
+-        else if(mem_str == "DRAMSIM")
+-        	m_mc_builder = new DramSim_builder(this);
+-        else if(mem_str == "HMC")
+-        	m_mc_builder = new HMC_builder(this);
+-        else 
+-	{
++        if(mem_str == "CAFFDRAM") m_mc_builder = new CaffDRAM_builder(this);
++        else if(mem_str == "DRAMSIM") m_mc_builder = new DramSim_builder(this);
++        else {
+             cerr << "Memory controller type  " << mem_str << "  not supported\n";
+             exit(1);
+         }
+@@ -185,46 +180,19 @@ void SysBuilder_llp :: config_components()
+ 
+ 
+         //memory controller assignment
+-        if(mem_str == "HMC")
+-        {
+-		//xbar assignment
+-		//the node indices of xbar are in an array, each value between 0 and MAX_NODES-1
+-        	MAX_VAULTS = m_config.lookup("max_vaults");
+-        	MAX_SERDES = m_config.lookup("max_serdes");
+-		Setting& setting_hmc_xbar = m_config.lookup("mc.xbar.node_idx");
+-		num_serdes = m_config.lookup("mc.xbar.num_serdes");
+-		int num_xbar_nodes = setting_hmc_xbar.getLength(); //number of IRIS network nodes
+-		assert(num_xbar_nodes >=1 && num_xbar_nodes <= MAX_NODES);
+-		trans_size = m_config.lookup("mc.trans_size");
+-
+-		this->mc_node_idx_vec.resize(num_xbar_nodes);
+-
+-		for(int i=0; i < num_xbar_nodes; i++)
+-		{
+-			assert((int)setting_hmc_xbar[i] >=0 && (int)setting_hmc_xbar[i] < MAX_NODES);
+-			mc_node_idx_set.insert((int)setting_hmc_xbar[i]);
+-			this->mc_node_idx_vec[i] = (int)setting_hmc_xbar[i];
+-		}
+-		assert(mc_node_idx_set.size() == (unsigned)num_xbar_nodes); //verify no 2 indices are the same
+-        }
+-        else
+-        {
+-        	//memory controller assignment
+-		//the node indices of mc are in an array, each value between 0 and MAX_NODES-1
+-		Setting& setting_mc = m_config.lookup("mc.node_idx");
+-		int num_mc = setting_mc.getLength(); //number of SerDes links
+-		assert(num_mc >=1 && num_mc <= MAX_NODES);
+-
+-		this->mc_node_idx_vec.resize(num_mc);
+-
+-		for(int i=0; i<num_mc; i++)
+-		{
+-			assert((int)setting_mc[i] >=0 && (int)setting_mc[i] < MAX_NODES);
+-			mc_node_idx_set.insert((int)setting_mc[i]);
+-			this->mc_node_idx_vec[i] = (int)setting_mc[i];
+-		}
+-		assert(mc_node_idx_set.size() == (unsigned)num_mc); //verify no 2 indices are the same
++        //the node indices of MC are in an array, each value between 0 and MAX_NODES-1
++        Setting& setting_mc = m_config.lookup("mc.node_idx");
++        int num_mc = setting_mc.getLength(); //number of mem controllers
++        assert(num_mc >=1 && num_mc <= MAX_NODES);
++
++        this->mc_node_idx_vec.resize(num_mc);
++
++        for(int i=0; i<num_mc; i++) {
++            assert((int)setting_mc[i] >=0 && (int)setting_mc[i] < MAX_NODES);
++            mc_node_idx_set.insert((int)setting_mc[i]);
++            this->mc_node_idx_vec[i] = (int)setting_mc[i];
+         }
++        assert(mc_node_idx_set.size() == (unsigned)num_mc); //verify no 2 indices are the same
+ 
+ //      //verify MC indices are not used by processors
+ //      for(int i=0; i<num_mc; i++) {
+@@ -342,22 +310,17 @@ void SysBuilder_llp :: build_system(vector<string>& args, const char* appFile, i
+ 
+     //??????????????? todo: network should be able to use different clock
+     m_network_builder->create_network(*m_default_clock, PART_1);
+-    cout << "\n Network has been created" << endl;
+ 
+ #ifdef LIBKITFOX
+     m_kitfox_builder->create_proxy();
+ #endif
+ 
+-    cout << "\n Kitfox proxy has been created" << endl;
+     assert(m_proc_builder->get_fe_type() == ProcBuilder::INVALID_FE_TYPE);
+     m_proc_builder->set_fe_type(ProcBuilder::QSIMPROXY);
+-    cout << "\n Going into create_qsimproxy_nodes" << endl;
+     create_qsimproxy_nodes(args,appFile,n_lps,part);
+ 
+     //connect components
+-    cout << "\n connecting components..." << endl;
+     connect_components();
+-    cout << "\n connecting components done." << endl;
+ }
+ 
+ 
+@@ -487,9 +450,7 @@ void SysBuilder_llp :: create_qsimproxy_nodes(vector<string>& args, const char*
+         default: { assert(0); }
+     }
+ 
+-    cout << "\n Going to create nodes...";
+     create_nodes(FT_QSIMPROXY, n_lps, part);
+-    cout << "\n Nodes created" << endl;
+ }
+ 
+ 
+@@ -567,12 +528,8 @@ void SysBuilder_llp :: create_nodes(int type, int n_lps, int part)
+ 
+ 
+     //??????????????????? todo cache should have separate clock
+-    cout<<"\n Create_caches";
+     m_cache_builder->create_caches(*m_default_clock);
+-    cout<<"\n Created caches";
+-    cout<<"\n Create_mcs" << endl;
+     m_mc_builder->create_mcs(mc_id_lp_map);
+-    cout<<"\n Created mcs" << endl;
+ 
+     if(m_cache_builder->get_type() == CacheBuilder::MCP_CACHE || m_cache_builder->get_type() == CacheBuilder::MCP_L1L2) {
+         dep_injection_for_mcp();
+@@ -668,37 +625,13 @@ void SysBuilder_llp :: dep_injection_for_mcp()
+ 
+         m_cache_builder->set_mc_map_obj(mc_map);
+         m_mc_builder->set_mc_map_obj(mc_map);
+-    } 
+-    else if(m_mc_builder->get_type() == MemControllerBuilder::HMC) //HMC
+-    {
+-    	manifold::uarch::HMCDestMap *hmc_map = new manifold::uarch::HMCDestMap(
+-    	                                        mc_node_idx_vec, num_serdes, int(MAX_VAULTS / MAX_SERDES), trans_size );
+-    	cout << "hmc_map object " << hmc_map << endl;
+-    	cout << "HMCMap nodes size " << hmc_map->get_nodes_size() << endl;
+-   	    cout << "HMCDestMap selector bits " << dec << hmc_map->get_selector_bits() << endl;
+-   	    cout << "HMCDestMap selector mask " << hex << hmc_map->get_selector_mask() << endl;
+-    	/*
+-    	 * num_serdes can be 2 or 4. The number of HMCs = length(mc_node_idx_vec) / num_serdes
+-    	 * Eg: 			length(mc_node_idx_vec) = 16
+-    	 * 				num_serdes = 4
+-    	 * 				number of HMCs = 16 / 4 = 4
+-    	 */
+-		m_cache_builder->set_mc_map_obj(hmc_map);
+-		m_mc_builder->set_mc_map_obj(hmc_map);
+-
+-    }
+-    else if(m_mc_builder->get_type() == MemControllerBuilder::DRAMSIM)// DRAMSim
+-    {
++    } else {
+         manifold::uarch::PageBasedMap *mc_map = new manifold::uarch::PageBasedMap(
+                                         mc_node_idx_vec, 12); // assuming page size= 2^12
+ 
+         m_cache_builder->set_mc_map_obj(mc_map);
+         m_mc_builder->set_mc_map_obj(mc_map);
+     }
+-    else
+-    {
+-        assert(0);
+-    }
+ }
+ 
+ 
+diff --git a/simulator/smp/common/sysBuilder_llp.h b/simulator/smp/common/sysBuilder_llp.h
+index ea83059..02bfa96 100644
+--- a/simulator/smp/common/sysBuilder_llp.h
++++ b/simulator/smp/common/sysBuilder_llp.h
+@@ -78,8 +78,6 @@ protected:
+     MemControllerBuilder* m_mc_builder;
+     QsimBuilder *m_qsim_builder;
+ 
+-    int num_serdes;
+-
+ #ifdef LIBKITFOX
+     KitFoxBuilder *m_kitfox_builder;
+ #endif
+@@ -87,35 +85,16 @@ protected:
+     Qsim::OSDomain *m_qsim_osd;
+ 
+     int MAX_NODES;
+-    int MAX_VAULTS;
+-    int MAX_SERDES;
+-    int trans_size;
+     manifold::kernel::Ticks_t STOP; //simulation stop time
+     uint64_t m_DEFAULT_CLOCK_FREQ; //default clock's frequency
+ 
+     std::vector<Node_conf_llp> m_node_conf;
+-    /*
+-     * For HMC, "mc_node_idx_vec" is the vector containing the node_ids
+-     * of all the HMCs connected to the network. Each HMC will have a fixed
+-     * number of SerDes links given by the length of xbar.node_idx configuration
+-     * input.
+-     *
+-     * "mc_node_idx_set" is the set which will contain the node_ids of all
+-     * the HMCs connected to the network.
+-     *
+-     * "mc_id_lp_map" contains the lp to node_id mapping for each HMC.
+-     * Currently, all the HMC nodes are on lp = 0;
+-     * !!!!!!!!!!!!!TODO: Need to figure out mpi implementation of HMC!!!!!!!!!!!!!
+-     *
+-     */
+ 
+     std::vector<int> proc_node_idx_vec;
+     std::vector<int> mc_node_idx_vec;
+-    std::vector<int> vault_node_idx_vec;
+ 
+     std::set<int> proc_node_idx_set; //set is used to ensure each index is unique
+     std::set<int> mc_node_idx_set; //set is used to ensure each index is unique
+-    std::set<int> vault_node_idx_set; //set is used to ensure each index is unique
+ 
+     std::map<int, int> proc_id_lp_map; //maps proc's node id to its LP
+     std::map<int, int> mc_id_lp_map; //maps mc's node id to its LP
+diff --git a/simulator/smp/common/sysBuilder_llp_HUT.cpp b/simulator/smp/common/sysBuilder_llp_HUT.cpp
+deleted file mode 100644
+index 745c489..0000000
+--- a/simulator/smp/common/sysBuilder_llp_HUT.cpp
++++ /dev/null
+@@ -1,259 +0,0 @@
+-/*
+- * sysBuilder_llp_HUT.cpp
+- *
+- *  Created on: Feb 14, 2017
+- *      Author: Karthik Rao
+- *
+- *  
+- */
+-
+-#include "sysBuilder_llp_HUT.h"
+-
+-#include "kernel/clock.h"
+-#include "kernel/component.h"
+-#include "kernel/manifold.h"
+-#define MAX_NODES 36
+-
+-using namespace manifold::kernel;
+-using namespace libconfig;
+-
+-//====================================================================
+-//====================================================================
+-SysBuilder_llp_HUT :: SysBuilder_llp_HUT(const char* fname)
+-{
+-	try 
+-	{
+-		m_config.readFile(fname);
+-		m_config.setAutoConvert(true);
+-	}
+-	catch (FileIOException e) 
+-	{
+-		cerr << "Cannot read configuration file " << fname << endl;
+-		exit(1);
+-	}
+-	catch (ParseException e) 
+-	{
+-		cerr << "Cannot parse configuration file " << fname << endl;
+-		exit(1);
+-	}
+-
+-	m_conf_read = false;
+-
+-	m_mc_builder = 0;
+-
+-	m_default_clock = 0;
+-}
+-
+-SysBuilder_llp_HUT :: ~SysBuilder_llp_HUT()
+-{
+-	delete m_mc_builder;
+-	delete m_default_clock;
+-}
+-
+-//====================================================================
+-//====================================================================
+-void SysBuilder_llp_HUT :: config_system()
+-{
+-	assert(m_conf_read == false);
+-	config_components();
+-	m_conf_read = true;
+-}
+-
+-
+-
+-//====================================================================
+-//====================================================================
+-void SysBuilder_llp_HUT :: config_components()
+-{
+-	try 
+-	{
+-		//simulation parameters
+-		STOP = m_config.lookup("simulation_stop");
+-
+-		try
+-		{
+-			m_DEFAULT_CLOCK_FREQ = m_config.lookup("default_clock");
+-			assert(m_DEFAULT_CLOCK_FREQ > 0);
+-		}
+-		catch (SettingNotFoundException e)
+-		{
+-			//if default clock not defined
+-			m_DEFAULT_CLOCK_FREQ = -1;
+-		}
+-
+-		//memory controller
+-		const char* mem_chars = m_config.lookup("mc.type");
+-		string mem_str = mem_chars;
+-		// create HMC builder obj
+-		m_mc_builder = new HMC_builder(this);
+-		m_mc_builder->read_config(m_config);
+-		//xbar assignment
+-		//the node indices of xbar are in an array, each value between 0 and MAX_NODES-1
+-		MAX_VAULTS = m_config.lookup("max_vaults");
+-		MAX_SERDES = m_config.lookup("max_serdes");
+-		Setting& setting_hmc_xbar = m_config.lookup("mc.xbar.node_idx");
+-		num_serdes = m_config.lookup("mc.xbar.num_serdes");
+-		int num_xbar_nodes = setting_hmc_xbar.getLength(); //number of IRIS network nodes
+-		assert(num_xbar_nodes >=1 && num_xbar_nodes <= MAX_NODES);
+-		trans_size = m_config.lookup("mc.trans_size"); // Transaction size = cache line size
+-
+-		this->mc_node_idx_vec.resize(num_xbar_nodes);
+-
+-		for(int i=0; i < num_xbar_nodes; i++)
+-		{
+-			assert((int)setting_hmc_xbar[i] >=0 && (int)setting_hmc_xbar[i] < MAX_NODES);
+-			mc_node_idx_set.insert((int)setting_hmc_xbar[i]);
+-			this->mc_node_idx_vec[i] = (int)setting_hmc_xbar[i];
+-		}
+-		assert(mc_node_idx_set.size() == (unsigned)num_xbar_nodes); //verify no 2 indices are the same
+-        
+-    }
+-    catch (SettingNotFoundException e)
+-    {
+-		cout << e.getPath() << " not set." << endl;
+-		exit(1);
+-    }
+-    catch (SettingTypeException e)
+-    {
+-		cout << e.getPath() << " has incorrect type." << endl;
+-		exit(1);
+-    }
+-}
+-
+-
+-//====================================================================
+-// For QsimProxy front-end
+-//====================================================================
+-void SysBuilder_llp_HUT :: build_system()
+-{
+-	assert(m_conf_read == true);
+-
+-	// create default clock, this is the Master Clock
+-	m_default_clock = 0;
+-	if(m_DEFAULT_CLOCK_FREQ > 0)
+-		m_default_clock = new Clock(m_DEFAULT_CLOCK_FREQ);
+-
+-	cout << "\n Going to create nodes...";
+-	create_nodes();
+-	cout << "\n Nodes created" << endl;
+-
+-	//connect components
+-	cout << "\n connecting components..." << endl;
+-	connect_components();
+-	cout << "\n connecting components done." << endl;
+-}
+-
+-//====================================================================
+-//====================================================================
+-void SysBuilder_llp_HUT :: create_nodes()
+-{
+-	m_node_conf.resize(MAX_NODES);
+-	do_partitioning_1_part(0);
+-	cout<<"\n Create_mcs" << endl;
+-   	m_mc_builder->create_mcs(mc_id_lp_map);
+-   	cout<<"\n Created mcs" << endl;
+-
+-        dep_injection_for_mcp();
+-}
+-
+-//====================================================================
+-//====================================================================
+-void SysBuilder_llp_HUT :: do_partitioning_1_part(int n_lps)
+-{
+-    int lp_idx = 1; //the network is LP 0
+-
+-	for(int i=0; i<MAX_NODES; i++)
+-	{
+-		bool flag = false;
+-		if(n_lps == 1)
+-			lp_idx = 0;
+-		else if(n_lps == 2)
+-			lp_idx = 1;
+-
+-		if(mc_node_idx_set.find(i) != mc_node_idx_set.end())
+-		{ //MC node
+-			m_node_conf[i].type = MC_NODE;
+-			m_node_conf[i].lp = 0;
+-			mc_id_lp_map[i] = m_node_conf[i].lp;
+-			flag = true;
+-		}
+-		if (!flag)
+-		{
+-			m_node_conf[i].type = EMPTY_NODE;
+-		}
+-	}
+-}
+-
+-//====================================================================
+-//====================================================================
+-void SysBuilder_llp_HUT :: dep_injection_for_mcp()
+-{
+-	manifold::uarch::HMCDestMap *hmc_map = new manifold::uarch::HMCDestMap(
+-		                                mc_node_idx_vec, num_serdes, int(MAX_VAULTS / MAX_SERDES), trans_size );
+-	cout << "hmc_map object " << hmc_map << endl;
+-	cout << "HMCMap nodes size " << hmc_map->get_nodes_size() << endl;
+-	cout << "HMCDestMap selector bits " << dec << hmc_map->get_page_offset_bits() << endl;
+-	cout << "HMCDestMap selector mask " << hex << hmc_map->get_selector_mask() << endl;
+-	cout << "HMCDestMap cache line offset bits" << dec << hmc_map->get_byte_offset_bits() << endl;
+-	/*
+-	 * num_serdes can be 2 or 4. The number of HMCs = length(mc_node_idx_vec) / num_serdes
+-	 * Eg: 			length(mc_node_idx_vec) = 16
+-	 * 				num_serdes = 4
+-	 * 				number of HMCs = 16 / 4 = 4
+-	 */
+-	m_mc_builder->set_mc_map_obj(hmc_map);
+-}
+-
+-//====================================================================
+-//====================================================================
+-void SysBuilder_llp_HUT :: connect_components()
+-{
+-	cout << "\n Connecting network to HMC" << endl;
+-#ifdef HUTDEBUG
+-	m_mc_builder->connect_mc_network();
+-#endif
+-	cout << "\n Connected network to HMC" << endl;
+-}
+-
+-//====================================================================
+-//====================================================================
+-void SysBuilder_llp_HUT :: print_config(ostream& out)
+-{
+-	for(int i=0; i<MAX_NODES; i++) 
+-	{
+-		out << "node " << i;
+-		if(m_node_conf[i].type == CORE_NODE)
+-			out << "  core node";
+-		else if(m_node_conf[i].type == MC_NODE)
+-			out << "  mc node";
+-		else if(m_node_conf[i].type == CORE_MC_NODE)
+-			out << "  core and mc node";
+-		else if(m_node_conf[i].type == L2_NODE)
+-			out << "  l2 node";
+-		else
+-			out << "  empty node";
+-		if(m_node_conf[i].type != EMPTY_NODE)
+-			out << " lp= " << m_node_conf[i].lp << endl;
+-		else
+-			out << "\n";
+-	}
+-
+-	out <<"\n********* Configuration *********\n";
+-
+-#ifdef FORECAST_NULL
+-    out << "Forecast Null: on\n";
+-#else
+-    out << "Forecast Null: off\n";
+-#endif
+-
+-	m_mc_builder->print_config(out);
+-}
+-
+-
+-//====================================================================
+-//====================================================================
+-void SysBuilder_llp_HUT :: print_stats(ostream& out)
+-{
+-    m_mc_builder->print_stats(out);
+-    Manifold::print_stats(out);
+-}
+diff --git a/simulator/smp/common/sysBuilder_llp_HUT.h b/simulator/smp/common/sysBuilder_llp_HUT.h
+deleted file mode 100644
+index 10e1f9a..0000000
+--- a/simulator/smp/common/sysBuilder_llp_HUT.h
++++ /dev/null
+@@ -1,101 +0,0 @@
+-/*
+- * sysBuilder_llp_HUT.h
+- *
+- *  Created on: Feb 14, 2017
+- *      Author: Karthik Rao
+- *
+- *  This header file used for HMC unit test
+- */
+-
+-#ifndef SYSBUILDER_LLP_HUT_H_
+-#define SYSBUILDER_LLP_HUT_H_
+-
+-#include <libconfig.h++>
+-#include <vector>
+-#include <set>
+-#include "kernel/manifold.h"
+-#include "kernel/component.h"
+-#include "uarch/DestMap.h"
+-#include "mc_builder.h"
+-
+-// this data structure to hold a node's type and lp
+-enum {INVALID_NODE=0, EMPTY_NODE, CORE_NODE, MC_NODE, CORE_MC_NODE, L2_NODE};
+-
+-struct Node_conf_llp {
+-	Node_conf_llp() : type(INVALID_NODE) {}
+-
+-	int type;
+-	int lp;
+-};
+-
+-class SysBuilder_llp_HUT {
+-public:
+-    
+-	SysBuilder_llp_HUT(const char* fname);
+-	~SysBuilder_llp_HUT();
+-
+-	void config_system();
+-	void build_system(); 
+-
+-	void print_config(std::ostream& out);
+-	void print_stats(std::ostream& out);
+-
+-	libconfig::Config m_config;
+-
+-	MemControllerBuilder* get_mc_builder() { return m_mc_builder; }
+-
+-	manifold::kernel::Ticks_t get_stop_tick() { return STOP; }
+-	size_t get_mc_node_size() { return mc_node_idx_vec.size(); }
+-
+-	manifold::kernel::Clock* get_default_clock() { return m_default_clock; }
+-
+-protected:
+-
+-	virtual void config_components();
+-	virtual void create_nodes();
+-
+-	virtual void do_partitioning_1_part(int);
+-
+-	MemControllerBuilder* m_mc_builder;
+-	int num_serdes;
+-	int MAX_VAULTS;
+-	int MAX_SERDES;
+-	manifold::kernel::Ticks_t STOP; //simulation stop time
+-	uint64_t m_DEFAULT_CLOCK_FREQ; //default clock's frequency
+-	int trans_size;
+-
+-	std::vector<Node_conf_llp> m_node_conf;
+-
+-	/*
+-	* For HMC, "mc_node_idx_vec" is the vector containing the node_ids
+-	* of all the HMCs connected to the network. Each HMC will have a fixed
+-	* number of SerDes links given by the length of xbar.node_idx configuration
+-	* input.
+-	*
+-	* "mc_node_idx_set" is the set which will contain the node_ids of all
+-	* the HMCs connected to the network.
+-	*
+-	* "mc_id_lp_map" contains the lp to node_id mapping for each HMC.
+-	* Currently, all the HMC nodes are on lp = 0;
+-	* !!!!!!!!!!!!!TODO: Need to figure out mpi implementation of HMC!!!!!!!!!!!!!
+-	*
+-	*/
+-	std::vector<int> mc_node_idx_vec;
+-	std::vector<int> vault_node_idx_vec;
+-
+-	std::set<int> mc_node_idx_set; //set is used to ensure each index is unique
+-	std::set<int> vault_node_idx_set; //set is used to ensure each index is unique
+-
+-	std::map<int, int> mc_id_lp_map; //maps mc's node id to its LP
+-
+-private:
+-
+-	void connect_components();
+-	void dep_injection_for_mcp();
+-
+-	bool m_conf_read; //used to ensure config_system is called first
+-
+-	manifold::kernel::Clock* m_default_clock;
+-};
+-
+-#endif /* SYSBUILDER_LLP_HUT_H_ */
+diff --git a/simulator/smp/config/3d_die_HMC.ini b/simulator/smp/config/3d_die_HMC.ini
+deleted file mode 100644
+index 77f6714..0000000
+--- a/simulator/smp/config/3d_die_HMC.ini
++++ /dev/null
+@@ -1,59 +0,0 @@
+-NUM_BANKS=8; 8 for 4GB, 16 for 8GB.
+-NUM_ROWS=2048; changed from 32768. 2048 rows for 4GB @ 32 vaults and 4 layers and 4096 rows for 8GB @ 32 vaults and 8 layers
+-NUM_COLS=1024
+-DEVICE_WIDTH=8
+-
+-;in nanoseconds
+-;#define REFRESH_PERIOD 7800
+-REFRESH_PERIOD=7800
+-tCK=1.25 ;*
+-
+-CL=9;
+-AL=0;
+-;AL=3; needs to be tRCD-1 or 0
+-;RL=(CL+AL)
+-;WL=(RL-1)
+-BL=4;  8 for 64B transaction and 4 for 32B transaction
+-tRAS=34; 
+-tRCD=12;
+-tRRD=8;
+-tRC=49;
+-tRP=12;
+-tCCD=3; 
+-tRTP=6;
+-tWTR=8;
+-tWR=20;
+-tRTRS=0; -- RANK PARAMETER, TODO 
+-tRFC=72;
+-tFAW=48;
+-tCKE=12;
+-tXP=6;
+-
+-tCMD=1;
+-
+-;TODO reducing TSV current is important & remaining 
+-IDD0=75;    	-- 	ACT-PRE	
+-IDD1=95;    	-- 	ACT-RD-PRE	
+-IDD2P=6 	;12/2 	-- 	PRE-DWN
+-IDD2Q=20 	;40/2; 	-- 	PRE-QSTBY
+-IDD2N=21	;42/2; 	-- 	PRE-STBY
+-IDD3Pf=23	;45/2	--	ACT-PDN-FAST	
+-IDD3Ps=8	;15/2;	-- 	ACT-PDN-SLOW
+-IDD3N=25	;50/2; 	-- 	ACT-STBY
+-IDD4W=120	;145-25;  	-- 	BURST-WR	-- They are subtracted by IDD3N/2 as read write currents are (this-IDD3N)
+-IDD4R=120	;145-25;	--	BURST-RD
+-IDD5=165	;190-25;	--	BURST-REFR
+-IDD6=12;	--	SELF-REFR
+-IDD6L=16;	--	SELF-REFR	
+-IDD7=220	;245-25;	--	BNK-INTRLV-RD
+-
+-;same bank
+-;READ_TO_PRE_DELAY=(AL+BL/2+max(tRTP,2)-2)
+-;WRITE_TO_PRE_DELAY=(WL+BL/2+tWR)
+-;READ_TO_WRITE_DELAY=(RL+BL/2+tRTRS-WL)
+-;READ_AUTOPRE_DELAY=(AL+tRTP+tRP)
+-;WRITE_AUTOPRE_DELAY=(WL+BL/2+tWR+tRP)
+-;WRITE_TO_READ_DELAY_B=(WL+BL/2+tWTR);interbank
+-;WRITE_TO_READ_DELAY_R=(WL+BL/2+tRTRS-RL);interrank
+-
+-Vdd=1.5 ; TODO: double check this
+diff --git a/simulator/smp/config/3d_die_HMC.ini.example b/simulator/smp/config/3d_die_HMC.ini.example
+deleted file mode 100644
+index dc7141f..0000000
+--- a/simulator/smp/config/3d_die_HMC.ini.example
++++ /dev/null
+@@ -1,25 +0,0 @@
+-; COPY THIS FILE AND MODIFY IT TO SUIT YOUR NEEDS
+-
+-NUM_CHANS=1					; we haven't tested a whole lot with CHANS>1 so use at your own peril 
+-JEDEC_DATA_BUS_BITS=64 				; will never change for DDR parts
+-TRANS_QUEUE_DEPTH=32				; transaction queue ex: READ 0xbeef
+-CMD_QUEUE_DEPTH=32				; command queue ex: RAS 4
+-EPOCH_LENGTH=100000000				; length of an epoch in cycles (granularity of simulation)
+-ROW_BUFFER_POLICY=close_page 			; close_page or open_page
+-ADDRESS_MAPPING_SCHEME=scheme7			; valid schemes 1-7. Scheme 7 is low-interleave for whole HMC 
+-SCHEDULING_POLICY=rank_then_bank_round_robin  	; bank_then_rank_round_robin or rank_then_bank_round_robin 
+-QUEUING_STRUCTURE=per_rank			; per_rank or per_rank_per_bank
+-
+-;for true/false, please use all lowercase
+-DEBUG_TRANS_Q=false
+-DEBUG_CMD_Q=false
+-DEBUG_ADDR_MAP=false
+-DEBUG_BUS=false
+-DEBUG_BANKSTATE=false
+-DEBUG_BANKS=false
+-DEBUG_POWER=false
+-VIS_FILE_OUTPUT=false
+-
+-USE_LOW_POWER=true 				; go into low power mode when idle?
+-VERIFICATION_OUTPUT=false 			; should be false for normal operation
+-TOTAL_ROW_ACCESSES=8				; maximum number of open page requests to send to the same row before forcing a row close (to prevent starvation)
+diff --git a/simulator/smp/config/HMC_Unit_Test.cfg b/simulator/smp/config/HMC_Unit_Test.cfg
+deleted file mode 100644
+index 0c601a7..0000000
+--- a/simulator/smp/config/HMC_Unit_Test.cfg
++++ /dev/null
+@@ -1,49 +0,0 @@
+-simulation_stop = 1e3;
+-default_clock = 1e9;
+-max_vaults = 32;
+-max_serdes = 4;
+-
+-network:
+-{
+-    topology = "TORUS";
+-    x_dimension = 3;
+-    y_dimension = 4;
+-    num_vcs = 4;
+-    credits = 6;
+-    link_width = 128;
+-
+-    ni_up_credits = 20; //credits for network interface sending to terminal
+-    ni_up_buffer = 5; //network interface's output buffer (to terminal) size
+-
+-    coh_msg_type = 123; //message types
+-    mem_msg_type = 456;
+-    credit_msg_type = 789;
+-};
+-
+-
+-mc: //hmc unit with memory controllers for each vault
+-{
+-    xbar: //cross-bars for hmc
+-    {
+-        node_idx = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35];
+-	//0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]; //node ids of all serdes links
+-	//Changing the ending number here affects MAX_NODES in sysBuilder_llp_HUT.cpp
+-	//Changing the starting number affects pkt_generator.cpp
+-        num_serdes = 4; //number of serdes links per HMC. Can be 2 or 4.
+-        downstream_credits = 10; //credits for sending to network
+-	upstream_credits = 10; //credits for sending to vault
+-    };
+-
+-    trans_size = 32; // Transaction byte size. Must be equal to cache line size
+-    num_vaults = 32; // Total number of vaults for the HMC. Can be 16 or 32
+-    downstream_credits = 10; //credits for sending to xbar
+-    type = "HMC";
+-     
+-    vault: //each vault is a dramsim2 instance
+-    {
+-        dev_file = "../config/3d_die_HMC.ini";
+-        sys_file = "../config/3d_die_HMC.ini.example";
+-        size = 128; // 128MB per vault => 4GB for 32 vaults with 4 layers
+-		    // 256MB per vault => 8GB for 32 vaults with 4 layers
+-    }
+-};
+diff --git a/simulator/smp/config/conf2x2_spx_t_llp_HMC_100M.a64.cfg b/simulator/smp/config/conf2x2_spx_t_llp_HMC_100M.a64.cfg
+deleted file mode 100644
+index 67ae063..0000000
+--- a/simulator/smp/config/conf2x2_spx_t_llp_HMC_100M.a64.cfg
++++ /dev/null
+@@ -1,88 +0,0 @@
+-simulation_stop = 100e6;
+-default_clock = 1e9;
+-qsim_interrupt_handler_clock = 1e3;
+-kitfox_config = "../config/kitfox-4core.config";
+-kitfox_freq = 1000;
+-max_vaults = 32;
+-max_serdes = 4;
+-
+-network:
+-{
+-    topology = "TORUS";
+-    x_dimension = 2;
+-    y_dimension = 4;
+-    num_vcs = 4;
+-    credits = 6;
+-    link_width = 128;
+-
+-    ni_up_credits = 20; //credits for network interface sending to terminal
+-    ni_up_buffer = 5; //network interface's output buffer (to terminal) size
+-
+-    coh_msg_type = 123; //message types
+-    mem_msg_type = 456;
+-    credit_msg_type = 789;
+-};
+-
+-
+-processor:
+-{
+-    type = "SPX";
+-    node_idx = [0, 1, 2, 3];
+-    config = "../config/spx-outorder.a64.config";
+-    state = "../state/state.4.a64"
+-};
+-
+-llp_cache:
+-{
+-    name = "L1";
+-    type = "DATA";
+-    size = 0x8000; //32K
+-    assoc = 8;
+-    block_size = 64;
+-    hit_time = 3;
+-    lookup_time = 3;
+-    replacement_policy = "LRU";
+-    mshr_size = 8;
+-
+-    downstream_credits = 20; //credits for sending to network
+-};
+-
+-lls_cache:
+-{
+-    name = "L2";
+-    type = "DATA";
+-    size = 0x200000; // 2MB
+-    assoc = 16;
+-    block_size = 64;
+-    hit_time = 35;
+-    lookup_time = 100;
+-    replacement_policy = "LRU";
+-    mshr_size = 32;
+-
+-    downstream_credits = 20; //credits for sending to network
+-};
+-
+-mc: //hmc unit with memory controllers for each vault
+-{
+-    xbar: //cross-bars for hmc
+-    {
+-        node_idx = [4, 5, 6, 7]; //node ids of all serdes links
+-        num_serdes = 4; //number of serdes links per HMC. Can be 2 or 4.
+-        downstream_credits = 10; //credits for sending to network
+-	upstream_credits = 10; //credits for sending to vault
+-    };
+-
+-    trans_size = 32; // Transaction byte size. Must be equal to cache line size
+-    num_vaults = 32; // Total number of vaults for the HMC. Can be 16 or 32
+-    downstream_credits = 10; //credits for sending to xbar
+-    type = "HMC";
+-     
+-    vault: //each vault is a dramsim2 instance
+-    {
+-        dev_file = "../config/3d_die_HMC.ini";
+-        sys_file = "../config/3d_die_HMC.ini.example";
+-        size = 128; // 128MB per vault => 4GB for 32 vaults with 4 layers
+-		    // 256MB per vault => 8GB for 32 vaults with 4 layers
+-    };
+-};
+-
+diff --git a/simulator/smp/config/conf2x2_spx_t_llp_HMC_50M.a64.cfg b/simulator/smp/config/conf2x2_spx_t_llp_HMC_50M.a64.cfg
+deleted file mode 100644
+index 1091811..0000000
+--- a/simulator/smp/config/conf2x2_spx_t_llp_HMC_50M.a64.cfg
++++ /dev/null
+@@ -1,88 +0,0 @@
+-simulation_stop = 5e6;
+-default_clock = 1e9;
+-qsim_interrupt_handler_clock = 1e3;
+-kitfox_config = "../config/kitfox-4core.config";
+-kitfox_freq = 1000;
+-max_vaults = 32;
+-max_serdes = 4;
+-
+-network:
+-{
+-    topology = "TORUS";
+-    x_dimension = 2;
+-    y_dimension = 4;
+-    num_vcs = 4;
+-    credits = 6;
+-    link_width = 128;
+-
+-    ni_up_credits = 20; //credits for network interface sending to terminal
+-    ni_up_buffer = 5; //network interface's output buffer (to terminal) size
+-
+-    coh_msg_type = 123; //message types
+-    mem_msg_type = 456;
+-    credit_msg_type = 789;
+-};
+-
+-
+-processor:
+-{
+-    type = "SPX";
+-    node_idx = [0, 1, 2, 3];
+-    config = "../config/spx-outorder.a64.config";
+-    state = "../state/state.4.a64"
+-};
+-
+-llp_cache:
+-{
+-    name = "L1";
+-    type = "DATA";
+-    size = 0x8000; //32K
+-    assoc = 8;
+-    block_size = 64;
+-    hit_time = 3;
+-    lookup_time = 3;
+-    replacement_policy = "LRU";
+-    mshr_size = 8;
+-
+-    downstream_credits = 20; //credits for sending to network
+-};
+-
+-lls_cache:
+-{
+-    name = "L2";
+-    type = "DATA";
+-    size = 0x200000; // 2MB
+-    assoc = 16;
+-    block_size = 64;
+-    hit_time = 35;
+-    lookup_time = 100;
+-    replacement_policy = "LRU";
+-    mshr_size = 32;
+-
+-    downstream_credits = 20; //credits for sending to network
+-};
+-
+-mc: //hmc unit with memory controllers for each vault
+-{
+-    xbar: //cross-bars for hmc
+-    {
+-        node_idx = [4, 5, 6, 7]; //node ids of all serdes links
+-        num_serdes = 4; //number of serdes links per HMC. Can be 2 or 4.
+-        downstream_credits = 10; //credits for sending to network
+-	upstream_credits = 10; //credits for sending to vault
+-    };
+-
+-    trans_size = 32; // Transaction byte size. Must be equal to cache line size
+-    num_vaults = 32; // Total number of vaults for the HMC. Can be 16 or 32
+-    downstream_credits = 10; //credits for sending to xbar
+-    type = "HMC";
+-     
+-    vault: //each vault is a dramsim2 instance
+-    {
+-        dev_file = "../config/3d_die_HMC.ini";
+-        sys_file = "../config/3d_die_HMC.ini.example";
+-        size = 128; // 128MB per vault => 4GB for 32 vaults with 4 layers
+-		    // 256MB per vault => 8GB for 32 vaults with 4 layers
+-    };
+-};
+-
+diff --git a/uarch/DestMap.h b/uarch/DestMap.h
+index f7ffc26..9b26759 100644
+--- a/uarch/DestMap.h
++++ b/uarch/DestMap.h
+@@ -6,10 +6,6 @@
+ #include <vector>
+ #include <iostream>
+ 
+-#ifdef HMCDEBUG
+-#include <ios>
+-#endif
+-
+ namespace manifold {
+ namespace uarch {
+ 
+@@ -42,10 +38,6 @@ public:
+         int idx = m_selector_mask & (addr >> m_page_offset_bits);
+         int m_id = m_nodes[idx];
+ 
+-#ifdef HMCDEBUG
+-       	std::cerr << "VaultMap idx " << idx << " m_id " << m_id << std::endl;
+-#endif
+-
+         return m_id;
+     }
+ 
+@@ -53,12 +45,7 @@ public:
+     {
+         for (unsigned int i = 0; i < m_nodes.size(); i++) {
+             if (m_nodes[i] == m_id)
+-	    {
+-#ifdef HMCDEBUG
+-			std::cerr << "VaultMap get_idx: " << i << std::endl;
+-#endif
+                 return i;
+-	    }
+         }
+ 
+         assert(0);
+@@ -69,11 +56,6 @@ public:
+         uint64_t up_addr = addr >> (m_page_offset_bits + m_selector_bits);
+         uint64_t low_addr = addr & m_page_offset_mask;
+         uint64_t laddr = (up_addr << m_page_offset_bits) | low_addr;
+-#ifdef HMCDEBUG
+-		std::cerr << "VaultMap addr: " << std::hex << addr << " laddr " << laddr
+-                << std::dec << " m_page_offset_bits " << m_page_offset_bits << " m_selector_bits " << m_selector_bits
+-				<< " m_page_offset_mask " << std::hex << m_page_offset_mask << std::dec << std::endl;
+-#endif
+ 
+         return laddr;
+     }
+@@ -87,10 +69,6 @@ public:
+         uint64_t low_addr = (addr & m_page_offset_mask) | idx << (m_page_offset_bits);
+         uint64_t gaddr = (up_addr << (m_page_offset_bits + m_selector_bits)) | low_addr;
+ 
+-#ifdef HMCDEBUG
+-		std::cerr << "VaultMap addr: " << std::hex << addr << " gaddr " << gaddr << " idx " << std::dec << idx << std::endl;
+-#endif
+-
+         return  gaddr;
+     }
+ 
+@@ -99,21 +77,6 @@ public:
+         return m_page_offset_bits;
+     }
+ 
+-    int get_selector_bits()
+-    {
+-	return m_selector_bits;
+-    }
+-
+-    uint64_t get_selector_mask()
+-    {
+-	return m_selector_mask;
+-    }
+-
+-    int get_nodes_size()
+-    {
+-	return m_nodes.size();
+-    }
+-
+ private:
+ 
+     static int myLog2(unsigned num)
+@@ -135,169 +98,6 @@ private:
+ };
+ 
+ 
+-class HMCDestMap : public manifold::uarch::DestMap {
+-public:
+-    HMCDestMap(std::vector<int>& hmc_nodes, int num_links, int max_HMC_units, int cache_line_size) :
+-    	num_serdes(num_links), MAX_HMC(max_HMC_units)
+-    {
+-        assert(hmc_nodes.size() > 0);
+-
+-        for(unsigned i=0; i<hmc_nodes.size(); i++)
+-            m_nodes.push_back(hmc_nodes[i]);
+-
+-        // log2(number of HMCs) = number of bits required to
+-        // select the HMC unit
+-        assert (hmc_nodes.size() % num_serdes == 0);
+-
+-        int num_HMC = hmc_nodes.size() / num_serdes;
+-        assert(num_HMC <= MAX_HMC);
+-
+-        m_selector_bits = myLog2(num_HMC);
+-        m_byte_offset_bits = myLog2(cache_line_size);
+-
+-        m_selector_mask = (0x1 << m_selector_bits) - 1;
+-#ifdef HMCDEBUG
+-        std::cerr << std::dec << "HMCMap m_selector_bits: " << m_selector_bits << " m_byte_offset_bits: "
+-        		<< m_byte_offset_bits << std::hex << " m_selector_mask: " << m_selector_mask << std::dec << std::endl;
+-#endif
+-    }
+-
+-    int lookup(uint64_t addr)
+-    {
+-    	uint64_t adj_addr = addr >> m_byte_offset_bits;
+-        int idx = m_selector_mask & (adj_addr);
+-        int m_id = 0;
+-        int p_rand = 0;
+-
+-        /*
+-         * Assuming every HMC has same number of SerDes Links.
+-         * Once we know the HMC number to which the request
+-         * must be sent, we need to choose the dst_id i.e.
+-         * the network id.
+-         *
+-         * Eg: 	m_selector_mask = 0x7, addr = 0x 'something'
+-         * 		idx = 0x7 & addr;
+-         * Let idx = 5 i.e. the pkt must go to the 6th HMC
+-         * 		p_rand = some number in the range {0 - 4}
+-         * 				 Assuming each HMC has 4 links
+-         * say	p_rand = 3
+-         * 		m_id = m_nodes[3 + (4 * 5)]
+-         * 			 = m_nodes[23] which is the 4th network
+-         * 			 port of the 6th HMC
+-         */
+-        p_rand = rand() % num_serdes;
+-		assert( (p_rand + (num_serdes * idx)) <= m_nodes.size() );
+-
+-#ifdef HMCDEBUG
+-        std::cerr << "HMCMap prand: " << p_rand << " idx: " << idx << " num serdes: " << num_serdes << " (p_rand + (num_serdes * idx)): " << (p_rand + (num_serdes * idx)) << std::endl;
+-#endif
+-
+-        m_id = m_nodes[p_rand + (num_serdes * idx)];
+-        return m_id;
+-    }
+-
+-    /*
+-     * This function is redundant, at least for HMC_map
+-     */
+-
+-    int get_idx(int m_id)
+-    {
+-        for (int i = 0; i < m_nodes.size(); i++) {
+-            if (m_nodes[i] == m_id)
+-            {
+-#ifdef HMCDEBUG
+-            	std::cerr << "HMCMap get_idx: " << i << std::endl;
+-#endif
+-                return i;
+-            }
+-        }
+-
+-        assert(0);
+-    }
+-
+-    /*
+-     * Here we need to strip away the lower bits.
+-     * Suppose m_selector_bits = 2, i.e. there are 2, 3 or 4 HMCs
+-     * The local_addr that will be sent to 'that' HMC should not
+-     * contain the lower 2 bits. Extension is similar to 5 - 8 HMCs.
+-     */
+-    uint64_t get_local_addr(uint64_t addr)
+-    {
+-        uint64_t laddr = addr >> (m_selector_bits + m_byte_offset_bits);
+-#ifdef HMCDEBUG
+-		std::cerr << "HMCMap addr: " << std::hex << addr << " laddr " << laddr << std::dec << std::endl;
+-#endif
+-        return laddr;
+-    }
+-
+-    /*
+-     * Here we need to append the addr at the LSB end by the HMC
+-     * index field.
+-     *
+-     * Suppose m_selector_bits = 2, i.e there are 2, 3 or 4 HMCs
+-     * The addr will not contain the HMC id. So depending on the
+-     * m_id i.e. the node_id of the pkt should be assigned.
+-     */
+-    uint64_t get_global_addr(uint64_t addr, uint64_t hmc_id)
+-    {
+-        uint64_t gaddr = (addr << m_selector_bits) | hmc_id;
+-        gaddr = gaddr << m_byte_offset_bits;
+-#ifdef HMCDEBUG
+-		std::cerr << "HMCMap addr: " << std::hex << addr << " gaddr " << gaddr << " hmc_id " << std::dec << hmc_id << std::endl;
+-#endif
+-        return  gaddr;
+-    }
+-
+-    /*
+-     * This function is basically useless for HMCDestMap
+-     */
+-    int get_page_offset_bits()
+-    {
+-	return m_selector_bits;
+-    }
+-
+-    int get_selector_bits()
+-    {
+-	return m_selector_bits;
+-    }
+-
+-    int get_byte_offset_bits()
+-    {
+-	return m_byte_offset_bits;
+-    }
+-
+-    uint64_t get_selector_mask()
+-    {
+-    	return m_selector_mask;
+-    }
+-
+-    int get_nodes_size()
+-    {
+-    	return m_nodes.size();
+-    }
+-
+-private:
+-
+-    static int myLog2(unsigned num)
+-    {
+-        assert(num > 0);
+-
+-        int bits = 0;
+-        while(((unsigned)0x1 << bits) < num) {
+-            bits++;
+-        }
+-        return bits;
+-    }
+-
+-    std::vector<int> m_nodes; //target HMC node ids
+-    int num_serdes;
+-    int MAX_HMC;
+-    int m_selector_bits; // Number of bits required to select HMC instances
+-    uint64_t m_selector_mask; // Selector mask. Eg. 4 HMCs => 0x3, > 4 HMCs => 0x7
+-    int m_byte_offset_bits; // Number of bits required to address a cache line (16B, 32B, 64B = 4, 5, 6 bits resp)
+-};
+-
+-
+ } //namespace uarch
+ } //namespace manifold
+ 
