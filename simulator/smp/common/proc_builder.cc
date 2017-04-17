@@ -445,6 +445,8 @@ void Spx_builder :: read_config(Config& config)
     try {
 	    const char* chars = config.lookup("processor.config");
 	    m_CONFIG_FILE = chars;
+	    Setting& proc_nodes = config.lookup("processor.node_idx");
+	    m_NUM_PROC = proc_nodes.getLength();
     }
     catch (SettingNotFoundException e) {
 	    cout << e.getPath() << " not set." << endl;
@@ -454,7 +456,25 @@ void Spx_builder :: read_config(Config& config)
 	    cout << e.getPath() << " has incorrect type." << endl;
 	    exit(1);
     }
-    m_use_default_clock = true;
+
+    try {
+        Setting& proc_clocks = config.lookup("processor.clocks");
+        assert((unsigned)proc_clocks.getLength() == m_NUM_PROC);
+        m_clocks.resize(m_NUM_PROC);
+        m_CLOCK_FREQ.resize(m_NUM_PROC);
+
+        for(unsigned i=0; i<m_NUM_PROC; i++) {
+            m_CLOCK_FREQ[i] = (double) proc_clocks[i];
+            m_clocks[i] = new Clock(m_CLOCK_FREQ[i]);
+        }
+
+        m_use_default_clock = false;
+    }
+    catch (SettingNotFoundException e) {
+        //clock not defined; use default
+        m_use_default_clock = true;
+    }
+
 }
 
 void Spx_builder :: create_qsimlib_procs(std::map<int,int>& id_lp)
