@@ -12,13 +12,13 @@ qsim_proxy_t::qsim_proxy_t(char *StateName, char *AppName, uint64_t InterruptInt
     qsim_osd(NULL),
     interrupt_interval(InterruptInterval)
 {
-    cout << "Loading Qsim state file ..." << endl;
+    cerr << "Loading Qsim state file ..." << endl;
     qsim_osd = new Qsim::OSDomain(StateName);
 
-    cout << "Loading application ..." << endl;
+    cerr << "Loading application ..." << endl;
     load_file(*qsim_osd, AppName);
 
-    cout << "Finished initializing Qsim" << endl;
+    cerr << "Finished initializing Qsim" << endl;
 
     /* Set Qsim callback functions */
     /* Setup the callbacks after loading state file */
@@ -36,7 +36,7 @@ qsim_proxy_t::qsim_proxy_t(char *StateName, char *AppName, uint64_t InterruptInt
 
 qsim_proxy_t::~qsim_proxy_t()
 {
-    cout << "Terminating Qsim" << endl;
+    cerr << "Terminating Qsim" << endl;
     delete qsim_osd;
 }
 
