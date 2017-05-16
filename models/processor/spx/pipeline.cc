@@ -121,7 +121,7 @@ void pipeline_t::Qsim_mem_cb(int core_id, uint64_t vaddr, uint64_t paddr, uint8_
   
     if(type) { // store
         // there can't be mem_cb after mem_cb or dest_reg/flag_cb
-        if(Qsim_cb_status > SPX_QSIM_MEM_CB) {
+        if(Qsim_cb_status > SPX_QSIM_MEM_CB && config.arch_type != SPX_A64) {
             Qsim_post_cb(next_inst);
             fetch(next_inst);
       
@@ -162,7 +162,7 @@ void pipeline_t::Qsim_mem_cb(int core_id, uint64_t vaddr, uint64_t paddr, uint8_
     }
     else { // load
         // there can't be mem_cb after mem_cb or dest_reg/flag_cb
-        if(Qsim_cb_status > SPX_QSIM_MEM_CB) {
+        if(Qsim_cb_status > SPX_QSIM_MEM_CB && config.arch_type != SPX_A64) {
             Qsim_post_cb(next_inst);
             fetch(next_inst);
       
@@ -210,7 +210,7 @@ void pipeline_t::Qsim_reg_cb(int core_id, int reg, uint8_t size, int type) {
     if(type) { // dest
         if(size > 0) { // regs
             // there can be multiple dest regs (e.g., div/mul) - don't use >= sign
-            if(Qsim_cb_status > SPX_QSIM_DEST_REG_CB) {
+            if(Qsim_cb_status > SPX_QSIM_DEST_REG_CB && config.arch_type != SPX_A64) {
                 Qsim_post_cb(next_inst);
                 fetch(next_inst);
         
@@ -251,7 +251,7 @@ void pipeline_t::Qsim_reg_cb(int core_id, int reg, uint8_t size, int type) {
             Qsim_cb_status = SPX_QSIM_DEST_REG_CB;
         }
         else { // flags
-            if(Qsim_cb_status >= SPX_QSIM_DEST_FLAG_CB) {
+            if(Qsim_cb_status >= SPX_QSIM_DEST_FLAG_CB && config.arch_type != SPX_A64) {
                 Qsim_post_cb(next_inst);
                 fetch(next_inst);
         
@@ -291,7 +291,7 @@ void pipeline_t::Qsim_reg_cb(int core_id, int reg, uint8_t size, int type) {
     else { // src
         if(size > 0) { // regs
             // there can be multiple src regs - don't use >= sign
-            if(Qsim_cb_status > SPX_QSIM_SRC_REG_CB) {
+            if(Qsim_cb_status > SPX_QSIM_SRC_REG_CB && config.arch_type != SPX_A64) {
                 Qsim_post_cb(next_inst);
                 fetch(next_inst);
                 
@@ -328,7 +328,7 @@ void pipeline_t::Qsim_reg_cb(int core_id, int reg, uint8_t size, int type) {
             Qsim_cb_status = SPX_QSIM_SRC_REG_CB;
         }
         else { // flags
-            if(Qsim_cb_status >= SPX_QSIM_SRC_FLAG_CB) {
+            if(Qsim_cb_status >= SPX_QSIM_SRC_FLAG_CB && config.arch_type != SPX_A64) {
                 Qsim_post_cb(next_inst);
                 fetch(next_inst);
                 
