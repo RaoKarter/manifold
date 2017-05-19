@@ -14,7 +14,8 @@ libspx_a_SOURCES = \
 	pipeline/outorder.cc \
 	pipeline/inorder.cc \
 	core.cc \
-    qsim-proxy.cc
+    qsim-proxy.cc \
+	cs_disas.cpp
 
 pkginclude_spxdir = $(includedir)/manifold/spx
 
@@ -26,6 +27,8 @@ pkginclude_spx_HEADERS = \
 	pipeline/outorder.h \
 	pipeline/inorder.h \
 	core.h \
-    qsim-proxy.h
+    qsim-proxy.h \
+	cs_disas.h
 
-libspx_a_CPPFLAGS = -I$(KERNEL_INC) -I$(QSIM_INC) -I$(KITFOX_INC) -Ipipeline -lqsim -lqsim-client
+CAPSTONE_DIR="/home/Documents/TrialInstall/qsim_testing/capstone/"
+libspx_a_CPPFLAGS = -I$(KERNEL_INC) -I$(QSIM_INC) -I$(KITFOX_INC) -I$(CAPSTONE_DIR) -Ipipeline -lqsim -lqsim-client -lcapstone

@@ -108,7 +108,10 @@ void pipeline_t::Qsim_inst_cb(int core_id, uint64_t vaddr, uint64_t paddr, uint8
     }
     fprintf(stdout,"\n");
 #endif
-  
+
+    for(int k = 0; k < 15; k++)
+        next_inst->inst_bytes[k] = bytes[k];
+    next_inst->inst_length = len;
     next_inst->opcode = type;
     next_inst->op.vaddr = vaddr&config.mem_addr_mask;
     next_inst->op.paddr = paddr&config.mem_addr_mask;

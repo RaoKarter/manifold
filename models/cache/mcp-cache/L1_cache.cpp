@@ -145,7 +145,7 @@ void L1_cache :: process_processor_request (cache_req *request, bool first)
 {
 
     DBG_L1_CACHE_TICK_ID( cout,  "###### " << " process_processor_request():  addr= " <<hex<< request->addr <<dec<< ((request->op_type==OpMemLd) ? " LD" : " ST") << "\n" );
-
+    cerr << " HISTOGRAM" << get_node_id() << "\taddr\t" << hex << request->addr << dec << ((request->op_type==OpMemLd) ? "\tLD" : "\tST") << endl;
 #ifdef LIBKITFOX
     if(request->op_type==OpMemLd) {
         counter.cache.read += 3;
