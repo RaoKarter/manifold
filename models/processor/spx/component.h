@@ -175,10 +175,18 @@ public:
         insn[0].address = v;
 
         std::cerr << "INST_CB_DEBUG_LDQ" << std::dec << c << ": " << std::hex << insn[0].address << " : "
-                  << insn[0].mnemonic << " : " << insn[0].op_str << " " << req_paddr << std::endl;
+                  << insn[0].mnemonic << " : " << insn[0].op_str << " " << req_paddr << std::dec << std::endl;
 
         dis_LDQ.free_insn(insn, count);
         fflush(NULL);
+        return;
+    }
+    void debugging_mem_cb_LDQ(int c, const uint64_t req_paddr, uint8_t memcb_type)
+    {
+        if (memcb_type == 10)
+            std::cerr << "MEM_CB_DEBUG_LDQ" << std::dec << c << " " <<std::hex<<  req_paddr << " ST" << std::dec << std::endl;
+        else if (memcb_type == 20)
+            std::cerr << "MEM_CB_DEBUG_LDQ" << std::dec << c << " " <<std::hex<<  req_paddr << " LD" << std::dec << std::endl;
         return;
     }
 
@@ -214,10 +222,18 @@ public:
         insn[0].address = v;
 
         std::cerr << "INST_CB_DEBUG_STQ" << std::dec << c << ": " << std::hex << insn[0].address << " : "
-                  << insn[0].mnemonic << " : " << insn[0].op_str << " " <<  req_paddr << std::endl;
+              << insn[0].mnemonic << " : " << insn[0].op_str << " " <<  req_paddr << std::dec << std::endl;
 
         dis_STQ.free_insn(insn, count);
         fflush(NULL);
+        return;
+    }
+    void debugging_mem_cb_STQ(int c, const uint64_t req_paddr, uint8_t memcb_type)
+    {
+        if (memcb_type == 10)
+            std::cerr << "MEM_CB_DEBUG_STQ" << std::dec << c << " " <<std::hex<<  req_paddr << " ST" << std::dec << std::endl;
+        else if (memcb_type == 20)
+            std::cerr << "MEM_CB_DEBUG_STQ" << std::dec << c << " " <<std::hex<<  req_paddr << " LD" << std::dec << std::endl;
         return;
     }
 

@@ -158,7 +158,6 @@ void pipeline_t::Qsim_mem_cb(int core_id, uint64_t vaddr, uint64_t paddr, uint8_
 #ifdef SPX_QSIM_DEBUG
         fprintf(stdout,"SPX_QSIM_DEBUG (core %d):      mem STORE | 0x%lx\n",core_id,paddr);
 #endif
-    
         next_inst->data.vaddr = vaddr&config.mem_addr_mask;
         next_inst->data.paddr = paddr&config.mem_addr_mask;
         Qsim_cb_status = SPX_QSIM_ST_CB;
@@ -199,7 +198,6 @@ void pipeline_t::Qsim_mem_cb(int core_id, uint64_t vaddr, uint64_t paddr, uint8_
 #ifdef SPX_QSIM_DEBUG
         fprintf(stdout,"SPX_QSIM_DEBUG (core %d):      mem LOAD | 0x%lx\n",core_id,paddr);
 #endif
-    
         next_inst->data.vaddr = vaddr&config.mem_addr_mask;
         next_inst->data.paddr = paddr&config.mem_addr_mask;
         Qsim_cb_status = SPX_QSIM_LD_CB;

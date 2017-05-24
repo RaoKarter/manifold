@@ -1033,6 +1033,9 @@ void LDQ_t::handle_cache()
             outstanding.insert(pair<uint64_t,inst_t*>(inst->uop_sequence,inst));
 
         debugging_inst_cb_LDQ(inst->core->core_id, inst->op.vaddr, inst->inst_length, inst->inst_bytes, inst->data.paddr);
+//        if (inst->mem_cb_type == 10 || inst->mem_cb_type == 20)
+//            debugging_mem_cb_LDQ(inst->core->core_id, inst->data.paddr, inst->mem_cb_type);
+
         pipeline->core->Send(pipeline->core->OUT_TO_DATA_CACHE,cache_request);
 
 #ifdef LIBKITFOX
@@ -1175,6 +1178,10 @@ void STQ_t::handle_cache()
             outstanding.insert(pair<uint64_t,inst_t*>(inst->uop_sequence,inst));
 
         debugging_inst_cb_STQ(inst->core->core_id, inst->op.vaddr, inst->inst_length, inst->inst_bytes, inst->data.paddr);
+
+//        if (inst->mem_cb_type == 10 || inst->mem_cb_type == 20)
+//            debugging_mem_cb_STQ(inst->core->core_id, inst->data.paddr, inst->mem_cb_type);
+
         pipeline->core->Send(pipeline->core->OUT_TO_DATA_CACHE,cache_request);
 
 #ifdef LIBKITFOX

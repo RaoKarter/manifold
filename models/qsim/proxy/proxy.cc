@@ -28,6 +28,7 @@ qsim_proxy_t::qsim_proxy_t(char *StateName, char *AppName, uint64_t InterruptInt
 
     /* to enable system callbacks */
     //qsim_osd->set_sys_cbs(true);
+    qsim_osd->set_sys_cbs(false);
 
     buffer.reserve(QSIM_PROXY_QUEUE_SIZE);
     buffer.clear();

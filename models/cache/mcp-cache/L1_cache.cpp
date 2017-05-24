@@ -145,7 +145,6 @@ void L1_cache :: process_processor_request (cache_req *request, bool first)
 {
 
     DBG_L1_CACHE_TICK_ID( cout,  "###### " << " process_processor_request():  addr= " <<hex<< request->addr <<dec<< ((request->op_type==OpMemLd) ? " LD" : " ST") << "\n" );
-    cerr << " HISTOGRAM" << get_node_id() << "\taddr\t" << hex << request->addr << dec << ((request->op_type==OpMemLd) ? "\tLD" : "\tST") << endl;
 #ifdef LIBKITFOX
     if(request->op_type==OpMemLd) {
         counter.cache.read += 3;
@@ -776,7 +775,7 @@ void L1_cache :: print_stats(std::ostream& out)
 {
     double avg_occup = (double)stats_table_occupancy / stats_cycles;
 
-    out << "L1 node " << node_id << endl
+    out << dec << "L1 node " << node_id << endl
         << "    Processor requests = " << stats_processor_read_requests << " (R) + " << stats_processor_write_requests
         << " (W) = " << stats_processor_read_requests + stats_processor_write_requests << endl
         << "    Hits = " << stats_hits << endl
