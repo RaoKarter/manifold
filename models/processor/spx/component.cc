@@ -914,7 +914,7 @@ bool EX_t::is_available(int excode)
 
 
 LDQ_t::LDQ_t(pipeline_t *pl, int LDQ_size) :
-    size(LDQ_size), occupancy(0), pipeline(pl), dis_LDQ(CS_ARCH_ARM64, CS_MODE_ARM)
+    size(LDQ_size), occupancy(0), pipeline(pl)//, dis_LDQ(CS_ARCH_ARM64, CS_MODE_ARM)
 {
     outgoing.reserve(size);
 }
@@ -1083,7 +1083,7 @@ inst_t* LDQ_t::handle_deadlock()
 
 
 STQ_t::STQ_t(pipeline_t *pl, int STQ_size) :
-    size(STQ_size), occupancy(0), pipeline(pl), dis_STQ(CS_ARCH_ARM64, CS_MODE_ARM)
+    size(STQ_size), occupancy(0), pipeline(pl)//, dis_STQ(CS_ARCH_ARM64, CS_MODE_ARM)
 {
     outgoing.reserve(size);
 }
