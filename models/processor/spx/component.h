@@ -167,28 +167,28 @@ public:
     void handle_cache();
     bool is_available();
     inst_t* handle_deadlock();
-    void debugging_inst_cb_LDQ(int c, uint64_t v, uint8_t l, const uint8_t *b, const uint64_t req_paddr)
-    {
-        cs_insn *insn = NULL;
+//    void debugging_inst_cb_LDQ(int c, uint64_t v, uint8_t l, const uint8_t *b, const uint64_t req_paddr)
+//    {
+//        cs_insn *insn = NULL;
 
-        int count = dis_LDQ.decode((unsigned char *)b, l, insn);
-        insn[0].address = v;
+//        int count = dis_LDQ.decode((unsigned char *)b, l, insn);
+//        insn[0].address = v;
 
-        std::cerr << "INST_CB_DEBUG_LDQ" << std::dec << c << ": " << std::hex << insn[0].address << " : "
-                  << insn[0].mnemonic << " : " << insn[0].op_str << " " << req_paddr << std::dec << std::endl;
+//        std::cerr << "INST_CB_DEBUG_LDQ" << std::dec << c << ": " << std::hex << insn[0].address << " : "
+//                  << insn[0].mnemonic << " : " << insn[0].op_str << " " << req_paddr << std::dec << std::endl;
 
-        dis_LDQ.free_insn(insn, count);
-        fflush(NULL);
-        return;
-    }
-    void debugging_mem_cb_LDQ(int c, const uint64_t req_paddr, uint8_t memcb_type)
-    {
-        if (memcb_type == 10)
-            std::cerr << "MEM_CB_DEBUG_LDQ" << std::dec << c << " " <<std::hex<<  req_paddr << " ST" << std::dec << std::endl;
-        else if (memcb_type == 20)
-            std::cerr << "MEM_CB_DEBUG_LDQ" << std::dec << c << " " <<std::hex<<  req_paddr << " LD" << std::dec << std::endl;
-        return;
-    }
+//        dis_LDQ.free_insn(insn, count);
+//        fflush(NULL);
+//        return;
+//    }
+//    void debugging_mem_cb_LDQ(int c, const uint64_t req_paddr, uint8_t memcb_type)
+//    {
+//        if (memcb_type == 10)
+//            std::cerr << "MEM_CB_DEBUG_LDQ" << std::dec << c << " " <<std::hex<<  req_paddr << " ST" << std::dec << std::endl;
+//        else if (memcb_type == 20)
+//            std::cerr << "MEM_CB_DEBUG_LDQ" << std::dec << c << " " <<std::hex<<  req_paddr << " LD" << std::dec << std::endl;
+//        return;
+//    }
 
 
 private:
@@ -197,7 +197,7 @@ private:
     int size;
     int occupancy;
     pipeline_t *pipeline;
-    cs_disas dis_LDQ;
+//    cs_disas dis_LDQ;
 };
 
 class STQ_t
@@ -214,28 +214,28 @@ public:
     void store_forward(inst_t *inst);
     void mem_disamb_check(inst_t *inst);
     inst_t* handle_deadlock();
-    void debugging_inst_cb_STQ(int c, uint64_t v, uint8_t l, const uint8_t *b, const uint64_t req_paddr)
-    {
-        cs_insn *insn = NULL;
+//    void debugging_inst_cb_STQ(int c, uint64_t v, uint8_t l, const uint8_t *b, const uint64_t req_paddr)
+//    {
+//        cs_insn *insn = NULL;
 
-        int count = dis_STQ.decode((unsigned char *)b, l, insn);
-        insn[0].address = v;
+//        int count = dis_STQ.decode((unsigned char *)b, l, insn);
+//        insn[0].address = v;
 
-        std::cerr << "INST_CB_DEBUG_STQ" << std::dec << c << ": " << std::hex << insn[0].address << " : "
-              << insn[0].mnemonic << " : " << insn[0].op_str << " " <<  req_paddr << std::dec << std::endl;
+//        std::cerr << "INST_CB_DEBUG_STQ" << std::dec << c << ": " << std::hex << insn[0].address << " : "
+//              << insn[0].mnemonic << " : " << insn[0].op_str << " " <<  req_paddr << std::dec << std::endl;
 
-        dis_STQ.free_insn(insn, count);
-        fflush(NULL);
-        return;
-    }
-    void debugging_mem_cb_STQ(int c, const uint64_t req_paddr, uint8_t memcb_type)
-    {
-        if (memcb_type == 10)
-            std::cerr << "MEM_CB_DEBUG_STQ" << std::dec << c << " " <<std::hex<<  req_paddr << " ST" << std::dec << std::endl;
-        else if (memcb_type == 20)
-            std::cerr << "MEM_CB_DEBUG_STQ" << std::dec << c << " " <<std::hex<<  req_paddr << " LD" << std::dec << std::endl;
-        return;
-    }
+//        dis_STQ.free_insn(insn, count);
+//        fflush(NULL);
+//        return;
+//    }
+//    void debugging_mem_cb_STQ(int c, const uint64_t req_paddr, uint8_t memcb_type)
+//    {
+//        if (memcb_type == 10)
+//            std::cerr << "MEM_CB_DEBUG_STQ" << std::dec << c << " " <<std::hex<<  req_paddr << " ST" << std::dec << std::endl;
+//        else if (memcb_type == 20)
+//            std::cerr << "MEM_CB_DEBUG_STQ" << std::dec << c << " " <<std::hex<<  req_paddr << " LD" << std::dec << std::endl;
+//        return;
+//    }
 
 private:
     std::map<uint64_t,inst_t*> mem_disamb;
@@ -244,7 +244,7 @@ private:
     int size;
     int occupancy;
     pipeline_t *pipeline;
-    cs_disas dis_STQ;
+//    cs_disas dis_STQ;
 };
 
 } // namespace spx

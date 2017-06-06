@@ -7,8 +7,8 @@
 #include <map>
 #include <vector>
 #include <cstddef>
-#include <capstone.h>
-#include "cs_disas.h"
+//#include <capstone.h>
+//#include "cs_disas.h"
 
 namespace manifold {
 namespace spx {
@@ -70,8 +70,8 @@ public:
     int memcode; // memory instruction type
     int excode; // FU type (e.g., SPX_FU_INT)
     int port; // EX port
-    uint8_t inst_bytes[15] = {};
-    uint8_t inst_length = 0;
+//    uint8_t inst_bytes[15] = {};
+//    uint8_t inst_length = 0;
 
     bool is_long_inst;
     bool inflight;
