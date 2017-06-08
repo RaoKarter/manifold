@@ -291,7 +291,7 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
 	{
 		// cerr << "vis file output disabled\n";
 	}
-#ifdef LOG_OUTPUT
+#if 0
 	string dramsimLogFilename("dramsim");
 	if (sim_description != NULL)
 	{
@@ -357,7 +357,7 @@ MultiChannelMemorySystem::~MultiChannelMemorySystem()
 	channels.clear(); 
 
 // flush our streams and close them up
-#ifdef LOG_OUTPUT
+#if 0
 	dramsim_log.flush();
 	dramsim_log.close();
 #endif

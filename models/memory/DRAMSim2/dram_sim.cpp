@@ -17,13 +17,14 @@ bool Dram_sim :: Msg_type_set = false;
 
 
 Dram_sim::Dram_sim (int nid, const Dram_sim_settings& dram_settings, Clock& clk) :
-    m_nid(nid)
+    m_nid(nid), dram_clk(clk)
 {
     assert(Msg_type_set);
     assert(MEM_MSG_TYPE != CREDIT_MSG_TYPE);
 
     m_send_st_response = dram_settings.send_st_resp;
     downstream_credits = dram_settings.downstream_credits;
+    MAX_DOWNSTREAM_CREDITS = downstream_credits;
 
     /* instantiate the DRAMSim module */
     mem = new MultiChannelMemorySystem(dram_settings.dev_filename, dram_settings.mem_sys_filename, ".", "res", dram_settings.size);
@@ -34,6 +35,7 @@ Dram_sim::Dram_sim (int nid, const Dram_sim_settings& dram_settings, Clock& clk)
     read_cb = new Callback<Dram_sim, void, unsigned, uint64_t, uint64_t>(this, &Dram_sim::read_complete);
     write_cb = new Callback<Dram_sim, void, unsigned, uint64_t, uint64_t>(this, &Dram_sim::write_complete);
     mem->RegisterCallbacks(read_cb, write_cb, NULL);
+    mem->setCPUClockSpeed(clk.freq);
 
     //register with clock
     Clock :: Register(clk, this, &Dram_sim::tick, (void(Dram_sim::*)(void)) 0 );
@@ -43,7 +45,9 @@ Dram_sim::Dram_sim (int nid, const Dram_sim_settings& dram_settings, Clock& clk)
     stats_n_writes = 0;
     stats_n_reads_sent = 0;
     stats_totalMemLat = 0;
-
+#ifdef DBG_DRAMSIM
+    cout << "Created DRAM with id: " << m_nid << endl;
+#endif
 #ifdef DRAMSIM_UTEST
     completed_writes = 0;
 #endif
@@ -103,17 +107,24 @@ void Dram_sim :: try_send_reply()
     m_completed_reqs.pop_front();
 
     uarch::Mem_msg mem_msg(req.gaddr, req.read);
+    mem_msg.type = 1;  // MEM RPLY
 
     manifold::uarch::NetworkPacket * pkt = (manifold::uarch::NetworkPacket*)(req.extra);
     pkt->type = MEM_MSG_TYPE;
     *((uarch::Mem_msg*)(pkt->data)) = mem_msg;
     pkt->data_size = sizeof(uarch::Mem_msg);
 
-#ifdef DBG_DRAMSIM
-    cout << "@ " << m_clk->NowTicks() << " MC " << m_nid << " sending reply: addr= " << hex << req.gaddr << dec << " destination= " << pkt->get_dst() << endl;
+#ifdef DBG_DRAMSIM    
+    cerr << dec << "@\t" << dram_clk.NowTicks() << "\tdram_clk\tVault\t" << this->get_nid() << "\treply LD\t\t\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+                << "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << req.addr
+                << "\tgaddr\t" << req.gaddr << dec << endl;
 #endif
     Send(PORT0, pkt);
     downstream_credits--;
+#ifdef DBG_DRAMSIM
+    cerr << dec << "@\t" << dram_clk.NowTicks() << "\tdram_clk\tVault\t" << this->get_nid() << "\tdownstream_credits[" << downstream_credits+1 << "]->"
+         << downstream_credits << endl;
+#endif
     }
 }
 
@@ -123,6 +134,9 @@ void Dram_sim :: send_credit()
     manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
     credit_pkt->type = CREDIT_MSG_TYPE;
     Send(PORT0, credit_pkt);
+#ifdef DBG_DRAMSIM
+    cerr << dec << "@\t" << dram_clk.NowTicks() << "\tdram_clk\tVault\t" << this->get_nid() << "\tSending CREDIT PKT to xbar" << endl;
+#endif
 }
 
 
@@ -145,7 +159,7 @@ void Dram_sim::tick()
 
     mem->addTransaction(!req.read, req.addr);
 #ifdef DBG_DRAMSIM
-    cout << "@ " << m_clk->NowTicks() << " MC " << m_nid << ": transaction of address " << hex << req.gaddr << dec << " is pushed to memory" << endl;
+    cout << "@ " << dram_clk.NowTicks() << " MC " << m_nid << ": transaction of address " << hex << req.gaddr << dec << " is pushed to memory" << endl;
 #endif
     //move from input buffer to pending buffer
         m_pending_reqs[req.addr].push_back(req);

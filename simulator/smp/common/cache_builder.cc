@@ -125,6 +125,10 @@ void MCP_lp_lls_builder :: connect_cache_network(NetworkBuilder* net_builder)
         assert(irisBuilder != 0);
 
         const std::vector<CompId_t>& ni_cids = net_builder->get_interface_cid();
+        for(int i = 0; i < 8; i++)
+        {
+            cout << "Network node_cids[" << i << "]= " << ni_cids[i] << endl;
+        }
         for(map<int, LP_LLS_unit*>::iterator it = m_caches.begin(); it != m_caches.end(); ++it) {
             int node_id = (*it).first;
             LP_LLS_unit* unit = (*it).second;
@@ -146,6 +150,10 @@ void MCP_lp_lls_builder :: connect_cache_network(NetworkBuilder* net_builder)
                                             ni_cids[node_id*2], GenNetworkInterface<NetworkPacket>::TERMINAL_PORT,
                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);
                         break;
+                    case MemControllerBuilder::HMC:
+                        cerr << " TORUS 6P cannot be used with HMC at this moment!!!" << endl;
+                        assert(0);
+                        break;
                     default:
                         assert(0);
                         break;
@@ -162,6 +170,10 @@ void MCP_lp_lls_builder :: connect_cache_network(NetworkBuilder* net_builder)
                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);
                         break;
                     case MemControllerBuilder::DRAMSIM:
+                    case MemControllerBuilder::HMC:
+#ifdef HMCDEBUG
+                        cout << "Connecting Cache: " << dec << cache_cid <<" with MuxDemux NET_PORT " << dec << MuxDemux::PORT_NET << " with network cid " << dec << ni_cids[node_id] << " TERMINAL PORT" << endl;
+#endif /* HMCDEBUG */
                         Manifold :: Connect(cache_cid, MuxDemux::PORT_NET, &MuxDemux::handle_net<manifold::uarch::Mem_msg>,
                                             ni_cids[node_id], GenNetworkInterface<NetworkPacket>::TERMINAL_PORT,
                                             &GenNetworkInterface<NetworkPacket>::handle_new_packet_event, Clock::Master(), Clock::Master(), 1, 1);

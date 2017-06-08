@@ -14,4 +14,4 @@ pkginclude_DRAMSim2_HEADERS = \
         dram_sim.h
 
 
-libDRAMSim2_a_CPPFLAGS = -I$(KERNEL_INC)
+libDRAMSim2_a_CPPFLAGS = -DHMCMEM=1 -I$(KERNEL_INC)

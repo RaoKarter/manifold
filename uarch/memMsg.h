@@ -14,6 +14,7 @@ public:
     bool read;
     uint64_t get_addr() { return addr; }
     bool is_read() { return read; }
+    int type;   // 0 MEM REQ, 1 MEM RPLY
 };
 
 

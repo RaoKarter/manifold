@@ -78,6 +78,7 @@ protected:
     MemControllerBuilder* m_mc_builder;
     QsimBuilder *m_qsim_builder;
 
+    int num_serdes;
 #ifdef LIBKITFOX
     KitFoxBuilder *m_kitfox_builder;
 #endif
@@ -85,6 +86,10 @@ protected:
     Qsim::OSDomain *m_qsim_osd;
 
     int MAX_NODES;
+    int MAX_VAULTS;
+    int MAX_SERDES;
+    int trans_size;
+    int num_kitfox_pkgs;
     manifold::kernel::Ticks_t STOP; //simulation stop time
     uint64_t m_DEFAULT_CLOCK_FREQ; //default clock's frequency
 

@@ -205,7 +205,7 @@ void L1_cache :: handle_processor_request(int, T* request)
     //might receive multiple processor requests at the same tick.
     //assert(m_proc_requests.size() == 0);
     m_proc_requests.push_back(req);
-    cerr << "HISTOGRAM" << get_node_id() << "\taddr\t" << hex << request->addr << dec << ((request->op_type==OpMemLd) ? "\tLD" : "\tST") << dec << endl;
+    //cerr << "HISTOGRAM" << get_node_id() << "\taddr\t" << hex << request->addr << dec << ((request->op_type==OpMemLd) ? "\tLD" : "\tST") << dec << endl;
     //process_processor_request(req, true);
 }
 

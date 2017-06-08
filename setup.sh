@@ -74,11 +74,11 @@ fi
 echo -e "Building simulator ..."
 cd QsimProxy
 make clean
-if [  -z "$KITFOX_PREFIX" ]; then
-    make -j4
-else
-    make -j4 -f Makefile.kitfox
-fi
+#if [  -z "$KITFOX_PREFIX" ]; then
+    make -j4 -f Makefile.HMC
+#else
+#    make -j4 -f Makefile.HMC.kitfox
+#fi
 
 
 if [ $? -eq "0" ]; then
