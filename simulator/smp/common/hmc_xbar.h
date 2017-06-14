@@ -11,7 +11,7 @@
 #include <iterator>
 #include <string>
 
-#ifdef HMCDEBUG
+#ifdef HMCXBAR
 #include "mcp-cache/coh_mem_req.h"
 #include "mcp-cache/cache_req.h"
 #endif
@@ -88,6 +88,13 @@ public:
         delete stats_num_outgoing_serdes_credits;
         delete intermediate_num_incoming_serdes_credits;
         delete intermediate_num_outgoing_serdes_credits;
+
+#ifdef HMCXBAR
+        delete stats_num_incoming_coh_req_serdes_msg;
+        delete stats_num_incoming_coh_resp_serdes_msg;
+        delete stats_num_outgoing_coh_req_serdes_msg;
+        delete stats_num_outgoing_coh_resp_serdes_msg;
+#endif
     }
 
     int get_hmc_id() { return hmc_id; }
@@ -118,15 +125,20 @@ public:
     void queue_mem_after_xbar_delay_serdes(manifold::uarch::NetworkPacket* pkt, int in_port, int vault, int credit_type);
     void queue_after_xbar_delay_vault(manifold::uarch::NetworkPacket* pkt, int in_port, int serdes_port, unsigned int credit_type);
 
+#ifdef HMCXBAR
+    void handle_serdes_coh_msg(manifold::uarch::NetworkPacket* pkt, int in_port, int dst);
+    void queue_coh_after_xbar_delay_serdes(manifold::uarch::NetworkPacket *pkt, int in_port, int dst, unsigned int type);
+#endif
+
     uint64_t serdes_rx_calculate_delay(int from_port, int to_port, int type);
     uint64_t vault_rx_calculate_delay(int from_port, int to_port, int type);
 
     void send_credit_downstream(int);
     void send_credit_upstream(int, int);
 
-    #ifdef FORECAST_NULL
+#ifdef FORECAST_NULL
     void do_output_to_net_prediction();
-    #endif
+#endif
 
     static void Set_msg_types(int mem, int credit, int coh) // Set some interface parameters
 	{
@@ -146,10 +158,10 @@ public:
 #endif
 
 protected:
-    #ifdef FORECAST_NULL
+#ifdef FORECAST_NULL
     //overwrite base class
     void remote_input_notify(manifold::kernel::Ticks_t, void* data, int port);
-    #endif
+#endif
 
     // NEED BUFFERS FOR EACH VAULT AND EACH NETWORK PORT
     std::list<manifold::uarch::NetworkPacket*>* hmc_to_serdes_buffer; //store responses from all connected vaults
@@ -220,6 +232,13 @@ private:
     unsigned* intermediate_num_incoming_serdes_credits;
     unsigned* intermediate_num_outgoing_serdes_credits;
 
+#ifdef HMCXBAR
+    unsigned* stats_num_incoming_coh_req_serdes_msg;
+    unsigned* stats_num_incoming_coh_resp_serdes_msg;
+    unsigned* stats_num_outgoing_coh_req_serdes_msg;
+    unsigned* stats_num_outgoing_coh_resp_serdes_msg;
+#endif
+
 #ifdef LIBKITFOX
     manifold::uarch::hmcxbar_counter_t counter;
 #endif
@@ -242,7 +261,7 @@ void HMC_xbar :: handle_vault_incoming(int in_port, manifold::uarch::NetworkPack
         stats_num_incoming_vault_credits[in_port - hmc_num_net_ports]++;
         intermediate_num_incoming_vault_credits[in_port - hmc_num_net_ports]++;
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\trcvd MC CREDIT pkt @ port\t" << dec  << in_port
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\trcvd MC CREDIT pkt @ port\t" << dec  << in_port
 				<<"\tupstream credits[" << in_port - hmc_num_net_ports << "]\t" << upstream_credits[in_port - hmc_num_net_ports]-1
 				<< "->" << upstream_credits[in_port - hmc_num_net_ports] << endl;
 #endif
@@ -262,7 +281,7 @@ void HMC_xbar :: handle_vault_incoming(int in_port, manifold::uarch::NetworkPack
 	req->addr = pkt_gaddr;
 
 #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\t(B)hmc_id\t" << this->get_hmc_id() << "\trcvd MC MSG pkt @ port\t"
+    cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\t(B)hmc_id\t" << this->get_hmc_id() << "\trcvd MC MSG pkt @ port\t"
 			<< dec << in_port << "\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
 			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t"
 			<< hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << endl;
@@ -281,7 +300,7 @@ void HMC_xbar :: handle_vault_incoming(int in_port, manifold::uarch::NetworkPack
 */
 
 #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\t(A)hmc_id\t" << this->get_hmc_id() << "\trcvd MC MSG pkt @ port\t"
+    cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\t(A)hmc_id\t" << this->get_hmc_id() << "\trcvd MC MSG pkt @ port\t"
 			<< dec << in_port << "\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
 			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t"
 			<< hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << endl;
@@ -316,7 +335,7 @@ void HMC_xbar :: handle_serdes_incoming(int in_port, manifold::uarch::NetworkPac
         assert(downstream_credits[in_port] <= MAX_NET_CREDITS);
 
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\trcvd SERDES CREDIT pkt @ port\t" << dec << in_port
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\trcvd SERDES CREDIT pkt @ port\t" << dec << in_port
                 <<"\tHMCdownstream credits[" << in_port << "]\t" << downstream_credits[in_port]-1 << "->" << downstream_credits[in_port] << endl;
 #endif
         delete pkt;
@@ -326,7 +345,7 @@ void HMC_xbar :: handle_serdes_incoming(int in_port, manifold::uarch::NetworkPac
     if (pkt->type == MEM_MSG_TYPE)
     {
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tHMC Received PKT TYPE is MEM MSG" << endl;
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\tHMC Received PKT TYPE is MEM MSG" << endl;
 #endif
         // MEM_MSG_TYPE
 
@@ -351,7 +370,7 @@ void HMC_xbar :: handle_serdes_incoming(int in_port, manifold::uarch::NetworkPac
         assert(vault_id >= 0 && vault_id <= hmc_num_mc_ports);
 
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\trcvd NET MSG pkt @ port\t"
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\trcvd NET MEM MSG pkt @ port\t"
                 << dec << in_port << "\tsrc_id\t" << pkt->get_src() << "\tpkt->src_port\t" << pkt->get_src_port()
                 << "\tdst_id\t" << pkt->get_dst() << "\tpkt->dst_port\t" << pkt->get_dst_port() << "\tladdr\t"
                 << hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << endl;
@@ -359,9 +378,22 @@ void HMC_xbar :: handle_serdes_incoming(int in_port, manifold::uarch::NetworkPac
         //handle_serdes_mem_msg(pkt, from_port, to_port)
         handle_serdes_mem_msg(pkt, in_port, vault_id);
     }
+
+#ifdef HMCXBAR
+    else if (pkt->type == COH_MSG_TYPE)
+    {
+#ifdef HMCDEBUG
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\tHMC Received PKT TYPE is COH MSG" << endl;
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\trcvd NET COH MSG pkt @ port\t"
+                << dec << in_port << "\tsrc_id\t" << pkt->get_src() << "\tpkt->src_port\t" << pkt->get_src_port()
+                << "\tdst_id\t" << pkt->get_dst() << "\tpkt->dst_port\t" << pkt->get_dst_port() << endl;
+#endif
+        handle_serdes_coh_msg(pkt, in_port, pkt->get_dst());
+    }
+#endif
     else
     {
-        cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\trcvd NET MSG pkt @ port\t"
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\trcvd NET MSG pkt @ port\t"
              << dec << in_port << "\tBAD MSG ERROR\t" << endl;
         assert(0);
     }
@@ -378,7 +410,7 @@ void HMC_xbar :: handle_kitfox_proxy_request(int temp, T *kitfox_proxy_request)
     double meas_time_period = 0;
     meas_time_period = (xbar_clk.NowTicks() * xbar_clk.period) - time;
 
-    cerr << "@\t" << xbar_clk.NowTicks() << "\txbar_clk\t" << "xbar" << this->get_hmc_id() << " meas_time_period: " << meas_time_period << endl;
+    cerr << "@\t" << xbar_clk.NowTicks() << "\txbar_clk\txbar" << this->get_hmc_id() << " meas_time_period: " << meas_time_period << endl;
     for(int i = 0; i < hmc_num_net_ports; i++)
     {
         counter.xbar_power += intermediate_num_outgoing_serdes_credits[i];

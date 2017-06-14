@@ -558,7 +558,7 @@ void SysBuilder_llp :: create_nodes(int type, int n_lps, int part)
     cout<<"\n Creating caches";
     m_cache_builder->create_caches(*m_default_clock);
     cout<<"\n Created caches";
-    cout<<"\n Creating mcs";
+    cout<<"\n Creating mcs" << endl;
     m_mc_builder->create_mcs(mc_id_lp_map);
     cout<<"\nCreated mcs" << endl;
 
@@ -713,8 +713,12 @@ void SysBuilder_llp :: connect_components()
         m_proc_builder->connect_proc_qsim_proxy(m_qsim_builder);
 
     m_proc_builder->connect_proc_cache(m_cache_builder);
+#ifdef HMCXBAR
+    m_mc_builder->connect_mc_cache(m_cache_builder);
+#else
     m_cache_builder->connect_cache_network(m_network_builder);
     m_mc_builder->connect_mc_network(m_network_builder);
+#endif
 
 #ifdef LIBKITFOX
     if(m_kitfox_builder){

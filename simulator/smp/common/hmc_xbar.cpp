@@ -128,6 +128,13 @@ HMC_xbar :: HMC_xbar(int id, const HMC_xbar_settings& hmcxbar_settings, Clock& c
     intermediate_num_incoming_serdes_credits =  new unsigned [hmc_num_net_ports];
     intermediate_num_outgoing_serdes_credits = new unsigned [hmc_num_net_ports];
 
+#ifdef HMCXBAR
+    stats_num_incoming_coh_req_serdes_msg = new unsigned [hmc_num_net_ports];
+    stats_num_incoming_coh_resp_serdes_msg = new unsigned [hmc_num_net_ports];
+    stats_num_outgoing_coh_req_serdes_msg = new unsigned [hmc_num_net_ports];
+    stats_num_outgoing_coh_resp_serdes_msg = new unsigned [hmc_num_net_ports];
+#endif
+
 
     for (int i = 0; i < hmc_num_mc_ports; i++)
     {
@@ -140,7 +147,6 @@ HMC_xbar :: HMC_xbar(int id, const HMC_xbar_settings& hmcxbar_settings, Clock& c
     }
     for (int i = 0; i < hmc_num_net_ports; i++)
     {
-
         stats_num_incoming_read_req_serdes_msg[i] = 0;
         stats_num_incoming_write_req_serdes_msg[i] = 0;
         stats_num_outgoing_read_resp_serdes_msg[i] = 0;
@@ -149,6 +155,13 @@ HMC_xbar :: HMC_xbar(int id, const HMC_xbar_settings& hmcxbar_settings, Clock& c
         stats_num_outgoing_serdes_credits[i] = 0;
         intermediate_num_incoming_serdes_credits[i] = 0;
         intermediate_num_outgoing_serdes_credits[i] = 0;
+
+#ifdef HMCXBAR
+        stats_num_incoming_coh_req_serdes_msg[i] = 0;
+        stats_num_incoming_coh_resp_serdes_msg[i] = 0;
+        stats_num_outgoing_coh_req_serdes_msg[i] = 0;
+        stats_num_outgoing_coh_resp_serdes_msg[i] = 0;
+#endif
     }
 }
 
@@ -174,20 +187,21 @@ void HMC_xbar :: tick()
             assert(upstream_credits[i] >= 0);
             stats_num_outgoing_vault_msg[i]++;
 
-#ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() <<"\t(tick)HMC upstream credits[" << i << "]\t" << upstream_credits[i]+1
-            << "->" << upstream_credits[i] << "\thmc_to_mc_buffer.size\t" << hmc_to_mc_buffer[i].size() << endl;
-	manifold::mcp_cache_namespace::Mem_msg* req = (manifold::mcp_cache_namespace::Mem_msg*)pkt->data;
-	uint64_t pkt_laddr = req->get_addr(); // Local address right now
-	uint64_t pkt_gaddr = hmc_map->get_global_addr(pkt_laddr, this->get_hmc_id()); // Global address
-    cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending MSG pkt from MC port\t"
-			<< dec << m_ports[i] << "(" << m_ports[i] - hmc_num_net_ports << ")\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
-			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << dec << endl;
-#endif
+//#ifdef HMCDEBUG
+//    cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\t(tick)HMC upstream credits[" << i << "]\t" << upstream_credits[i]+1
+//            << "->" << upstream_credits[i] << "\thmc_to_mc_buffer.size\t" << hmc_to_mc_buffer[i].size() << endl;
+//	manifold::mcp_cache_namespace::Mem_msg* req = (manifold::mcp_cache_namespace::Mem_msg*)pkt->data;
+//	uint64_t pkt_laddr = req->get_addr(); // Local address right now
+//	uint64_t pkt_gaddr = hmc_map->get_global_addr(pkt_laddr, this->get_hmc_id()); // Global address
+//    cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\tsending MSG pkt from MC port\t"
+//			<< dec << m_ports[i] << "(" << m_ports[i] - hmc_num_net_ports << ")\tsrc_id\t" << pkt->get_src() << "\tsrc_port\t" << pkt->get_src_port()
+//			<< "\tdst_id\t" << pkt->get_dst() << "\tdst_port\t" << pkt->get_dst_port() << "\tladdr\t" << hex << pkt_laddr << "\tgaddr\t" << pkt_gaddr << dec << endl;
+//#endif
 		}
 	}
 
-	// Now start to process memory responses
+    // Now start to process memory responses (If the xbar is used as the network, this queue will also
+    // contain COH msgs).
     for(int i = 0; i < get_num_net_ports(); i++) // For each SerDes link
     {
         if ( hmc_to_serdes_buffer[i].size() > 0 && downstream_credits[i] > 0) // buffer containing memory responses
@@ -197,7 +211,18 @@ void HMC_xbar :: tick()
             Send(net_ports[i],pkt);
             downstream_credits[i]--;
             assert(downstream_credits[i] >= 0);
-            stats_num_outgoing_read_resp_serdes_msg++;
+            if (pkt->type == MEM_MSG_TYPE)
+                stats_num_outgoing_read_resp_serdes_msg++;
+#ifdef HMCXBAR
+            else if (pkt->type == COH_MSG_TYPE)
+            {
+                manifold::mcp_cache_namespace::Coh_msg* msg = (manifold::mcp_cache_namespace::Coh_msg*)pkt->data;
+                if (msg->type == 0) // COH REQ
+                    stats_num_outgoing_coh_req_serdes_msg++;
+                else                // COH RESP
+                    stats_num_outgoing_coh_resp_serdes_msg++;
+            }
+#endif
         }
     }
 
@@ -225,12 +250,12 @@ void HMC_xbar::handle_vault_responses(manifold::uarch::NetworkPacket *pkt, int s
 }
 
 void HMC_xbar::handle_serdes_mem_msg(manifold::uarch::NetworkPacket* pkt, int in_port, int vault)
-{
-    unsigned int credit_type = 0;
+{    
     // THIS FUNCTION IS SPECIFICALLY FOR MEM MSG
 #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thandle_serdes_mem_msg";
+    cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thandle_serdes_mem_msg";
 #endif
+    unsigned int credit_type = 0;
     uint64_t pkt_delay = 0;
     manifold::mcp_cache_namespace::Mem_msg* msg = (manifold::mcp_cache_namespace::Mem_msg*) pkt->data;
     if (msg->type == 0)             // MEM_REQ
@@ -270,15 +295,113 @@ void HMC_xbar::handle_serdes_mem_msg(manifold::uarch::NetworkPacket* pkt, int in
     }
     else if (msg->type == 1)        // MEM_RPLY
     {
-        cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\tHMC handle_mem_msg MEM MSG TYPE ERROR. CPU cannot send read/write response type" << endl;
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\tHMC handle_mem_msg MEM MSG TYPE ERROR. CPU cannot send read/write response type" << endl;
         assert(0);
     }
     else
     {
-        cerr << dec << "\n@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\trcvd NET MSG pkt BAD REQ TYPE ERROR!!!! " << endl;
+        cerr << dec << "\n@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\trcvd NET MSG pkt BAD REQ TYPE ERROR!!!! " << endl;
         assert(0);
     }
 }
+
+#ifdef HMCXBAR
+void HMC_xbar::handle_serdes_coh_msg(manifold::uarch::NetworkPacket* pkt, int in_port, int dst)
+{
+    // THIS FUNCTION IS SPECIFICALLY FOR COH MSG
+#ifdef HMCDEBUG
+    cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thandle_serdes_coh_msg";
+#endif
+    unsigned int credit_type = 0;
+    uint64_t pkt_delay = 0;
+    manifold::mcp_cache_namespace::Coh_msg* msg = (manifold::mcp_cache_namespace::Coh_msg*) pkt->data;
+
+    switch(msg->type)
+    {
+        case 0:                     // Coh Request
+        {
+            stats_num_incoming_coh_req_serdes_msg[in_port]++;
+            /*
+             * A coh request is 1 FLIT = 16B. Assuming 16 bit lines for SerDes link
+             * 2B get transferred every SerDes clock tick.
+            */
+            pkt_delay = serdes_rx_calculate_delay(in_port, dst, 0);
+#ifdef HUTDEBUG
+            serdes_rx_addr[in_port].push_back(msg->addr);
+#endif
+    #ifdef HMCDEBUG
+            cerr << " COH REQ addr\t" << hex << msg->addr << dec << "\tdelay\t" << pkt_delay << endl;
+    #endif
+            credit_type = 0;
+            manifold::kernel::Manifold::ScheduleClock(pkt_delay, this->xbar_clk, &HMC_xbar::queue_coh_after_xbar_delay_serdes, this, pkt, in_port, dst, credit_type);
+            break;
+        }
+        case 1:                     // Coh Reply
+        {
+            stats_num_incoming_coh_resp_serdes_msg[in_port]++;
+            /*
+             * A coh reply is 3 FLITs (1 FLIT overhead + 2 FLITs data) = 48B.
+             * Assuming 16 bit lines for SerDes link 2B get transferred every
+             * SerDes clock tick.
+            */
+            pkt_delay = serdes_rx_calculate_delay(in_port, dst, 1);
+#ifdef HUTDEBUG
+            serdes_rx_addr[in_port].push_back(msg->addr);
+#endif
+#ifdef HMCDEBUG
+            cerr << " COH REPLY addr\t" << hex << msg->addr << dec << "\tdelay\t" << pkt_delay << endl;
+#endif
+            credit_type = 1;
+            manifold::kernel::Manifold::ScheduleClock(pkt_delay, this->xbar_clk, &HMC_xbar::queue_coh_after_xbar_delay_serdes, this, pkt, in_port, dst, credit_type);
+            break;
+        }
+        default:
+        {
+            cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\tHMC ReceivedNET BAD COH MSG" << endl;
+            assert(0);
+        }
+    }
+}
+
+void HMC_xbar::queue_coh_after_xbar_delay_serdes(manifold::uarch::NetworkPacket *pkt, int in_port, int dst, unsigned int type)
+{
+    // THIS FUNCTION IS SPECIFICALLY FOR COH MSG
+    assert(pkt->type == COH_MSG_TYPE);
+    assert( serdes_rx_dep_time[in_port].front() == xbar_clk.NowTicks());
+
+    hmc_to_serdes_buffer[dst].push_back(pkt);
+    send_credit_upstream(in_port, type); // Send credits to SerDes (downstream_credits)
+
+#ifdef HMCDEBUG
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\tqueue_coh_after_xbar_delay COH MSG TYPE port\t" << in_port << "\tdst\t" << dst << endl;
+        cerr << "8888888888 SERDES RX BUFFER STATS " << in_port << " 8888888888888" << endl;
+        cerr << "ARR_CLK\t\tTYPE\tDEP_CLK\t\tADDR" << endl;
+#ifdef HUTDEBUG
+        std::list<uint64_t>::iterator it1 = serdes_rx_cur_clk_tick[in_port].begin();
+        std::list<uint64_t>::iterator it2 = serdes_rx_pkt_type[in_port].begin();
+        std::list<uint64_t>::iterator it4 = serdes_rx_addr[in_port].begin();
+#endif /* HUTDEBUG */
+        for(std::list<uint64_t>::iterator it3 = serdes_rx_dep_time[in_port].begin(); it3 != serdes_rx_dep_time[in_port].end(); ++it3)
+        {
+#ifdef HUTDEBUG
+            cerr << *it1 << "\t\t\t" << *it2 << "\t\t" << *it3 << "\t\t\t" << hex << *it4 << dec << endl;
+            ++it1;
+            ++it2;
+            ++it4;
+#else
+            cerr << "  \t\t  \t\t" << *it3 << endl;
+#endif /* HUTDEBUG */
+        }
+#endif /* HMCDEBUG */
+    serdes_rx_dep_time[in_port].pop_front();
+
+#ifdef HUTDEBUG
+    serdes_rx_cur_clk_tick[in_port].pop_front();
+    serdes_rx_pkt_type[in_port].pop_front();
+    serdes_rx_addr[in_port].pop_front();
+#endif /* HUTDEBUG */
+}
+#endif
 
 // queue mem req from serdes to vault after xbar delay
 void HMC_xbar::queue_mem_after_xbar_delay_serdes(manifold::uarch::NetworkPacket *pkt, int in_port, int vault, int type)
@@ -291,7 +414,7 @@ void HMC_xbar::queue_mem_after_xbar_delay_serdes(manifold::uarch::NetworkPacket 
     send_credit_upstream(in_port, type); // Send credits to SerDes (downstream_credits)
 
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\tqueue_mem_after_xbar_delay MEM MSG TYPE port\t" << in_port << "\tvault\t" << vault << endl;
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\tqueue_mem_after_xbar_delay MEM MSG TYPE port\t" << in_port << "\tvault\t" << vault << endl;
         cerr << "8888888888 SERDES RX BUFFER STATS " << in_port << " 8888888888888" << endl;
         cerr << "ARR_CLK\t\tTYPE\tDEP_CLK\t\tADDR" << endl;
 #ifdef HUTDEBUG
@@ -331,7 +454,7 @@ void HMC_xbar::queue_after_xbar_delay_vault(manifold::uarch::NetworkPacket *pkt,
     send_credit_downstream(in_port); // Send credits to Vaults (upstream_credits)
 
  #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\tqueue_after_xbar_delay_vault MEM MSG TYPE vault\t" << in_port << "\tto serdes\t" << serdes_port << endl;
+        cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\tqueue_after_xbar_delay_vault MEM MSG TYPE vault\t" << in_port << "\tto serdes\t" << serdes_port << endl;
         cerr << "8888888888 VAULT RX BUFFER STATS " << in_port << " 8888888888888" << endl;
         cerr << "ARR_CLK\t\tTYPE\tDEP_CLK\t\tADDR" << endl;
 #ifdef HUTDEBUG
@@ -366,11 +489,14 @@ void HMC_xbar :: send_credit_upstream(int port, int type)
     credit_pkt->type = CREDIT_MSG_TYPE;
     Send(net_ports[port], credit_pkt);
 #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending CREDIT pkt from NET port\t"
+    cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\tsending CREDIT pkt from NET port\t"
             << dec << net_ports[port] << endl;
 #endif
     stats_num_outgoing_serdes_credits[port]++;
-    intermediate_num_outgoing_serdes_credits[port]++;
+    if (type == 0)
+        intermediate_num_outgoing_serdes_credits[port]++;
+    else
+        intermediate_num_outgoing_serdes_credits[port] += resp_flit_size;
 }
 
 void HMC_xbar :: send_credit_downstream(int port)
@@ -379,7 +505,7 @@ void HMC_xbar :: send_credit_downstream(int port)
     credit_pkt->type = CREDIT_MSG_TYPE;
     Send(m_ports[port], credit_pkt);
 #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " xbar_clk " << xbar_clk.NowTicks() << "\thmc_id\t" << this->get_hmc_id() << "\tsending CREDIT pkt from MC port\t"
+    cerr << dec << "@\t" << xbar_clk.NowTicks() << " xbar_clk\thmc_id\t" << this->get_hmc_id() << "\tsending CREDIT pkt from MC port\t"
             << dec << m_ports[port] << endl;
 #endif
     stats_num_outgoing_vault_credits[port]++;
@@ -444,13 +570,13 @@ uint64_t HMC_xbar::serdes_rx_calculate_delay(int from_port, int to_port, int typ
 #endif
             if (to_quadrant != from_port)
             {
-                delay = 1 + 3;
-                serdes_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 1 + 3);
+                delay = 2 + 4;
+                serdes_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 2 + 4);
             }
             else
             {
-                delay = 1;
-                serdes_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 1);
+                delay = 2;
+                serdes_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 2);
             }
             break;
         }
@@ -465,13 +591,13 @@ uint64_t HMC_xbar::serdes_rx_calculate_delay(int from_port, int to_port, int typ
 #endif
             if (to_quadrant != from_port)
             {
-                delay = 5 + 3;
-                serdes_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 5 + 3);
+                delay = 6 + 4;
+                serdes_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 6 + 4);
             }
             else
             {
-                delay = 5;
-                serdes_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 5);
+                delay = 6;
+                serdes_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 6);
             }
             break;
         }
@@ -489,10 +615,10 @@ uint64_t HMC_xbar::serdes_rx_calculate_delay(int from_port, int to_port, int typ
         switch(type)
         {
         case 0:     // COH REQ
-            serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 1);
+            serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 2);
             break;
         case 1:     // COH REPLY
-            serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 5);
+            serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 6);
             break;
         case 2:     // READ REQ
         {
@@ -504,9 +630,9 @@ uint64_t HMC_xbar::serdes_rx_calculate_delay(int from_port, int to_port, int typ
             cerr << "\t to_port quadrant= " << to_quadrant << " from_quadrant= " << from_port << endl;
 #endif
             if (to_quadrant != from_port)
-                serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 1 + 3);
+                serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 2 + 4);
             else
-                serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 1);
+                serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 2);
             break;
         }
         case 3:     // WRITE REQ
@@ -519,9 +645,9 @@ uint64_t HMC_xbar::serdes_rx_calculate_delay(int from_port, int to_port, int typ
             cerr << "\t to_port quadrant= " << to_quadrant << " from_quadrant= " << from_port << endl;
 #endif
             if (to_quadrant != from_port)
-                serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 5 + 3);
+                serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 6 + 4);
             else
-                serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 5);
+                serdes_rx_dep_time[from_port].push_back(serdes_rx_dep_time[from_port].back() + 6);
             break;
         }
         default:
@@ -568,13 +694,13 @@ uint64_t HMC_xbar::vault_rx_calculate_delay(int from_port, int to_port, int type
 #endif
             if (from_quadrant != to_port)
             {
-                delay = 3 + 3;
-                vault_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 3 + 3);
+                delay = 4 + 4;
+                vault_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 4 + 4);
             }
             else
             {
-                delay = 3;
-                vault_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 3);
+                delay = 4;
+                vault_rx_dep_time[from_port].push_back(xbar_clk.NowTicks() + 4);
             }
             break;
         }
@@ -610,9 +736,9 @@ uint64_t HMC_xbar::vault_rx_calculate_delay(int from_port, int to_port, int type
             cerr << "\t from_quadrant= " << from_quadrant << " to_port= " << to_port << endl;
 #endif
             if (from_quadrant != to_port)
-                vault_rx_dep_time[from_port].push_back(vault_rx_dep_time[from_port].back() + 3 + 3);
+                vault_rx_dep_time[from_port].push_back(vault_rx_dep_time[from_port].back() + 4 + 4);
             else
-                vault_rx_dep_time[from_port].push_back(vault_rx_dep_time[from_port].back() + 3);
+                vault_rx_dep_time[from_port].push_back(vault_rx_dep_time[from_port].back() + 4);
             break;
         }
         case 3:     // WRITE RESP
@@ -647,6 +773,12 @@ void HMC_xbar :: print_stats(ostream& out)
         << "  outgoing serdes[" << i <<"] read resp msg: " << stats_num_outgoing_read_resp_serdes_msg[i] << endl
         << "  incoming serdes[" << i <<"] write req msg: " << stats_num_incoming_write_req_serdes_msg[i] << endl
 
+#ifdef HMCXBAR
+        << "  incoming serdes[" << i <<"] coh req msg: " << stats_num_incoming_coh_req_serdes_msg[i] << endl
+        << "  outgoing serdes[" << i <<"] coh req msg: " << stats_num_outgoing_coh_req_serdes_msg[i] << endl
+        << "  incoming serdes[" << i <<"] coh resp msg: " << stats_num_incoming_coh_resp_serdes_msg[i] << endl
+        << "  outgoing serdes[" << i <<"] coh resp msg: " << stats_num_outgoing_coh_resp_serdes_msg[i] << endl
+#endif
         << "  incoming serdes[" << i <<"] credits: " << stats_num_incoming_serdes_credits[i] << endl
         << "  outgoing serdes[" << i <<"] credits: " << stats_num_outgoing_serdes_credits[i] << endl;
     }

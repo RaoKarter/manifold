@@ -392,7 +392,9 @@ void L1_cache :: start_eviction (hash_entry* mshr_entry, cache_req *request)
 //====================================================================
 void L1_cache :: internal_handle_peer_and_manager_request (NetworkPacket* pkt)
 {
+//    cerr << "@\t" << m_clk->NowTicks() << "\tinternal_handle_peer_and_manager_request";
     if(pkt->type == CREDIT_MSG) {
+//        cerr << " CREDIT PKT" << endl;
         delete pkt;
         m_downstream_credits++;
     assert(m_downstream_credits <= DOWNSTREAM_FULL_CREDITS);
@@ -407,7 +409,8 @@ void L1_cache :: internal_handle_peer_and_manager_request (NetworkPacket* pkt)
     *request = *((Coh_msg*)(pkt->data));
 
     DBG_L1_CACHE_TICK_ID(cout, "@@@@@@  internal_handle_peer_and_manager_request(),  src= " << pkt->src << " addr= " <<hex<< request->addr <<dec<< " fwd= " << request->forward_id << "\n");
-
+//    cerr << " COH PKT type\t" << request->type << "\tsrc_id\t" << request->src_id << "\tsrc_port\t" << request->src_port << "\tdst_id\t" << request->dst_id
+//         << "\tdst_port\t" << request->dst_port << "\taddr\t" << hex << request->addr << dec << endl;
     delete pkt;
     process_peer_and_manager_request(request);
     //If the msg is a reply, we can certainly send a credit back.

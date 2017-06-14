@@ -12,7 +12,7 @@
 #include <iterator>
 #include <string>
 
-#ifdef HMCDEBUG
+#ifdef HMCXBAR
 #include "mcp-cache/coh_mem_req.h"
 #include "mcp-cache/cache_req.h"
 #endif
@@ -55,8 +55,13 @@ public:
 
     // These functions handle coherent messages and memory messages received from the cores
     // Internally they call the queue_coh_after_serdes_time and queue_mem_after_serdes_time.
-    void handle_net_msg(manifold::uarch::NetworkPacket* pkt);
-    void handle_xbar_msg(manifold::uarch::NetworkPacket* pkt);
+    void handle_net_mem_msg(manifold::uarch::NetworkPacket* pkt);
+    void handle_xbar_mem_msg(manifold::uarch::NetworkPacket* pkt);
+
+#ifdef HMCXBAR
+    void handle_net_coh_msg(manifold::uarch::NetworkPacket* pkt);
+    void handle_xbar_coh_msg(manifold::uarch::NetworkPacket* pkt);
+#endif
 
     // These functions queue the incoming network packets. A coh msg pkt goes back
     // towards the queues cores whereas mem msg pkts get send towards the vaults
@@ -128,6 +133,17 @@ private:
     // incoming from
     // outgoing to
 
+#ifdef HMCXBAR
+    unsigned stats_num_incoming_coh_req_net_msg;
+    unsigned stats_num_incoming_coh_resp_net_msg;
+    unsigned stats_num_outgoing_coh_req_net_msg;
+    unsigned stats_num_outgoing_coh_resp_net_msg;
+
+    unsigned stats_num_incoming_coh_req_xbar_msg;
+    unsigned stats_num_incoming_coh_resp_xbar_msg;
+    unsigned stats_num_outgoing_coh_req_xbar_msg;
+    unsigned stats_num_outgoing_coh_resp_xbar_msg;
+#endif
     unsigned stats_num_incoming_net_read_req_msg;
     unsigned stats_num_incoming_net_write_req_msg;
     unsigned stats_num_incoming_xbar_read_resp_msg;
@@ -159,7 +175,7 @@ void HMC_SerDes :: handle_net(int in_port, manifold::uarch::NetworkPacket* pkt)
         downstream_credits++;
         stats_num_incoming_net_credits++;
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << "\tserdes_id\t" << this->get_serdes_id() << "\trcvd NET CREDIT pkt @ port\t" << dec << in_port
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " Serdes clk\tserdes_id\t" << this->get_serdes_id() << "\trcvd NET CREDIT pkt @ port\t" << dec << in_port
                 <<"\tSerDes downstream credits\t" << downstream_credits-1 << "->" << downstream_credits << endl;
 #endif
         assert(downstream_credits <= MAX_DOWNSTREAM_CREDITS);
@@ -170,18 +186,32 @@ void HMC_SerDes :: handle_net(int in_port, manifold::uarch::NetworkPacket* pkt)
     if (pkt->type == MEM_MSG_TYPE)
     {
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << "\tserdes_id\t" << this->get_serdes_id() << "\tSerDes Received PKT TYPE is MEM MSG" << endl;
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " Serdes clk\tserdes_id\t" << this->get_serdes_id() << "\tSerDes Received PKT TYPE is MEM MSG" << endl;
 #endif
         // MEM_MSG_TYPE
         /*
          * This function will calculate the SerDes Rx delay and send the packet to the
          * HMC xbar switch. Credits are sent upstream internally.
          */
-        handle_net_msg(pkt);
+        handle_net_mem_msg(pkt);
     }
+#ifdef HMCXBAR
+    else if (pkt->type == COH_MSG_TYPE)
+    {
+#ifdef HMCDEBUG
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " Serdes clk\tserdes_id\t" << this->get_serdes_id() << "\tSerDes Received PKT TYPE is COH MSG" << endl;
+#endif
+        // COH_MSG_TYPE
+        /*
+         * This function will calculate the SerDes Rx delay and send the packet to the
+         * HMC xbar switch. Credits are sent upstream internally.
+         */
+        handle_net_coh_msg(pkt);
+    }
+#endif
     else
     {
-        cerr << dec << "@\t" << m_clk->NowTicks() << "\tserdes_id\t" << this->get_serdes_id() << "\tSerDes rcvd NET MSG pkt @ port\t"
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " Serdes clk\tserdes_id\t" << this->get_serdes_id() << "\tSerDes rcvd NET MSG pkt @ port\t"
              << dec << in_port << "\tBAD MSG ERROR\t" << endl;
         assert(0);
     }
@@ -200,17 +230,32 @@ void HMC_SerDes :: handle_hmcxbar_incoming(int in_port, manifold::uarch::Network
         assert(upstream_credits <= MAX_UPSTREAM_CREDITS);
 
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << "\tserdes_id\t" << this->get_serdes_id() << "\trcvd XBAR CREDIT pkt @ port\t" << dec << in_port
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " Serdes clk\tserdes_id\t" << this->get_serdes_id() << "\trcvd XBAR CREDIT pkt @ port\t" << dec << in_port
                 <<"\tSerDes upstream credits\t" << upstream_credits-1 << "->" << upstream_credits << endl;
 #endif
         delete pkt;
         return;
     }
-    /*
-     * This function will calculate the SerDes Tx delay and send the packet back to the
-     * network or cache. Credits are sent downstream internally.
-     */
-    handle_xbar_msg(pkt);
+
+    if (pkt->type == MEM_MSG_TYPE)
+    {
+        /*
+         * This function will calculate the SerDes Tx delay and send the packet back to the
+         * network or cache. Credits are sent downstream internally.
+         */
+        handle_xbar_mem_msg(pkt);
+    }
+#ifdef HMCXBAR
+    else if (pkt->type == COH_MSG_TYPE)
+    {
+        /*
+         * This function will calculate the SerDes Tx delay and send the packet back to the
+         * network or cache. Credits are sent downstream internally.
+         */
+        handle_xbar_coh_msg(pkt);
+    }
+#endif
+
 }
 
 
@@ -230,7 +275,7 @@ void HMC_SerDes :: handle_kitfox_proxy_request(int temp, T *kitfox_proxy_request
     kitfox_proxy_request->set_serdes_power(counter.serdes_power);
 
     cerr << "int_out_credits_xbar= " << intermediate_outgoing_xbar_credits << " int_out_credits_net= " << intermediate_outgoing_net_credits << endl;
-    cerr << "@\t" << serdes_clk.NowTicks() << "\tserdes_clk\t" << "serdes" << this->get_serdes_id() << "\tmeas_time_period\t" << meas_time_period;
+    cerr << "@\t" << serdes_clk.NowTicks() << " Serdes_clk\tserdes" << this->get_serdes_id() << "\tmeas_time_period\t" << meas_time_period;
     cerr << "\tBW\t" << (double) ( (intermediate_outgoing_xbar_credits + intermediate_outgoing_net_credits ) * 16 / meas_time_period) / (1024 * 1024 * 1024) << " GB/s" << endl;
 
     counter.clear();

@@ -38,10 +38,12 @@ public:
     {
         delete upstream_credits;
 //        delete pkt_addresses;
+#ifdef HMCXBAR
         delete num_coh_req_pkts_sent;
         delete num_coh_resp_pkts_sent;
         delete num_coh_req_pkts_rcvd;
         delete num_coh_resp_pkts_rcvd;
+#endif
         delete num_mem_read_req_pkts_sent;
         delete num_mem_write_req_pkts_sent;
         delete num_mem_read_req_pkts_rcvd;
@@ -99,10 +101,13 @@ private:
     unsigned MAX_TEST_PKTS;
 
 	//stats
+
+#ifdef HMCXBAR
     unsigned* num_coh_req_pkts_sent;
     unsigned* num_coh_resp_pkts_sent;
     unsigned* num_coh_req_pkts_rcvd;
     unsigned* num_coh_resp_pkts_rcvd;
+#endif
     unsigned* num_mem_read_req_pkts_sent;
     unsigned* num_mem_write_req_pkts_sent;
     unsigned* num_mem_read_req_pkts_rcvd;
@@ -127,7 +132,7 @@ void PKT_gen :: handle_hmc_incoming(int in_port, manifold::uarch::NetworkPacket*
                     << "\tPKTupstream credits[" << in_port << "]\t" << upstream_credits[in_port]-1 << "->" << upstream_credits[in_port] << endl;
 		return;
 	}
-    else if (pkt->type == MEM_MSG_TYPE)
+    else if (pkt->type == MEM_MSG_TYPE || pkt->type == COH_MSG_TYPE)
         process_incoming_pkts(pkt, in_port);
     else
     {

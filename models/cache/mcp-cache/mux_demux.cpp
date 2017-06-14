@@ -35,6 +35,7 @@ void MuxDemux :: tick()
 //cout << "Mux " << m_llp->get_node_id() << " tick(), @ " << m_clk.NowTicks() << endl;
     NetworkPacket* lls_pkt = m_lls->pop_from_output_buffer();
     if(lls_pkt) {
+//        cerr << "@\t" << m_clk.NowTicks() << "\tMUX" << m_lls->get_node_id() << " sending LLS PKT to network" << endl;
 	Send(PORT_NET, lls_pkt);
 	stats_num_lls_outgoing_msg++;
 //cout << "OOOOOOOOOOOOOOOOOOOOOOOOOO, @ " << m_clk.NowTicks() << " mux send lls\n";
@@ -43,6 +44,7 @@ void MuxDemux :: tick()
     else {
 	NetworkPacket* llp_pkt = m_llp->pop_from_output_buffer();
 	if(llp_pkt) {
+//        cerr << "@\t" << m_clk.NowTicks() << "\tMUX" << m_llp->get_node_id() << " sending LLP PKT to network" << endl;
 	    Send(PORT_NET, llp_pkt);
 	    stats_num_llp_outgoing_msg++;
 //cout << "OOOOOOOOOOOOOOOOOOOOOOOOOO, @ " << m_clk.NowTicks() << " mux send llp\n";

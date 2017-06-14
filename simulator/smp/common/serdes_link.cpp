@@ -53,6 +53,18 @@ HMC_SerDes :: HMC_SerDes(int id, const HMC_SerDes_settings& serdes_settings, Clo
 
     intermediate_outgoing_xbar_credits = 0;
     intermediate_outgoing_net_credits = 0;
+
+#ifdef HMCXBAR
+    stats_num_incoming_coh_req_net_msg = 0;
+    stats_num_incoming_coh_resp_net_msg = 0;
+    stats_num_outgoing_coh_req_net_msg = 0;
+    stats_num_outgoing_coh_resp_net_msg = 0;
+
+    stats_num_incoming_coh_req_xbar_msg = 0;
+    stats_num_incoming_coh_resp_xbar_msg = 0;
+    stats_num_outgoing_coh_req_xbar_msg = 0;
+    stats_num_outgoing_coh_resp_xbar_msg = 0;
+#endif
 }
 
 void HMC_SerDes :: tick()
@@ -68,11 +80,24 @@ void HMC_SerDes :: tick()
 
         // Send the pkt to the xbar
         Send(XBAR_PORT, pkt);
-        manifold::uarch::Mem_msg* msg = (manifold::uarch::Mem_msg*) pkt->data;
-        if(msg->is_read())  // MEM READ REQ
-            stats_num_outgoing_xbar_read_req_msg++;
-        else                // MEM WRITE REQ
-            stats_num_outgoing_xbar_write_req_msg++;
+        if(pkt->type == MEM_MSG_TYPE)
+        {
+            manifold::uarch::Mem_msg* msg = (manifold::uarch::Mem_msg*) pkt->data;
+            if(msg->is_read())  // MEM READ REQ
+                stats_num_outgoing_xbar_read_req_msg++;
+            else                // MEM WRITE REQ
+                stats_num_outgoing_xbar_write_req_msg++;
+        }
+#ifdef HMCXBAR
+        else if(pkt->type == COH_MSG_TYPE)
+        {
+            manifold::mcp_cache_namespace::Coh_msg* msg = (manifold::mcp_cache_namespace::Coh_msg*) pkt->data;
+            if(msg->type == 0)  // COH REQ
+                stats_num_outgoing_coh_req_xbar_msg++;
+            else                // COH RESP
+                stats_num_outgoing_coh_resp_xbar_msg++;
+        }
+#endif
 
         upstream_credits--;
         assert(upstream_credits >= 0);
@@ -90,19 +115,30 @@ void HMC_SerDes :: tick()
 
         // Send the pkt to the NET
         Send(NET_PORT, pkt);
-        stats_num_outgoing_net_read_resp_msg++;
+        if (pkt->type == MEM_MSG_TYPE)
+            stats_num_outgoing_net_read_resp_msg++;
+#ifdef HMCXBAR
+        else if(pkt->type == COH_MSG_TYPE)
+        {
+            manifold::mcp_cache_namespace::Coh_msg* msg = (manifold::mcp_cache_namespace::Coh_msg*) pkt->data;
+            if(msg->type == 0)  // COH REQ
+                stats_num_outgoing_coh_req_net_msg++;
+            else                // COH RESP
+                stats_num_outgoing_coh_resp_net_msg++;
+        }
+#endif
 
         downstream_credits--;
         assert(downstream_credits >= 0);
     }
 }
 
-void HMC_SerDes::handle_xbar_msg(manifold::uarch::NetworkPacket *pkt)
-{
-    unsigned int credit_type = 0;
+void HMC_SerDes::handle_xbar_mem_msg(manifold::uarch::NetworkPacket *pkt)
+{    
 #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\thandle_xbar_msg";
+    cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk " << "\thandle_xbar_mem_msg";
 #endif
+    unsigned int credit_type = 0;
     uint64_t pkt_delay = 0;
 
     if (pkt->type == MEM_MSG_TYPE)
@@ -111,7 +147,7 @@ void HMC_SerDes::handle_xbar_msg(manifold::uarch::NetworkPacket *pkt)
         if (msg->type == 0)             // MEM_REQ
         {
             // Vaults should only send responses!!!
-            cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\thandle_xbar_msg MEM MSG TYPE ERROR. Vault cannot send read/write request type" << endl;
+            cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\thandle_xbar_msg MEM MSG TYPE ERROR. Vault cannot send read/write request type" << endl;
             assert(0);
         }
         else if (msg->type == 1)        // MEM_RPLY
@@ -132,23 +168,85 @@ void HMC_SerDes::handle_xbar_msg(manifold::uarch::NetworkPacket *pkt)
         }
         else
         {
-            cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tserdes_id\t" << this->get_serdes_id() << "\trcvd NET MSG pkt BAD REQ TYPE ERROR!!!! " << endl;
+            cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tserdes_id\t" << this->get_serdes_id() << "\trcvd NET MSG pkt BAD REQ TYPE ERROR!!!! " << endl;
             assert(0);
         }
     }
     else
     {
-        cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tSerDes Received BAD MSG TYPE from xbar" << endl;
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tSerDes Received BAD MSG TYPE from xbar" << endl;
         assert(0);
     }
 }
 
-void HMC_SerDes::handle_net_msg(manifold::uarch::NetworkPacket* pkt)
+#ifdef HMCXBAR
+void HMC_SerDes::handle_xbar_coh_msg(manifold::uarch::NetworkPacket *pkt)
 {
-    unsigned int credit_type = 0;
 #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\thandle_net_msg";
+    cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk" << "\thandle_xbar_coh_msg";
 #endif
+    unsigned int credit_type = 0;
+    uint64_t pkt_delay = 0;
+    if(pkt->type == COH_MSG_TYPE)
+    {
+        manifold::mcp_cache_namespace::Coh_msg* msg = (manifold::mcp_cache_namespace::Coh_msg*) pkt->data;
+        switch(msg->type)
+        {
+            case 0:                     // Coh Request
+            {
+                stats_num_incoming_coh_req_xbar_msg++;
+                /*
+                 * A coh request is 1 FLIT = 16B. Assuming 16 bit lines for SerDes link
+                 * 2B get transferred every SerDes clock tick.
+                */
+                pkt_delay = xbar_rx_calculate_delay(0);
+#ifdef HUTDEBUG
+                xbar_rx_addr.push_back(msg->addr);
+#endif
+#ifdef HMCDEBUG
+                cerr << " COH REQ addr\t" << hex << msg->addr << dec << "\tdelay\t" << pkt_delay << endl;
+#endif
+                credit_type = 0;
+                manifold::kernel::Manifold::ScheduleClock(pkt_delay, this->serdes_clk, &HMC_SerDes::queue_after_serdes_time_to_net, this, pkt, credit_type);
+                break;
+            }
+            case 1:                     // Coh Reply
+            {
+                stats_num_incoming_coh_resp_xbar_msg++;
+                /*
+                 * A coh reply is 3 FLITs (1 FLIT overhead + 2 FLITs data) = 48B.
+                 * Assuming 16 bit lines for SerDes link 2B get transferred every
+                 * SerDes clock tick.
+                */
+                pkt_delay = xbar_rx_calculate_delay(1);
+#ifdef HUTDEBUG
+                xbar_rx_addr.push_back(msg->addr);
+#endif
+#ifdef HMCDEBUG
+                cerr << " COH REPLY addr\t" << hex << msg->addr << dec << "\tdelay\t" << pkt_delay << endl;
+#endif
+                credit_type = 1;
+                manifold::kernel::Manifold::ScheduleClock(pkt_delay, this->serdes_clk, &HMC_SerDes::queue_after_serdes_time_to_net, this, pkt, credit_type);
+                break;
+            }
+            default:
+            {
+                cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tSerDes Received BAD COH MSG from xbar" << endl;
+                assert(0);
+            }
+        }
+    }
+
+}
+#endif
+
+
+void HMC_SerDes::handle_net_mem_msg(manifold::uarch::NetworkPacket* pkt)
+{    
+#ifdef HMCDEBUG
+    cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\thandle_net_mem_msg";
+#endif
+    unsigned int credit_type = 0;
     uint64_t pkt_delay = 0;
     if (pkt->type == MEM_MSG_TYPE)
     {
@@ -190,31 +288,102 @@ void HMC_SerDes::handle_net_msg(manifold::uarch::NetworkPacket* pkt)
         }
         else if (msg->type == 1)        // MEM_RPLY
         {
-            cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tSerDes handle_net_msg MEM MSG TYPE ERROR. CPU cannot send read/write response type" << endl;
+            cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tSerDes handle_net_msg MEM MSG TYPE ERROR. CPU cannot send read/write response type" << endl;
             assert(0);
         }
         else
         {
-            cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tserdes_id\t" << this->get_serdes_id() << "\trcvd NET MSG pkt BAD REQ TYPE ERROR!!!! " << endl;
+            cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tserdes_id\t" << this->get_serdes_id() << "\trcvd NET MSG pkt BAD REQ TYPE ERROR!!!! " << endl;
             assert(0);
+        }
+    }
+
+    else
+    {
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tSerDes Received BAD MSG TYPE from NET" << endl;
+        assert(0);
+    }
+}
+
+#ifdef HMCXBAR
+void HMC_SerDes::handle_net_coh_msg(manifold::uarch::NetworkPacket* pkt)
+{
+#ifdef HMCDEBUG
+    cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\thandle_net_coh_msg";
+#endif
+    unsigned int credit_type = 0;
+    uint64_t pkt_delay = 0;
+    if(pkt->type == COH_MSG_TYPE)
+    {
+        manifold::mcp_cache_namespace::Coh_msg* msg = (manifold::mcp_cache_namespace::Coh_msg*) pkt->data;
+        switch(msg->type)
+        {
+            case 0:                     // Coh Request
+            {
+                stats_num_incoming_coh_req_net_msg++;
+                /*
+                 * A coh request is 1 FLIT = 16B. Assuming 16 bit lines for SerDes link
+                 * 2B get transferred every SerDes clock tick.
+                */
+                pkt_delay = net_rx_calculate_delay(0);
+#ifdef HUTDEBUG
+                net_rx_addr.push_back(msg->addr);
+#endif
+#ifdef HMCDEBUG
+                cerr << " COH REQ addr\t" << hex << msg->addr << dec << "\tdelay\t" << pkt_delay << endl;
+#endif
+                credit_type = 0;
+                manifold::kernel::Manifold::ScheduleClock(pkt_delay, this->serdes_clk, &HMC_SerDes::queue_after_serdes_time_to_xbar, this, pkt, credit_type);
+                break;
+            }
+            case 1:                     // Coh Reply
+            {
+                stats_num_incoming_coh_resp_net_msg++;
+                /*
+                 * A coh reply is 3 FLITs (1 FLIT overhead + 2 FLITs data) = 48B.
+                 * Assuming 16 bit lines for SerDes link 2B get transferred every
+                 * SerDes clock tick.
+                */
+                pkt_delay = net_rx_calculate_delay(1);
+#ifdef HUTDEBUG
+                net_rx_addr.push_back(msg->addr);
+#endif
+#ifdef HMCDEBUG
+                cerr << " COH REPLY addr\t" << hex << msg->addr << dec << "\tdelay\t" << pkt_delay << endl;
+#endif
+                credit_type = 1;
+                manifold::kernel::Manifold::ScheduleClock(pkt_delay, this->serdes_clk, &HMC_SerDes::queue_after_serdes_time_to_xbar, this, pkt, credit_type);
+                break;
+            }
+            default:
+            {
+                cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tSerDes Received NET BAD COH MSG" << endl;
+                assert(0);
+            }
         }
     }
     else
     {
-        cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tSerDes Received BAD MSG TYPE from NET" << endl;
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tSerDes Received BAD MSG TYPE from NET" << endl;
         assert(0);
     }
 }
+#endif
 
 void HMC_SerDes :: queue_after_serdes_time_to_xbar(manifold::uarch::NetworkPacket *pkt, unsigned int type)
 {
     // THIS FUNCTION IS SPECIFICALLY FOR NET RX MSGS
     assert(net_rx_dep_time.front() == serdes_clk.NowTicks());
     serdes_to_xbar_buffer.push_back(pkt);
+#ifdef HMCXBAR
+    int src_port = pkt->get_src_port();
+    send_credit_upstream(src_port,type);
+#else
     send_credit_upstream(type); // Send credits to Network (using downstream_credits)
+#endif
 
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tqueue_after_serdes_time_to_xbar";
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tqueue_after_serdes_time_to_xbar";
         cerr << "\tdst\t" << pkt->dst << endl;
         cerr << "8888888888 NET RX BUFFER STATS SerDes" << this->get_serdes_id() << " 8888888888888" << endl;
         cerr << "ARR_CLK\t\tTYPE\tDEP_CLK\t\tADDR" << endl;
@@ -252,7 +421,7 @@ void HMC_SerDes :: queue_after_serdes_time_to_net(manifold::uarch::NetworkPacket
     send_credit_downstream(type); // Send credits to hmcxbar (upstream_credits)
 
 #ifdef HMCDEBUG
-        cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tqueue_after_serdes_time_to_net";
+        cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tqueue_after_serdes_time_to_net";
         cerr << "\tdst\t" << pkt->dst << endl;
         cerr << "8888888888 XBAR RX BUFFER STATS SerDes" << this->get_serdes_id() << " 8888888888888" << endl;
         cerr << "ARR_CLK\t\tTYPE\tDEP_CLK\t\tADDR" << endl;
@@ -284,16 +453,16 @@ void HMC_SerDes :: queue_after_serdes_time_to_net(manifold::uarch::NetworkPacket
 
 void HMC_SerDes :: send_credit_upstream(int llp_lls_port, int type)
 {
-    cerr << " Code should not be reaching here right now!!!" << endl;
-    exit(0);
+//    cerr << " Code should not be reaching here right now!!!" << endl;
+//    exit(0);
     manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
     credit_pkt->type = CREDIT_MSG_TYPE;
     credit_pkt->set_dst_port(llp_lls_port);
     Send(NET_PORT, credit_pkt);
-    #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tserdes_id\t" << this->get_serdes_id() << "\tsending CREDIT pkt from NET port\t"
+#ifdef HMCDEBUG
+    cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tserdes_id\t" << this->get_serdes_id() << "\tsending CREDIT pkt from NET port\t"
             << dec << NET_PORT << "\tdst_port\t" << llp_lls_port << endl;
-    #endif
+#endif
     stats_num_outgoing_net_credits++;
     if (type == 0)
         intermediate_outgoing_net_credits++;
@@ -306,10 +475,10 @@ void HMC_SerDes :: send_credit_upstream(int type)
     manifold::uarch::NetworkPacket *credit_pkt = new manifold::uarch::NetworkPacket();
     credit_pkt->type = CREDIT_MSG_TYPE;
     Send(NET_PORT, credit_pkt);
-    #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tserdes_id\t" << this->get_serdes_id() << "\tsending CREDIT pkt from NET port\t"
+#ifdef HMCDEBUG
+    cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tserdes_id\t" << this->get_serdes_id() << "\tsending CREDIT pkt from NET port\t"
             << dec << NET_PORT << endl;
-    #endif
+#endif
     stats_num_outgoing_net_credits++;
     if (type == 0)
         intermediate_outgoing_net_credits++;
@@ -325,7 +494,7 @@ void HMC_SerDes :: send_credit_downstream(int type)
     credit_pkt->set_dst_port(type);
     Send(XBAR_PORT, credit_pkt);
 #ifdef HMCDEBUG
-    cerr << dec << "@\t" << m_clk->NowTicks() << " SerDes clk " << serdes_clk.NowTicks() << "\tserdes_id\t" << this->get_serdes_id() << "\tsending CREDIT pkt from MC port\t"
+    cerr << dec << "@\t" << serdes_clk.NowTicks() << " SerDes clk\tserdes_id\t" << this->get_serdes_id() << "\tsending CREDIT pkt from MC port\t"
             << dec << XBAR_PORT << endl;
 #endif
     stats_num_outgoing_xbar_credits++;
@@ -480,6 +649,18 @@ void HMC_SerDes::print_stats(ostream& out)
     << "  outgoing to xbar write req msg: " << stats_num_outgoing_xbar_write_req_msg << endl
     << "  incoming from xbar read resp msg: " << stats_num_incoming_xbar_read_resp_msg << endl
     << "  outgoing to net read resp msg: " << stats_num_outgoing_net_read_resp_msg << endl
+
+#ifdef HMCXBAR
+    << "  incoming from cache coh req msg: " << stats_num_incoming_coh_req_net_msg << endl
+    << "  outgoing to xbar coh req msg: " << stats_num_outgoing_coh_req_xbar_msg << endl
+    << "  incoming from cache coh resp msg: " << stats_num_incoming_coh_resp_net_msg << endl
+    << "  outgoing to xbar coh resp msg: " << stats_num_outgoing_coh_resp_xbar_msg << endl
+
+    << "  incoming from xbar coh req msg: " << stats_num_incoming_coh_req_xbar_msg << endl
+    << "  outgoing to cache coh req msg: " << stats_num_outgoing_coh_req_net_msg << endl
+    << "  incoming from xbar coh resp msg: " << stats_num_incoming_coh_resp_xbar_msg << endl
+    << "  outgoing to cache coh resp msg: " << stats_num_outgoing_coh_resp_net_msg << endl
+#endif
 
     << "  incoming net credits: " << stats_num_incoming_net_credits << endl
     << "  incoming xbar credits: " << stats_num_incoming_xbar_credits << endl

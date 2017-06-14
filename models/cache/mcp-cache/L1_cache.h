@@ -45,6 +45,7 @@ public:
     {
     //may receive multiple credits, or one msg one credit
         //assert(m_net_requests.size() == 0);
+//        cerr << "L1 CACHE" << get_node_id() <<" RCVD PKT" << endl;
     m_net_requests.push_back(pkt);
     }
 

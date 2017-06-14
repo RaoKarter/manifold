@@ -67,7 +67,9 @@ void CaffDRAM_builder :: create_mcs(map<int, int>& id_lp)
 }
 
 
-
+#ifdef HUTDEBUG
+// Write connect_mc_network() for unit test of CaffDRAM
+#else
 void CaffDRAM_builder :: connect_mc_network(NetworkBuilder* net_builder)
 {
     switch(net_builder->get_type()) {
@@ -121,6 +123,7 @@ void CaffDRAM_builder :: connect_mc_network(NetworkBuilder* net_builder)
     }//switch
 
 }
+#endif
 
 void CaffDRAM_builder :: set_mc_map_obj(manifold::uarch::DestMap *mc_map)
 {
@@ -240,7 +243,9 @@ void DramSim_builder :: create_mcs(map<int, int>& id_lp)
 }
 
 
-
+#ifdef HUTDEBUG
+// Write connect_mc_network() function for unit test of DRAMSim2
+#else
 void DramSim_builder :: connect_mc_network(NetworkBuilder* net_builder)
 {
     switch(net_builder->get_type()) {
@@ -301,6 +306,7 @@ void DramSim_builder :: connect_mc_network(NetworkBuilder* net_builder)
     }//switch
 
 }
+#endif
 
 void DramSim_builder :: set_mc_map_obj(manifold::uarch::DestMap *mc_map)
 {
@@ -974,7 +980,40 @@ void HMC_builder :: connect_mc_network(NetworkBuilder* net_builder)
             break;
     }//switch
 }
-//#endif /* HMCXBAR */
+
+void HMC_builder :: connect_mc_cache(CacheBuilder* cb)
+{
+    cout << "Connecting SerDes to Cache" << endl;
+    int j = 0;
+    MCP_lp_lls_builder* mcp_builder = dynamic_cast<MCP_lp_lls_builder*>(cb);
+    assert(mcp_builder);
+    map<int, LP_LLS_unit*>& mcp_caches = mcp_builder->get_cache_map();
+    LP_LLS_unit* unit = NULL;
+    for(int i = 0; i < m_NUM_HMCs; i++)
+    {
+        for(map<int, int>::iterator it = m_serdes_id_cid_map[i].begin(); it != m_serdes_id_cid_map[i].end(); ++it)
+        {
+            int serdes_cid = (*it).second;
+            HMC_SerDes* serdes = Component :: GetComponent<HMC_SerDes>(serdes_cid);
+            assert(j <= m_NUM_SERDES*m_NUM_HMCs);
+
+            if (serdes)
+            {
+                unit = mcp_caches[j];
+                assert(unit);
+                int mux_cid = unit->get_mux_cid();
+                cout << "SerDes: " << dec << serdes_cid << " to cache: " << dec << mux_cid << endl;
+                cout << "Connecting SerDes: " << dec << serdes_cid <<" with SerDes NET_PORT " << dec << HMC_SerDes::NET_PORT << " to cache mux "
+                     << dec << mux_cid << " at port " << MuxDemux::PORT_NET << endl;
+                Manifold :: Connect(serdes_cid, HMC_SerDes::NET_PORT, &HMC_SerDes::handle_net<manifold::mcp_cache_namespace::Mem_msg>,
+                                    mux_cid, MuxDemux::PORT_NET, &MuxDemux::handle_net<manifold::uarch::Mem_msg>,
+                                    *(serdes->get_clock()), Clock::Master(),
+                                    1, 1);
+            }
+            j += 1;
+        }
+    }
+}
 #endif /* HUTDEBUG */
 
 #ifdef LIBKITFOX

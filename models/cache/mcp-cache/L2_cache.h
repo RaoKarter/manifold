@@ -173,7 +173,9 @@ protected:
 template<typename T>
 void L2_cache :: handle_incoming (int, manifold::uarch::NetworkPacket* pkt)
 {
+//    cerr << "L2 CACHE " << get_node_id() << " RCVD";
     if(pkt->type == CREDIT_MSG) {
+//        cerr << " CREDIT PKT" << endl;
         delete pkt;
     m_downstream_credits++;
     assert(m_downstream_credits <= DOWNSTREAM_FULL_CREDITS);
@@ -184,6 +186,8 @@ void L2_cache :: handle_incoming (int, manifold::uarch::NetworkPacket* pkt)
     if(pkt->type == COH_MSG) {
         Coh_msg* coh = new Coh_msg;
     *coh = *((Coh_msg*)pkt->data);
+//        cerr << " COH PKT type\t" << coh->type << "\tsrc_id\t" << coh->src_id << "\tsrc_port\t" << coh->src_port << "\tdst_id\t" << coh->dst_id
+//             << "\tdst_port\t" << coh->dst_port << "\taddr\t" << hex << coh->addr << dec << endl;
     process_incoming_coh(coh);
     }
     else if(pkt->type == MEM_MSG) {
@@ -196,6 +200,8 @@ void L2_cache :: handle_incoming (int, manifold::uarch::NetworkPacket* pkt)
     else
         mem->op_type = OpMemSt;
 
+//    cerr << " MEM RPLY PKT type\t" << mem->op_type << "\tsrc_id\t" << mem->src_id << "\tsrc_port\t" << mem->src_port << "\tdst_id\t" << mem->dst_id
+//         << "\tdst_port\t" << mem->dst_port << "\taddr\t" << hex << mem->addr << dec << endl;
     process_mem_resp(mem);
     }
     else {

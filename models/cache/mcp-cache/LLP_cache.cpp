@@ -100,6 +100,9 @@ void LLP_cache :: send_msg_to_peer_or_l2(Coh_msg* msg)
 
 void LLP_cache :: add_to_output_buffer(NetworkPacket* pkt)
 {
+    Coh_msg req = *((Coh_msg*)pkt->data);
+//    cerr << "@\t" << m_clk->NowTicks() << "\tLLP" << get_node_id() << "\tsending COH MSG to\t" << req.dst_id << "\tdst_port\t" << req.dst_port
+//                  << "\treq_type\t" << req.type << hex << req.addr << dec << endl;
     m_downstream_output_buffer.push_back(pkt);
 }
 

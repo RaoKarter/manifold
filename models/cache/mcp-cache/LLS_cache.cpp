@@ -100,7 +100,12 @@ void LLS_cache::get_from_memory (Coh_msg *request)
     req.op_type = OpMemLd;
     req.src_id = node_id;
     req.src_port = manifold::uarch::LLS_ID;
+
+#ifdef HMCXBAR
+    req.dst_id = req.src_id;
+#else
     req.dst_id = mc_map->lookup(request->addr);
+#endif
 
     DBG_LLS_CACHE_ID(cout,  " get from memory node " << req.dst_id << " for 0x" << hex << req.addr << dec << endl);
 
@@ -140,7 +145,12 @@ void LLS_cache::dirty_to_memory (paddr_t addr)
     req.op_type = OpMemSt;
     req.src_id = node_id;
     req.src_port = manifold::uarch::LLS_ID;
+
+#ifdef HMCXBAR
+    req.dst_id = req.src_id;
+#else
     req.dst_id = mc_map->lookup(addr);
+#endif
 
     NetworkPacket* pkt = new NetworkPacket;
     pkt->type = MEM_MSG;
@@ -164,6 +174,9 @@ void LLS_cache::dirty_to_memory (paddr_t addr)
 
 void LLS_cache :: add_to_output_buffer(NetworkPacket* pkt)
 {
+    Mem_msg req = *((Mem_msg*)pkt->data);
+//    cerr << "@\t" << m_clk->NowTicks() << "\tLLS" << get_node_id() << "\tsending MEM MSG to\t" << req.dst_id << "\tdst_port\t" << req.dst_port
+//                  << "\treq_optype\t" << req.op_type << "\tsrc_port\t" << req.src_port << hex << req.addr << dec << endl;
     m_downstream_output_buffer.push_back(pkt);
 }
 

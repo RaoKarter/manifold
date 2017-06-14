@@ -82,6 +82,7 @@ void MuxDemux :: handle_net(int, manifold::uarch::NetworkPacket* pkt)
     else
         stats_num_llp_incoming_msg++;
 
+//    cerr << "@\t" << m_clk.NowTicks() << "\tMUC" << m_lls->get_node_id() << " RCVD LLP PKT." << endl;
     m_llp->handle_peer_and_manager_request(0, pkt);
     }
     else if(port == manifold::uarch::LLS_ID) {
@@ -90,6 +91,7 @@ void MuxDemux :: handle_net(int, manifold::uarch::NetworkPacket* pkt)
     else
         stats_num_lls_incoming_msg++;
 
+//    cerr << "@\t" << m_clk.NowTicks() << "\tMux RCVD LLS PKT." << endl;
 	m_lls->handle_incoming<T>(0, pkt);
     }
     else {

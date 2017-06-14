@@ -45,7 +45,9 @@ public:
     virtual void connect_mc_network() = 0;
 #else
     virtual void connect_mc_network(NetworkBuilder*) = 0;
+    virtual void connect_mc_cache(CacheBuilder*) = 0;
 #endif /* HUTDEBUG */
+
     virtual void print_config(std::ostream&);
     virtual void print_stats(std::ostream&) = 0;
     virtual void set_mc_map_obj(manifold::uarch::DestMap *mc_map) = 0;
@@ -79,7 +81,10 @@ public:
 
     void read_config(libconfig::Config&);
     void create_mcs(std::map<int, int>& id_lp);
+#ifndef HUTDEBUG
     void connect_mc_network(NetworkBuilder*);
+    void connect_mc_cache(CacheBuilder* cb) {}
+#endif
     void set_mc_map_obj(manifold::uarch::DestMap *mc_map);
 
     manifold::caffdram::Dsettings& get_settings() { return m_dram_settings; }
@@ -109,7 +114,10 @@ public:
 
     void read_config(libconfig::Config&);
     void create_mcs(std::map<int, int>& id_lp);
+#ifndef HUTDEBUG
     void connect_mc_network(NetworkBuilder*);
+    void connect_mc_cache(CacheBuilder* cb) {}
+#endif
     void set_mc_map_obj(manifold::uarch::DestMap *mc_map);
 
     void print_config(std::ostream&);
@@ -154,7 +162,10 @@ public:
     }
 #else
     void connect_mc_network(NetworkBuilder*);
+    void connect_mc_cache(CacheBuilder*);
 #endif /* HUTDEBUG */
+
+
     unsigned get_vault_size() { return m_VAULT_SIZE; }
     unsigned get_mem_size() { return m_MEM_SIZE; }
     unsigned get_num_vaults() { return m_NUM_VAULTS; }
