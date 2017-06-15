@@ -14,10 +14,10 @@ EXECS = smp_llp smp_l1l2
 ALL: $(EXECS)
 
 
-smp_llp: smp_llp.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_builder.o mc_builder.o network_builder.o qsim_builder.o kitfox_builder.o
+smp_llp: smp_llp.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_builder.o mc_builder.o network_builder.o qsim_builder.o kitfox_builder.o hmc_xbar.o serdes_link.o
 	$(CXX) $^ -o$@  $(LDFLAGS) -lconfig++
 
-smp_l1l2: smp_l1l2.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_builder.o mc_builder.o network_builder.o qsim_builder.o kitfox_builder.o
+smp_l1l2: smp_l1l2.o sysBuilder_llp.o sysBuilder_l1l2.o proc_builder.o cache_builder.o mc_builder.o network_builder.o qsim_builder.o kitfox_builder.o hmc_xbar.o serdes_link.o
 	$(CXX) $^ -o$@  $(LDFLAGS) -lconfig++
 
 

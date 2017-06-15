@@ -525,7 +525,7 @@ void Spx_builder :: create_trace_procs(std::map<int,int>& id_lp)
 #ifdef LIBKITFOX
 void Spx_builder :: connect_proc_kitfox_proxy(KitFoxBuilder* kitfox_builder)
 {
-    int kitfox_cid = kitfox_builder->get_component_id();
+    int kitfox_cid = kitfox_builder->get_component_id(0);
 
     for(map<int,int>::iterator it = m_proc_id_cid_map.begin(); it != m_proc_id_cid_map.end(); ++it) {
         int proc_cid = (*it).second;
@@ -534,8 +534,8 @@ void Spx_builder :: connect_proc_kitfox_proxy(KitFoxBuilder* kitfox_builder)
         Manifold :: Connect(proc_cid, spx_core_t::OUT_TO_KITFOX, &spx_core_t::handle_kitfox_proxy_request<kitfox_proxy_request_t<manifold::uarch::pipeline_counter_t>>,
                             kitfox_cid, proc_cid, &kitfox_proxy_t::handle_kitfox_proxy_response<manifold::uarch::pipeline_counter_t>,
                             Clock::Master(), Clock::Master(), 1, 1);
-        if (kitfox_builder->get_kitfox())
-            kitfox_builder->get_kitfox()->add_manifold_node(proc_cid, KitFoxType::core_type);
+        if (kitfox_builder->get_kitfox(0))
+            kitfox_builder->get_kitfox(0)->add_manifold_node(proc_cid, KitFoxType::core_type);
     }
 }
 #endif

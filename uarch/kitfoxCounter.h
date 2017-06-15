@@ -4,6 +4,7 @@
 #include "kitfox-defs.h"
 #include "communicator/kitfox-client.h"
 #include "kitfox.h"
+#include <vector>
 
 namespace manifold {
 namespace uarch {
@@ -14,6 +15,8 @@ enum KitFoxType {
     l1cache_type,
     l2cache_type,
     network_type,
+    hmcxbar_type,
+    hmcserdes_type,
     dram_type,
     num_types
 };
@@ -264,6 +267,89 @@ public:
     counter_t linefill, writeback;
     // undiff
     counter_t undiff;
+};
+
+class hmcxbar_counter_t
+{
+public:
+    hmcxbar_counter_t()
+    {
+        xbar_power = 0;
+    }
+    ~hmcxbar_counter_t() {}
+
+    void operator=(const hmcxbar_counter_t &c)
+    {
+        xbar_power = c.xbar_power;
+    }
+
+    void clear()
+    {
+        xbar_power = 0;
+    }
+
+    // xbar counters
+    double xbar_power;
+};
+
+class hmcserdes_counter_t
+{
+public:
+    hmcserdes_counter_t()
+    {
+        serdes_power = 0;
+    }
+    ~hmcserdes_counter_t() {}
+
+    void operator=(const hmcserdes_counter_t &c)
+    {
+        serdes_power = c.serdes_power;
+    }
+
+    void clear()
+    {
+        serdes_power = 0;
+    }
+
+    // serdes counter
+    double serdes_power;
+};
+
+class dram_power_t
+{
+public:
+    dram_power_t()
+    {
+        // By default the number of ranks = 4
+        ranks = 4;
+        for(unsigned i = 0; i < 4; i++)
+            vault.push_back(0);
+    }
+
+    void clear()
+    {
+        assert(ranks == vault.size());
+        vault.clear();
+        vault.resize(ranks);
+    }
+
+    void operator=(const dram_power_t &c)
+    {
+        vault = c.vault;
+    }
+
+    void set_num_dyn_comp(int num_ranks)
+    {
+        ranks = num_ranks;
+        vault.resize(num_ranks);
+    }
+
+    ~dram_power_t()
+    { }
+
+    // vault_power
+    int ranks;
+    std::vector<double> vault;
 };
 
 } // namespace uarch

@@ -87,6 +87,34 @@ void SysBuilder_llp :: config_components()
 #ifdef LIBKITFOX
         //kitfox
         try {
+            const char* kitfox_core_chars = m_config.lookup("kitfox_config");
+            uint64_t sampling_freq = m_config.lookup("kitfox_freq");
+#ifdef HMCMEM
+            const char* kitfox_hmc0_chars = m_config.lookup("mc.kitfox_hmc0");
+
+            uint64_t num_ranks = m_config.lookup("mc.vault.layers");
+            num_kitfox_pkgs = m_config.lookup("num_pkgs");
+            m_kitfox_builder = new KitFoxBuilder(kitfox_core_chars, kitfox_hmc0_chars, num_kitfox_pkgs, sampling_freq, num_ranks);
+            if(m_kitfox_builder == NULL)
+            {
+                    cerr << "KitFox config  " << kitfox_core_chars << " or " << kitfox_hmc0_chars << " contains errors\n";
+                    exit(1);
+            }
+#else
+            m_kitfox_builder = new KitFoxBuilder(kitfox_core_chars, sampling_freq);
+            if(m_kitfox_builder == NULL)
+            {
+                    cerr << "KitFox config  " << kitfox_core_chars << "  contains errors\n";
+                    exit(1);
+            }
+#endif
+        }
+        catch (SettingNotFoundException e) {
+            cerr << "KitFox config file not specified\n";
+            exit(1);
+        }
+/*
+        try {
             const char* kitfox_chars = m_config.lookup("kitfox_config");
             uint64_t sampling_freq = m_config.lookup("kitfox_freq");
             m_kitfox_builder = new KitFoxBuilder(kitfox_chars, sampling_freq);
@@ -100,6 +128,7 @@ void SysBuilder_llp :: config_components()
             cerr << "KitFox config file not specified\n";
             exit(1);
         }
+*/
 #endif
         //network
         try {
@@ -252,7 +281,11 @@ void SysBuilder_llp :: build_system(FrontendType type, int n_lps, vector<string>
     m_network_builder->create_network(*m_default_clock, part);
 
 #ifdef LIBKITFOX
-    m_kitfox_builder->create_proxy();
+#ifdef HMCMEM
+    m_kitfox_builder->create_proxy(1);
+#else
+    m_kitfox_builder->create_proxy(0);
+#endif
 #endif
 
     assert(m_proc_builder->get_fe_type() == ProcBuilder::INVALID_FE_TYPE);
@@ -299,7 +332,11 @@ void SysBuilder_llp :: build_system(Qsim::OSDomain* qsim_osd, vector<string>& ar
     m_network_builder->create_network(*m_default_clock, PART_1);
 
 #ifdef LIBKITFOX
-    m_kitfox_builder->create_proxy();
+#ifdef HMCMEM
+    m_kitfox_builder->create_proxy(1);
+#else
+    m_kitfox_builder->create_proxy(0);
+#endif
 #endif
 
     assert(m_proc_builder->get_fe_type() == ProcBuilder::INVALID_FE_TYPE);
@@ -333,7 +370,11 @@ void SysBuilder_llp :: build_system(vector<string>& args, const char* appFile, i
     cout << "\n Network has been created" << endl;
 
 #ifdef LIBKITFOX
-    m_kitfox_builder->create_proxy();
+#ifdef HMCMEM
+    m_kitfox_builder->create_proxy(1);
+#else
+    m_kitfox_builder->create_proxy(0);
+#endif
     cout << "\n Kitfox proxy has been created" << endl;
 #endif
 
@@ -724,6 +765,9 @@ void SysBuilder_llp :: connect_components()
     if(m_kitfox_builder){
         m_proc_builder->connect_proc_kitfox_proxy(m_kitfox_builder);
         m_cache_builder->connect_cache_kitfox_proxy(m_kitfox_builder);
+#ifdef HMCMEM
+        m_mc_builder->connect_mem_kitfox_proxy(m_kitfox_builder);
+#endif
     }
 #endif
 }

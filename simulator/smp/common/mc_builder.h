@@ -51,7 +51,9 @@ public:
     virtual void print_config(std::ostream&);
     virtual void print_stats(std::ostream&) = 0;
     virtual void set_mc_map_obj(manifold::uarch::DestMap *mc_map) = 0;
-
+#ifdef LIBKITFOX
+    virtual void connect_mem_kitfox_proxy(KitFoxBuilder* kitfox_builder) = 0;
+#endif
 protected:
 #ifdef HUTDEBUG
     SysBuilder_llp_HUT* m_sysBuilder;
@@ -91,6 +93,9 @@ public:
 
     void print_config(std::ostream&);
     void print_stats(std::ostream&);
+#ifdef LIBKITFOX
+    void connect_mem_kitfox_proxy(KitFoxBuilder* kitfox_builder) {};
+#endif
 
 private:
     manifold::caffdram::Dsettings m_dram_settings;
@@ -122,6 +127,9 @@ public:
 
     void print_config(std::ostream&);
     void print_stats(std::ostream&);
+#ifdef LIBKITFOX
+    void connect_mem_kitfox_proxy(KitFoxBuilder* kitfox_builder) {};
+#endif
 
 private:
     int m_MC_DOWNSTREAM_CREDITS; //credits for sending down to network
@@ -177,6 +185,10 @@ public:
     void set_mc_map_obj(manifold::uarch::DestMap *hmc_map);
     void print_config(std::ostream&);
     void print_stats(std::ostream&);
+
+#ifdef LIBKITFOX
+    void connect_mem_kitfox_proxy(KitFoxBuilder* kitfox_builder);
+#endif
 
 private:
     int m_XBAR_DOWNSTREAM_CREDITS; //credits for sending up to serdes

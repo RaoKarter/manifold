@@ -8,14 +8,15 @@ using namespace manifold::kernel;
 using namespace manifold::kitfox_proxy;
 using namespace manifold::uarch;
 
-kitfox_proxy_t::kitfox_proxy_t(const char *ConfigFile,
-                               uint64_t SamplingFreq) :
-    comp_num(0)
+kitfox_proxy_t::kitfox_proxy_t(const char *ConfigFile, uint64_t SamplingFreq, int vault_ranks) :
+    comp_num(0), ranks(vault_ranks)
 {
     kitfox = new kitfox_t(/* Intra (local) MPI Comm */ NULL,
                           /* Inter MPI Comm */ NULL);
 
-    cout << "Initializing KitFox ..." << endl;
+    cout << "Initializing KitFox... " << this->getComponentId() << std::hex << this << std::dec << endl;
+    assert(ConfigFile != NULL);
+    cerr << "ConfigFile= " << ConfigFile << endl;
     kitfox->configure(ConfigFile);
 
     cout << "Registering clock ( " << SamplingFreq / 1e6  << " MHz) to KitFox Proxy ..." << endl;
@@ -45,7 +46,47 @@ kitfox_proxy_t::kitfox_proxy_t(const char *ConfigFile,
         }
     }
 #endif
+    cout << "Finished initializing KitFox" << this->getComponentId() << endl;
+}
 
+kitfox_proxy_t::kitfox_proxy_t(const char *ConfigFile,
+                               uint64_t SamplingFreq) :
+    comp_num(0)
+{
+    kitfox = new kitfox_t(/* Intra (local) MPI Comm */ NULL,
+                          /* Inter MPI Comm */ NULL);
+
+    cout << "Initializing KitFox ... " << this->getComponentId() << std::hex << this << std::dec << endl;
+    kitfox->configure(ConfigFile);
+
+    cout << "Registering clock ( " << SamplingFreq / 1e6  << " MHz) to KitFox Proxy ..." << endl;
+    Clock* clk = new Clock(SamplingFreq);
+    manifold::kernel::Clock :: Register(*clk, (kitfox_proxy_t*)this, &kitfox_proxy_t::tick, (void(kitfox_proxy_t::*)(void))0);
+
+    /* Get the pair of <first ID, last ID> of KitFox pseudo components */
+    pair<Comp_ID, Comp_ID> kitfox_component_id =
+    kitfox->component_id_range;
+
+#if 0
+    /* Check which components are associated with which libraries. */
+    for(Comp_ID pseudo_component_id = kitfox_component_id.first;
+        pseudo_component_id <= kitfox_component_id.second;
+        pseudo_component_id++) {
+        /* Pseudo component is associated with energy library. */
+        if(kitfox->get_energy_library(pseudo_component_id)) {
+            add_kitfox_power_component(pseudo_component_id);
+        }
+        /* Pseudo component is associated with thermal library. */
+        if(kitfox->get_thermal_library(pseudo_component_id)) {
+            add_kitfox_thermal_component(pseudo_component_id);
+        }
+        /* Pseudo component is associated with reliability library. */
+        if(kitfox->get_reliability_library(pseudo_component_id)) {
+            add_kitfox_reliability_component(pseudo_component_id);
+        }
+    }
+#endif
+    ranks = 0;
     cout << "Finished initializing KitFox" << endl;
 }
 
@@ -66,6 +107,9 @@ void kitfox_proxy_t::tick()
     int core_id = 0;
     int l1cache_id = 0;
     int l2cache_id = 0;
+    int hmcxbar_id = 0;
+    int hmcvault_id = 0;
+    int hmcserdes_id = 0;
     for (auto id: manifold_node) {
         // core_model only, FIXME add test function for other models here
         // difference between manifold_node id and core_id???
@@ -73,6 +117,7 @@ void kitfox_proxy_t::tick()
         switch (id.second) {
             case KitFoxType::core_type: {
                 kitfox_proxy_request_t<pipeline_counter_t> *req;
+                assert(ranks == 0);
                 req = new kitfox_proxy_request_t<pipeline_counter_t> (core_id, id.second, m_clk->NowTicks() * m_clk->period);
                 Send(id.first, req);
                 core_id++;
@@ -80,6 +125,7 @@ void kitfox_proxy_t::tick()
             }
             case KitFoxType::l1cache_type: {
                 kitfox_proxy_request_t<cache_counter_t> *req;
+                assert(ranks == 0);
                 req = new kitfox_proxy_request_t<cache_counter_t> (l1cache_id, id.second, m_clk->NowTicks() * m_clk->period);
                 Send(id.first, req);
                 l1cache_id++;
@@ -87,9 +133,31 @@ void kitfox_proxy_t::tick()
             }
             case KitFoxType::l2cache_type: {
                 kitfox_proxy_request_t<cache_counter_t> *req;
+                assert(ranks == 0);
                 req = new kitfox_proxy_request_t<cache_counter_t> (l2cache_id, id.second, m_clk->NowTicks() * m_clk->period);
                 Send(id.first, req);
                 l2cache_id++;
+                break;
+            }
+            case KitFoxType::hmcxbar_type: {
+                kitfox_proxy_request_t<hmcxbar_counter_t> *req;
+                req = new kitfox_proxy_request_t<hmcxbar_counter_t> (hmcxbar_id, id.second, m_clk->NowTicks() * m_clk->period);
+                Send(id.first, req);
+                hmcxbar_id++;
+                break;
+            }
+            case KitFoxType::hmcserdes_type: {
+                kitfox_proxy_request_t<hmcserdes_counter_t> *req;
+                req = new kitfox_proxy_request_t<hmcserdes_counter_t> (hmcserdes_id, id.second, m_clk->NowTicks() * m_clk->period);
+                Send(id.first, req);
+                hmcserdes_id++;
+                break;
+            }
+            case KitFoxType::dram_type: {
+                kitfox_proxy_request_t<dram_power_t> *req;
+                req = new kitfox_proxy_request_t<dram_power_t> (hmcvault_id, id.second, m_clk->NowTicks() * m_clk->period, ranks);
+                Send(id.first, req);
+                hmcvault_id++;
                 break;
             }
             default:
@@ -676,4 +744,148 @@ void kitfox_proxy_t::calculate_power(manifold::uarch::cache_counter_t c, manifol
     cerr << prefix + ".power = " << power.get_total() << "W (dynamic = " << power.dynamic << "W, leakage = " << power.leakage << "W) @" << t << endl;
 }
 
+
+void kitfox_proxy_t::calculate_power(manifold::uarch::hmcxbar_counter_t c, manifold::kernel::Time_t t, const string prefix)
+{
+    libKitFox::Comp_ID comp_id;
+    int queue_error;
+    power_t power;
+
+    cerr << "kitfox = " << hex << this << dec;
+    comp_id = kitfox->get_component_id(prefix);
+    assert(comp_id != INVALID_COMP_ID);
+    cerr << "calculate xbar_power: " << c.xbar_power << endl;
+    power.total = c.xbar_power;
+    power.dynamic = 0.6*c.xbar_power;
+    power.leakage = c.xbar_power - power.dynamic;
+    queue_error = kitfox->push_data(comp_id, t, m_clk->period, KITFOX_DATA_POWER, &power);
+    queue_error = kitfox->pull_data(comp_id, t, m_clk->period, KITFOX_DATA_POWER, &power);
+    if(queue_error != KITFOX_QUEUE_ERROR_NONE)
+    {
+        cerr << "a pseudo component[id=" << comp_id << " name=" << prefix <<
+                "] failed at inserting calculated power data (" << KITFOX_QUEUE_ERROR_STR[queue_error]
+                << ") at time=" << t << " period=" << m_clk->period << endl;
+    }
+}
+
+
+void kitfox_proxy_t::calculate_power(manifold::uarch::hmcserdes_counter_t c, manifold::kernel::Time_t t, const string prefix)
+{
+    libKitFox::Comp_ID comp_id;
+    int queue_error;
+    power_t power;
+
+    // serdes
+    cerr << "kitfox = " << hex << this << dec;
+    // prefix is "package.logic_die.serdesX" where X is the serdes id
+    comp_id = kitfox->get_component_id(prefix);
+    assert(comp_id != INVALID_COMP_ID);
+    cerr << "calculate serdes_power: " << c.serdes_power << endl;
+    power.total = c.serdes_power;
+    power.dynamic = 0.6*c.serdes_power;
+    power.leakage = c.serdes_power - power.dynamic;
+    queue_error = kitfox->push_data(comp_id, t, m_clk->period, KITFOX_DATA_POWER, &power);
+    queue_error = kitfox->pull_data(comp_id, t, m_clk->period, KITFOX_DATA_POWER, &power);
+    if(queue_error != KITFOX_QUEUE_ERROR_NONE)
+    {
+        cerr << "a pseudo component[id=" << comp_id << " name=" << prefix <<
+                "] failed at inserting calculated power data (" << KITFOX_QUEUE_ERROR_STR[queue_error]
+                << ") at time=" << t << " period=" << m_clk->period << endl;
+    }
+}
+
+void kitfox_proxy_t::calculate_power(manifold::uarch::dram_power_t vault_power, manifold::kernel::Time_t t, const string vault_id)
+{
+    string comp;
+    libKitFox::Comp_ID comp_id;
+    int queue_error;
+    power_t power;
+    unsigned layer = 0;
+    string vault_string;
+    double rank_power = 0;
+    int vault_cid = 0;
+
+    vault_string = ".vault" + vault_id;
+    cerr << "kitfox = " << hex << this << dec;
+    /*
+     * The layout in the kitfox_hmc_config file follows the usual convention i.e layer by layer.
+     * However, in manifold, the HMC (vertical) vaults are individual components. This function
+     * will get called for each such manifold component.
+     * dram_power_t is a vector that contains power consumed by each layer (aka DRAMSim ranks).
+     * vault_id is in the range of 0 - 31 or 0 - 15.
+     *
+     * This for loop is to push the power values into the kitfox pseudo components layer by layer
+     */
+    for (std::vector<double>::iterator it = vault_power.vault.begin(); it != vault_power.vault.end(); ++it)
+    {
+        // Go layer by layer
+        comp = "package.memory_die" + std::to_string(layer) + vault_string;
+
+        vault_cid = kitfox->get_component_id(comp);
+        assert(vault_cid != INVALID_COMP_ID);
+
+        // get the power of the ranks in ascending order 0 - 3 or 0 - 7
+        rank_power = *it;
+
+        // vault_cid will tell which pseudo component in HMC the rank_power should be pushed to
+        // This part is copied from the synchronize_data API
+        cerr << "calculate vault" << vault_id << "rank" << layer<< "_power: " << rank_power << endl;
+        power.total = rank_power;
+        power.dynamic = 0.6*rank_power;
+        power.leakage = rank_power - power.dynamic;
+        queue_error = kitfox->push_data(vault_cid, t, m_clk->period, KITFOX_DATA_POWER, &power);
+        queue_error = kitfox->pull_data(vault_cid, t, m_clk->period, KITFOX_DATA_POWER, &power);
+        if(queue_error != KITFOX_QUEUE_ERROR_NONE)
+        {
+            cerr << "a pseudo component[id=" << vault_cid << " name=" << comp <<
+                    "] failed at inserting calculated power data (" << KITFOX_QUEUE_ERROR_STR[queue_error]
+                    << ") at time=" << t << " period=" << m_clk->period << endl;
+        }
+        layer += 1;
+    }
+
+};
+
+//int kitfox_proxy_t::synchronize_vault_power(manifold::kernel::Time_t t)
+//{
+//    string comp;
+//    libKitFox::Comp_ID comp_id;
+//    libKitFox::power_t power;
+
+
+//    for(int layer = 0; layer < ranks; layer++)
+//    {
+//        // synchronize power
+//        comp = "package.memory_die" + std::to_string(layer);
+//        comp_id = kitfox->get_component_id(comp);
+//        kitfox->synchronize_data(comp_id, t, m_clk->period, libKitFox::KITFOX_DATA_POWER);
+
+//        // Print vault power here
+//        assert(kitfox->pull_data(comp_id, t, m_clk->period, libKitFox::KITFOX_DATA_POWER, &power) == libKitFox::KITFOX_QUEUE_ERROR_NONE);
+//        cerr << comp + ".power = " << power.get_total() << "W @" << t << endl;
+//    }
+
+//    return 0;
+//}
+
+int kitfox_proxy_t::synchronize_logic_layer_power(manifold::kernel::Time_t t)
+{
+    string comp;
+    libKitFox::Comp_ID comp_id;
+    power_t power;
+
+
+    // synchronize power
+    cerr << "kitfox = " << hex << this << dec;
+    cerr << "synchronizing logic layer power";
+    comp = "package.logic_die";
+    comp_id = kitfox->get_component_id(comp);
+    cerr << " component " << comp_id;
+    kitfox->synchronize_data(comp_id, t, m_clk->period, libKitFox::KITFOX_DATA_POWER);
+    cerr << " synchronized." << endl;
+    // Print vault power here
+    assert(kitfox->pull_data(comp_id, t, m_clk->period, libKitFox::KITFOX_DATA_POWER, &power) == libKitFox::KITFOX_QUEUE_ERROR_NONE);
+    cerr << comp + ".power = " << power.get_total() << "W (dynamic = " << power.dynamic << "W, leakage = " << power.leakage << "W) @" << t << endl;
+    return 0;
+}
 #endif //USE_KITFOX

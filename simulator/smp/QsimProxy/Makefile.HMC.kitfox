@@ -1,10 +1,10 @@
-CXX = mpic++
+CXX = mpic++ --std=c++11
 QSIM_ROOT = ${QSIM_PREFIX}
 KITFOX_ROOT = ${KITFOX_PREFIX}
 KITFOX_LIBS = -lmcpat -L${KITFOX_ROOT} -l3dice -L${KITFOX_ROOT}
 MODELS_DIR = ../../../models
 CAPSTONE_DIR="/home/Documents/TrialInstall/qsim_testing/capstone/"
-CPPFLAGS += -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -DHMCDEBUG=1 -DHMCXBAR=1 -DHMC_CACHE_DEBUG=1 -I$(QSIM_ROOT)/include -I$(KITFOX_ROOT) -I ../../.. -I$(MODELS_DIR)/processor -I$(MODELS_DIR)/qsim -I$(MODELS_DIR)/cache -I$(MODELS_DIR)/network -I$(MODELS_DIR)/memory -I$(MODELS_DIR)/cross -I$(MODELS_DIR)/kitfox/proxy -std=c++11
+CPPFLAGS += -Wall -g -DUSE_QSIM -DSTATS -DLIBKITFOX=1 -DHMCMEM=1 -DHMCXBAR=1 -I$(QSIM_ROOT)/include -I$(KITFOX_ROOT) -I ../../.. -I$(MODELS_DIR)/processor -I$(MODELS_DIR)/qsim -I$(MODELS_DIR)/cache -I$(MODELS_DIR)/network -I$(MODELS_DIR)/memory -I$(MODELS_DIR)/cross -I$(MODELS_DIR)/kitfox/proxy -std=c++11
 LDFLAGS = -lqsim -L$(QSIM_ROOT)/lib -lKitFox -L$(KITFOX_ROOT) ${KITFOX_LIBS} -lmcp-iris -L$(MODELS_DIR)/cross/mcp_cache-iris -liris -L$(MODELS_DIR)/network/iris -lmcp-cache -L$(MODELS_DIR)/cache/mcp-cache -lspx -L$(MODELS_DIR)/processor/spx -lqsim_proxy -L$(MODELS_DIR)/qsim/proxy -lqsim_interrupt_handler -L$(MODELS_DIR)/qsim/interrupt_handler -lkitfox_proxy -L$(MODELS_DIR)/kitfox/proxy  -lcaffdram -L$(MODELS_DIR)/memory/CaffDRAM -lDRAMSim2 -L$(MODELS_DIR)/memory/DRAMSim2 -lDRAMSim2proper -L$(MODELS_DIR)/memory/DRAMSim2/DRAMSim2-2.2.2 -L$(CAPSTONE_DIR) -lcapstone -L../../../kernel -lmanifold -ldl -lrt
 
 VPATH = ../common
