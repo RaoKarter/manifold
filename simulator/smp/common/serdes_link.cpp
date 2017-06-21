@@ -4,7 +4,8 @@
 #include "mcp-cache/coh_mem_req.h"
 #include "mcp-cache/cache_req.h"
 
-#define MEAS_CYCLES 10000
+#define MEAS_CYCLES 1000000
+#define GIGA (1024 * 1024 * 1024)
 
 using namespace manifold::kernel;
 using namespace manifold::uarch;
@@ -82,7 +83,7 @@ void HMC_SerDes :: tick()
         Send(XBAR_PORT, pkt);
         if(pkt->type == MEM_MSG_TYPE)
         {
-            manifold::uarch::Mem_msg* msg = (manifold::uarch::Mem_msg*) pkt->data;
+            manifold::mcp_cache_namespace::Mem_msg* msg = (manifold::mcp_cache_namespace::Mem_msg*) pkt->data;
             if(msg->is_read())  // MEM READ REQ
                 stats_num_outgoing_xbar_read_req_msg++;
             else                // MEM WRITE REQ
@@ -101,6 +102,21 @@ void HMC_SerDes :: tick()
 
         upstream_credits--;
         assert(upstream_credits >= 0);
+
+//        if(serdes_clk.NowTicks() % MEAS_CYCLES == 0)
+//        {
+//            double meas_time = MEAS_CYCLES * serdes_clk.period;
+//            double num_flits = ( intermediate_outgoing_xbar_credits + intermediate_outgoing_net_credits );
+//            double num_bytes = num_flits * req_flit_size;
+//            double num_GB = num_bytes / GIGA;
+//            double BW = num_GB / meas_time;
+//            cerr << "int_out_credits_xbar= " << intermediate_outgoing_xbar_credits << " int_out_credits_net= " << intermediate_outgoing_net_credits
+//                 << " total flits: " << num_flits << " GB: " << num_GB << endl << flush;
+//            cerr << "@\t" << serdes_clk.NowTicks() << " Serdes_clk\tserdes" << this->get_serdes_id() << "\tmeas_time_period\t" << meas_time;
+//            cerr << "\tBW\t" << BW << " GB/s" << endl << flush;
+
+//            clear_bw_counters();
+//        }
     }
 
     /*
@@ -666,7 +682,9 @@ void HMC_SerDes::print_stats(ostream& out)
     << "  incoming xbar credits: " << stats_num_incoming_xbar_credits << endl
     << "  outgoing net credits: " << stats_num_outgoing_net_credits << endl
     << "  outgoing xbar credits: " << stats_num_outgoing_xbar_credits << endl
-    << "  Average BW: " << (stats_num_outgoing_net_credits + stats_num_outgoing_xbar_credits) * req_flit_size / (serdes_clk.NowTicks() / serdes_clk.freq) << " GB/s" << endl;
+    << "  intermediate_outgoing_xbar_credits: " << intermediate_outgoing_xbar_credits << endl
+    << "  intermediate_outgoing_net_credits: " << intermediate_outgoing_net_credits << endl
+    << "  Average BW: " << (stats_num_incoming_net_credits + stats_num_incoming_xbar_credits) * req_flit_size / (serdes_clk.NowTicks() * serdes_clk.period) << " B/s" << endl;
 }
 
 } // namespace hmc_serdes

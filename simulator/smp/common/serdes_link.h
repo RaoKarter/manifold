@@ -270,7 +270,7 @@ void HMC_SerDes :: handle_kitfox_proxy_request(int temp, T *kitfox_proxy_request
     meas_time_period = (serdes_clk.NowTicks() * serdes_clk.period) - time;
 
      // Power = Num of FLITS * Bytes-per-FLIT * Bits-per-Byte * nJ-per-bit
-    counter.serdes_power = (double)( ( (intermediate_outgoing_xbar_credits + intermediate_outgoing_net_credits) * 16 * 8 * 1.356e-9 ) / meas_time_period );
+    counter.serdes_power = (double)( ( (intermediate_outgoing_xbar_credits + intermediate_outgoing_net_credits) * 16 * 8 * 1.356e-12 ) / meas_time_period );
     cerr << "serdes_power= " << counter.serdes_power << endl;
     kitfox_proxy_request->set_serdes_power(counter.serdes_power);
 

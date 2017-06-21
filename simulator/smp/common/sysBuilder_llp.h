@@ -13,6 +13,11 @@
 #include "mc_builder.h"
 #include "qsim_builder.h"
 #include "qsim.h"
+#include "dvfs_controller.h"
+
+#ifdef CONTROLLER
+#include "dvfs_controller.h"
+#endif
 
 #ifdef LIBKITFOX
 #include "kitfox_builder.h"
@@ -41,6 +46,10 @@ public:
     void build_system(FrontendType type, int n_lps, std::vector<std::string>& args, int part); //for QSim client and tracefile
     void build_system(Qsim::OSDomain* osd, std::vector<std::string>& args); //for QSimLib
     void build_system(std::vector<std::string>& args, const char* appFile, int n_lps, int part); // for QSimProxy
+
+#ifdef LIBKITFOX
+    void create_dvfs_controller();
+#endif
 
     void pre_simulation();
     void print_config(std::ostream& out);
@@ -90,6 +99,7 @@ protected:
     int MAX_SERDES;
     int trans_size;
     int num_kitfox_pkgs;
+    double dvfs_controller_clk;
     manifold::kernel::Ticks_t STOP; //simulation stop time
     uint64_t m_DEFAULT_CLOCK_FREQ; //default clock's frequency
 
@@ -104,6 +114,8 @@ protected:
     std::map<int, int> proc_id_lp_map; //maps proc's node id to its LP
     std::map<int, int> mc_id_lp_map; //maps mc's node id to its LP
 
+    int controller_cid;
+    bool controller_use_default_clock;
     //int m_processor_type;
 private:
 

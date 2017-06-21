@@ -181,6 +181,7 @@ public:
     unsigned get_num_serdes() { return m_NUM_SERDES; }
     unsigned get_num_hmcs() { return m_NUM_HMCs; }
     int get_trans_size() { return m_TRANS_SIZE; }
+    std::map<int,int>* get_serdes_id_cid_map() { return m_serdes_id_cid_map; }
 
     void set_mc_map_obj(manifold::uarch::DestMap *hmc_map);
     void print_config(std::ostream&);

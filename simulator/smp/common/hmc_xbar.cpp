@@ -212,20 +212,19 @@ void HMC_xbar :: tick()
             downstream_credits[i]--;
             assert(downstream_credits[i] >= 0);
             if (pkt->type == MEM_MSG_TYPE)
-                stats_num_outgoing_read_resp_serdes_msg++;
+                stats_num_outgoing_read_resp_serdes_msg[i]++;
 #ifdef HMCXBAR
             else if (pkt->type == COH_MSG_TYPE)
             {
                 manifold::mcp_cache_namespace::Coh_msg* msg = (manifold::mcp_cache_namespace::Coh_msg*)pkt->data;
                 if (msg->type == 0) // COH REQ
-                    stats_num_outgoing_coh_req_serdes_msg++;
+                    stats_num_outgoing_coh_req_serdes_msg[i]++;
                 else                // COH RESP
-                    stats_num_outgoing_coh_resp_serdes_msg++;
+                    stats_num_outgoing_coh_resp_serdes_msg[i]++;
             }
 #endif
         }
     }
-
 }
 
 void HMC_xbar::handle_vault_responses(manifold::uarch::NetworkPacket *pkt, int serdes_port, int vault)

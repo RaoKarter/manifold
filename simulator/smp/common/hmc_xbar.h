@@ -426,7 +426,7 @@ void HMC_xbar :: handle_kitfox_proxy_request(int temp, T *kitfox_proxy_request)
     }
     cerr << "SerDes + Vault side credits= " << counter.xbar_power;
     // Power = Num of FLITS * Bytes-per-FLIT * Bits-per-Byte * nJ-per-bit
-    counter.xbar_power = (double) ( ( counter.xbar_power * 16 * 8 * 2.034e-9) / meas_time_period );
+    counter.xbar_power = (double) ( ( counter.xbar_power * 16 * 8 * 2.034e-12) / meas_time_period );
     cerr << " hmc_xbar_power= " << counter.xbar_power << endl;
     kitfox_proxy_request->set_xbar_power(counter.xbar_power);
 

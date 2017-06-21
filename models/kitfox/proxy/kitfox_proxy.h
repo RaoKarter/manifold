@@ -85,19 +85,34 @@ public:
     void add_kitfox_reliability_component(libKitFox::Comp_ID);
 #endif
 
-    void calculate_power(manifold::uarch::pipeline_counter_t c, manifold::kernel::Time_t t, const string prefix);
+    void calculate_power(manifold::uarch::pipeline_counter_t c, manifold::kernel::Time_t t, const string prefix, int cpu_id);
     void calculate_power(manifold::uarch::cache_counter_t c, manifold::kernel::Time_t t, const string prefix);
-    void calculate_power(manifold::uarch::hmcxbar_counter_t c, manifold::kernel::Time_t t, const string prefix);
-    void calculate_power(manifold::uarch::hmcserdes_counter_t c, manifold::kernel::Time_t t, const string prefix);
+    void calculate_power(manifold::uarch::hmcxbar_counter_t c, manifold::kernel::Time_t t, const string prefix, int hmc_id);
+    void calculate_power(manifold::uarch::hmcserdes_counter_t c, manifold::kernel::Time_t t, const string prefix, int serdes_id);
     void calculate_power(manifold::uarch::dram_power_t c, manifold::kernel::Time_t t, const string vault_id);
     template <typename T> void handle_kitfox_proxy_response(int temp, kitfox_proxy_request_t<T> *Req);
     int synchronize_vault_power(manifold::kernel::Time_t time);
     int synchronize_logic_layer_power(manifold::kernel::Time_t time);
+    void init_pwr_temp_vectors();
+
+    int num_cpus;
+    int num_hmcs;
+    int num_serdes;
+    int num_vaults;
+    std::vector<double>* cpu_dyn_pwr;
+    std::vector<double>* cpu_leak_pwr;
+    std::vector<double>* cpu_temp;
+    std::vector<double>* serdes_dyn_pwr;
+    std::vector<double>* serdes_leak_pwr;
+    std::vector<double>* serdes_temp;
+    std::vector<double>* hmcxbar_dyn_pwr;
+    std::vector<double>* hmcxbar_leak_pwr;
+    std::vector<double>* hmcxbar_temp;
 
 private:
     libKitFox::kitfox_t *kitfox;
     size_t comp_num;
-    int ranks;
+
 
     std::vector<std::pair<manifold::kernel::CompId_t, manifold::uarch::KitFoxType>> manifold_node;
 #if 0
@@ -105,6 +120,8 @@ private:
     std::vector<libKitFox::Comp_ID> kitfox_thermal_component;
     std::vector<libKitFox::Comp_ID> kitfox_reliability_component;
 #endif
+    int ranks;
+
 };
 
 
@@ -120,7 +137,7 @@ void kitfox_proxy_t::handle_kitfox_proxy_response(int temp, kitfox_proxy_request
     if (Req->get_type() == manifold::uarch::KitFoxType::core_type)
     {
         prefix = "package.core_die.core" + std::to_string(Req->get_id());
-        calculate_power(c, Req->get_time(), prefix);
+        calculate_power(c, Req->get_time(), prefix, Req->get_id());
     }
     else if (Req->get_type() == manifold::uarch::KitFoxType::l1cache_type)
     {
@@ -135,13 +152,13 @@ void kitfox_proxy_t::handle_kitfox_proxy_response(int temp, kitfox_proxy_request
     else if (Req->get_type() == manifold::uarch::KitFoxType::hmcxbar_type)
     {
         prefix = "package.logic_die.interconnect" + std::to_string(Req->get_id());
-        calculate_power(c, Req->get_time(), prefix);
+        calculate_power(c, Req->get_time(), prefix, Req->get_id());
         t_logic_layer = Req->get_time();
     }
     else if (Req->get_type() == manifold::uarch::KitFoxType::hmcserdes_type)
     {
         prefix = "package.logic_die.serdes" + std::to_string(Req->get_id());
-        calculate_power(c, Req->get_time(), prefix);
+        calculate_power(c, Req->get_time(), prefix, Req->get_id());
     }
     else if (Req->get_type() == manifold::uarch::KitFoxType::dram_type)
     {

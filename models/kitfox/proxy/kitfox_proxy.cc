@@ -46,6 +46,7 @@ kitfox_proxy_t::kitfox_proxy_t(const char *ConfigFile, uint64_t SamplingFreq, in
         }
     }
 #endif
+    init_pwr_temp_vectors();
     cout << "Finished initializing KitFox" << this->getComponentId() << endl;
 }
 
@@ -87,6 +88,7 @@ kitfox_proxy_t::kitfox_proxy_t(const char *ConfigFile,
     }
 #endif
     ranks = 0;
+    init_pwr_temp_vectors();
     cout << "Finished initializing KitFox" << endl;
 }
 
@@ -96,6 +98,58 @@ kitfox_proxy_t::~kitfox_proxy_t()
     cout << "Terminating KitFox" << endl;
     delete kitfox;
     delete m_clk;
+    delete cpu_dyn_pwr;
+    delete cpu_leak_pwr;
+    delete cpu_temp;
+    delete serdes_dyn_pwr;
+    delete serdes_leak_pwr;
+    delete serdes_temp;
+    delete hmcxbar_dyn_pwr;
+    delete hmcxbar_leak_pwr;
+    delete hmcxbar_temp;
+}
+
+kitfox_proxy_t::init_pwr_temp_vectors()
+{
+    num_cpus = 0;
+    num_hmcs = 0;
+    num_serdes = 0;
+    num_vaults = 0;
+    for (auto id: manifold_node)
+    {
+        switch (id.second)
+        {
+            case KitFoxType::core_type: {
+                num_cpus++;
+                break;
+            }
+            case KitFoxType::hmcxbar_type: {
+                num_hmcs++;
+                break;
+            }
+            case KitFoxType::hmcserdes_type: {
+                num_serdes++;
+                break;
+            }
+            case KitFoxType::dram_type: {
+                num_vaults++;
+                break;
+            }
+            default:
+                cerr << "In kitfox_proxy constructor. Error manifold_node type!" << endl;
+                exit(1);
+        }
+    }
+
+    cpu_dyn_pwr = new std::vector<double> [num_cpus];
+    cpu_leak_pwr = new std::vector<double> [num_cpus];
+    cpu_temp = new std::vector<double> [num_cpus];
+    serdes_dyn_pwr = new std::vector<double> [num_serdes];
+    serdes_leak_pwr = new std::vector<double> [num_serdes];
+    serdes_temp = new std::vector<double> [num_serdes];
+    hmcxbar_dyn_pwr = new std::vector<double> [num_hmcs];
+    hmcxbar_leak_pwr = new std::vector<double> [num_hmcs];
+    hmcxbar_temp = new std::vector<double> [num_hmcs];
 }
 
 
@@ -253,7 +307,7 @@ void kitfox_proxy_t::add_kitfox_reliability_component(Comp_ID ComponentID)
 }
 #endif
 
-void kitfox_proxy_t::calculate_power(manifold::uarch::pipeline_counter_t c, manifold::kernel::Time_t t, const string prefix)
+void kitfox_proxy_t::calculate_power(manifold::uarch::pipeline_counter_t c, manifold::kernel::Time_t t, const string prefix, int cpu_id)
 {
         string comp;
         libKitFox::Comp_ID comp_id;
@@ -684,6 +738,8 @@ void kitfox_proxy_t::calculate_power(manifold::uarch::pipeline_counter_t c, mani
         assert(kitfox->pull_data(comp_id, t, m_clk->period, libKitFox::KITFOX_DATA_POWER, &power) == libKitFox::KITFOX_QUEUE_ERROR_NONE);
         cerr << prefix + ".power = " << power.get_total() << "W (dynamic = " << power.dynamic << "W, leakage = " << power.leakage << "W) @" << t << endl;
 
+        cpu_dyn_pwr[cpu_id].push_back(power.dynamic);
+        cpu_leak_pwr[cpu_id].push_back(power.leakage);
 }
 
 void kitfox_proxy_t::calculate_power(manifold::uarch::cache_counter_t c, manifold::kernel::Time_t t, const string prefix)
@@ -745,7 +801,7 @@ void kitfox_proxy_t::calculate_power(manifold::uarch::cache_counter_t c, manifol
 }
 
 
-void kitfox_proxy_t::calculate_power(manifold::uarch::hmcxbar_counter_t c, manifold::kernel::Time_t t, const string prefix)
+void kitfox_proxy_t::calculate_power(manifold::uarch::hmcxbar_counter_t c, manifold::kernel::Time_t t, const string prefix, int hmc_id)
 {
     libKitFox::Comp_ID comp_id;
     int queue_error;
@@ -766,10 +822,12 @@ void kitfox_proxy_t::calculate_power(manifold::uarch::hmcxbar_counter_t c, manif
                 "] failed at inserting calculated power data (" << KITFOX_QUEUE_ERROR_STR[queue_error]
                 << ") at time=" << t << " period=" << m_clk->period << endl;
     }
+    hmcxbar_dyn_pwr[hmc_id].push_back(power.dynamic);
+    hmcxbar_leak_pwr[hmc_id].push_back(power.leakage);
 }
 
 
-void kitfox_proxy_t::calculate_power(manifold::uarch::hmcserdes_counter_t c, manifold::kernel::Time_t t, const string prefix)
+void kitfox_proxy_t::calculate_power(manifold::uarch::hmcserdes_counter_t c, manifold::kernel::Time_t t, const string prefix, int serdes_id)
 {
     libKitFox::Comp_ID comp_id;
     int queue_error;
@@ -792,6 +850,9 @@ void kitfox_proxy_t::calculate_power(manifold::uarch::hmcserdes_counter_t c, man
                 "] failed at inserting calculated power data (" << KITFOX_QUEUE_ERROR_STR[queue_error]
                 << ") at time=" << t << " period=" << m_clk->period << endl;
     }
+
+    serdes_dyn_pwr[serdes_id].push_back(power.dynamic);
+    serdes_leak_pwr[serdes_id].push_back(power.leakage);
 }
 
 void kitfox_proxy_t::calculate_power(manifold::uarch::dram_power_t vault_power, manifold::kernel::Time_t t, const string vault_id)

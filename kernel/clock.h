@@ -94,6 +94,11 @@ class tickObj : public tickObjBase {
 class Clock_stat_engine;
 
 
+class MultipleFreqChangeException //we do not allow a clock to change frequency multiple times in a single cycle
+{ //empty class
+};
+
+
 /** \class Clock A clock object that components can register to.
  *
  *  The clock object contains:
@@ -253,6 +258,8 @@ public:
   //!  Tick count of next tick
   Ticks_t nextTick;
 
+  void set_frequency(double f) throw (MultipleFreqChangeException);
+
 private:
 
   //! Called at early termination. Disables all registered components.
@@ -274,6 +281,9 @@ private:
   static ClockVec_t* clocks;
 
   Clock_stat_engine* stats;
+
+  Ticks_t m_lastChangeTick; //tick when frequency last changed.
+  Time_t m_lastChangeTime; //time (seconds) of the rising edge when frequency last changed.
 
 };
 
@@ -347,14 +357,7 @@ void Clock :: register_output_predictor(O* obj, void(O::*rising)(void))
 }
 
 
-
-
-
-class MultipleFreqChangeException //we do not allow a clock to change frequency multiple times in a single cycle
-{ //empty class
-};
-
-
+/*
 class DVFSClock : public Clock {
 public:
     DVFSClock(double f);
@@ -368,7 +371,7 @@ private:
     Time_t m_lastChangeTime; //time (seconds) of the rising edge when frequency last changed.
 };
 
-
+*/
 
 
 

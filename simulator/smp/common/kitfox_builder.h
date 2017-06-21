@@ -36,7 +36,6 @@ protected:
 //    const char* m_config_file;
 //    const char* m_config_file_hmc;
     const uint64_t m_clock_freq;
-
     int* component_id;
     int dram_ranks;
 

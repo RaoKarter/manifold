@@ -84,6 +84,16 @@ void SysBuilder_llp :: config_components()
             //if default clock not defined
             m_DEFAULT_CLOCK_FREQ = -1;
         }
+
+        try {
+            dvfs_controller_clk = m_config.lookup("controller_clk");
+            assert(dvfs_controller_clk > 0);
+            controller_use_default_clock = false;
+        }
+        catch (SettingNotFoundException e) {
+            //if clock not defined
+            controller_use_default_clock = true;
+        }
 #ifdef LIBKITFOX
         //kitfox
         try {
@@ -248,6 +258,7 @@ void SysBuilder_llp :: config_components()
             }
             assert(mc_node_idx_set.size() == (unsigned)num_mc); //verify no 2 indices are the same
         }
+
     }
     catch (SettingNotFoundException e) {
         cout << e.getPath() << " not set." << endl;
@@ -383,13 +394,49 @@ void SysBuilder_llp :: build_system(vector<string>& args, const char* appFile, i
     cout << "\n Going into create_qsimproxy_nodes" << endl;
     create_qsimproxy_nodes(args,appFile,n_lps,part);
 
+#ifdef LIBKITFOX
+    create_dvfs_controller();
+#endif
+
     //connect components
     cout << "\n connecting components..." << endl;
     connect_components();
     cout << "\n connecting components done." << endl;
 }
 
+#ifdef LIBKITFOX
+//====================================================================
+//====================================================================
+void SysBuilder_llp :: create_dvfs_controller()
+{
+    Clock* controller_clock = 0;
+    int lp = 0; // local process = 0;
+    int controller_id = 0;
+    manifold::dvfs_controller::Controller* controller;
 
+//    manifold::dvfs_controller::dvfs_settings controller_settings(m_proc_builder, m_mc_builder, m_kitfox_builder);
+    manifold::dvfs_controller::dvfs_settings controller_settings(m_proc_builder, m_mc_builder);
+
+    if(controller_use_default_clock == false)
+    {
+        controller_clock = new manifold::kernel::Clock(dvfs_controller_clk);
+        controller_cid = manifold::kernel::Component :: Create<manifold::dvfs_controller::Controller>(lp, controller_id, controller_settings, *controller_clock);
+    }
+    else
+    {
+        controller_clock =  this->get_default_clock();
+        controller_cid = manifold::kernel::Component :: Create<manifold::dvfs_controller::Controller>(lp, controller_id, controller_settings, *controller_clock);
+    }
+    controller = manifold::kernel::Component :: GetComponent<manifold::dvfs_controller::Controller>(controller_cid);
+    if(controller)
+        cout << "\n Created DVFS controller with cid: " << controller_cid << " sampling freq (Hz): " << controller_clock->freq;
+    else
+    {
+        cerr << "Error creating DVFS controller..." << endl;
+        assert(0);
+    }
+}
+#endif
 
 //====================================================================
 //====================================================================
@@ -818,6 +865,11 @@ void SysBuilder_llp :: print_config(ostream& out)
     m_network_builder->print_config(out);
     if(m_qsim_builder)
         m_qsim_builder->print_config(out);
+
+#ifdef CONTROLLER
+    manifold::dvfs_controller::Controller* controller = manifold::kernel::Component :: GetComponent<manifold::dvfs_controller::Controller>(controller_cid);
+    controller->print_config(out);
+#endif
 }
 
 
@@ -828,7 +880,15 @@ void SysBuilder_llp :: print_stats(ostream& out)
     m_proc_builder->print_stats(out);
     m_cache_builder->print_stats(out);
     m_mc_builder->print_stats(out);
+
+#ifndef HMCXBAR
     m_network_builder->print_stats(out);
+#endif
+
+#ifdef CONTROLLER
+    manifold::dvfs_controller::Controller* controller = manifold::kernel::Component :: GetComponent<manifold::dvfs_controller::Controller>(controller_cid);
+    controller->print_stats(out);
+#endif
 
     Manifold::print_stats(out);
 }

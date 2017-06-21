@@ -26,6 +26,9 @@ Clock::Clock(double f) : period(1/f), freq(f), nextRising(true), nextTick(0),
   clocks->push_back(this);
 
     stats = new Clock_stat_engine();
+
+    m_lastChangeTick = 0;
+    m_lastChangeTime = 0;
 }
 
 Clock::~Clock()
@@ -106,11 +109,20 @@ void Clock::Cancel(TickEventId)
 { // Implement later
 }
 
+/*
 Time_t Clock::NextTickTime() const
 {
   Time_t time = (Time_t)nextTick / freq;
   if (!nextRising) time += period/ 2.0; // The falling is 1/2 period later
   return time;
+}
+*/
+
+Time_t Clock::NextTickTime() const
+{
+    Time_t time = (Time_t)(nextTick - m_lastChangeTick) / freq + m_lastChangeTime;
+    if (!nextRising) time += period/ 2.0; // The falling is 1/2 period later
+    return time;
 }
 
 Ticks_t Clock::NowTicks() const
@@ -272,6 +284,19 @@ void Clock :: do_output_prediction()
     }
 }
 
+void Clock :: set_frequency(double f) throw (MultipleFreqChangeException)
+{
+    if(nextTick != m_lastChangeTick) {
+    m_lastChangeTime = (nextTick - m_lastChangeTick) / freq + m_lastChangeTime;
+    m_lastChangeTick = nextTick;
+    //set new frequency
+    freq = f;
+    period = 1.0/freq;
+    }
+    else
+    throw MultipleFreqChangeException();
+}
+
 
 #ifdef KERNEL_UTEST
 void Clock :: Reset()
@@ -356,7 +381,7 @@ void Clock_stat_engine::save_samples ()
 
 
 
-
+/*
 DVFSClock :: DVFSClock(double f) : Clock(f)
 {
     m_lastChangeTick = 0;
@@ -385,7 +410,7 @@ void DVFSClock :: set_frequency(double f) throw (MultipleFreqChangeException)
 	throw MultipleFreqChangeException();
 }
 
-
+*/
 
 
 } //namespace kernel

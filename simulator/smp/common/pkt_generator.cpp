@@ -38,10 +38,12 @@ PKT_gen :: PKT_gen(int id, const gen_settings& generator_settings, Clock& clk) :
 	pktgen_map = NULL;
 
     //stats
+#ifdef HMCXBAR
     num_coh_req_pkts_sent = new unsigned [num_cpu_ports];
     num_coh_resp_pkts_sent = new unsigned [num_cpu_ports];
     num_coh_req_pkts_rcvd = new unsigned [num_cpu_ports];
     num_coh_resp_pkts_rcvd = new unsigned [num_cpu_ports];
+#endif
     num_mem_read_req_pkts_sent = new unsigned [num_cpu_ports];
     num_mem_write_req_pkts_sent = new unsigned [num_cpu_ports];
     num_mem_read_req_pkts_rcvd = new unsigned [num_cpu_ports];
@@ -55,10 +57,12 @@ PKT_gen :: PKT_gen(int id, const gen_settings& generator_settings, Clock& clk) :
     {
         pkt_gen_cpu[i] = i;
         upstream_credits[i] = generator_settings.upstream_credits;
+#ifdef HMCXBAR
         num_coh_req_pkts_sent[i] = 0;
         num_coh_resp_pkts_sent[i] = 0;
         num_coh_req_pkts_rcvd[i] = 0;
         num_coh_resp_pkts_rcvd[i] = 0;
+#endif
         num_mem_read_req_pkts_sent[i] = 0;
         num_mem_write_req_pkts_sent[i] = 0;
         num_mem_read_req_pkts_rcvd[i] = 0;

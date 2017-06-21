@@ -31,6 +31,8 @@ public:
     }
 
     virtual ProcType get_proc_type() = 0;
+    virtual int get_num_procs() = 0;
+    virtual std::map<int,int>* get_proc_id_cid_map() = 0;
 
     FEType get_fe_type() { return m_fe_type; }
     void set_fe_type(FEType t) { m_fe_type = t; }
@@ -180,6 +182,8 @@ public:
           ProcBuilder(type, b), m_conf(conf), m_qsim_osd(osd) {}
 #endif
     ProcType get_proc_type() { return PROC_SPX; }
+    int get_num_procs() { return m_NUM_PROC; }
+    std::map<int,int>* get_proc_id_cid_map() {return &m_proc_id_cid_map; }
 
     void read_config(libconfig::Config&);
 
